@@ -3,16 +3,27 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Drawing;
+using Newtonsoft.Json;
 
-namespace Project_Buran_Controller
+namespace Buran_Controller
 {
-    abstract class ButtonProfile
+    public abstract class ButtonProfile
     {
-        public string name { get; set; }
+        /// <summary>The ID of the button</summary>
+        public int ID { get; set; }
+        /// <summary>The color of the button</summary>
+        public Color ButtonColor { get; set; }
+        /// <summary>The function of the button</summary>
+        public BUTTON_FUNCTION Function { get; set; }
 
-        public ButtonProfile()
+        public ButtonProfile(int ID, Color ButtonColor, BUTTON_FUNCTION Function)
         {
-
+            this.ID = ID;
+            this.ButtonColor = ButtonColor;
+            this.Function = Function;
         }
+        /// <summary> Generic function for the button action </summary>
+        public abstract void ExecuteFunction();
     }
 }
