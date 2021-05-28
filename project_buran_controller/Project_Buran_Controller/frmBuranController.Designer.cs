@@ -1,5 +1,5 @@
 ﻿
-namespace Project_Buran_Controller
+namespace Buran_Controller
 {
     partial class frmBuranController
     {
@@ -74,6 +74,7 @@ namespace Project_Buran_Controller
             this.button1.TabIndex = 2;
             this.button1.Text = "Create Button Profile";
             this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // button2
             // 
@@ -83,6 +84,7 @@ namespace Project_Buran_Controller
             this.button2.TabIndex = 3;
             this.button2.Text = "Apply Profiles";
             this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // button3
             // 
@@ -92,6 +94,7 @@ namespace Project_Buran_Controller
             this.button3.TabIndex = 4;
             this.button3.Text = "Save Profiles";
             this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
             // frmBuranController
             // 
@@ -105,6 +108,7 @@ namespace Project_Buran_Controller
             this.Controls.Add(this.olvController);
             this.Name = "frmBuranController";
             this.Text = "frmBuranController";
+            this.Load += new System.EventHandler(this.frmBuranController_Load);
             ((System.ComponentModel.ISupportInitialize)(this.olvController)).EndInit();
             this.ResumeLayout(false);
 
