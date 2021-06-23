@@ -35,17 +35,45 @@ void i2c_configure()
 	SERCOM0->I2CM.CTRLB.bit.SMEN = 1; // Enable Smart Mode
 	while(SERCOM0->I2CM.SYNCBUSY.bit.SYSOP);
 	
-	SERCOM0->I2CM.BAUD.bit.BAUD = 0xFF;
-	
-	SERCOM0->I2CM.STATUS.bit.BUSSTATE = 0x1; // Force I2C into idle state
-	
-	while(SERCOM0->I2CM.SYNCBUSY.bit.SYSOP);
+	SERCOM0->I2CM.BAUD.bit.BAUD = 0x13;
 	
 	SERCOM0->I2CM.CTRLA.bit.ENABLE = 1; // Enable I2C
+	
+	SERCOM0->I2CM.STATUS.bit.BUSSTATE = 0x1; // Force I2C into idle state
+	while(SERCOM0->I2CM.SYNCBUSY.bit.SYSOP);
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////
 }
 
-void i2c_read()
+uint8_t i2c_read(uint8_t reg_addr)
+{	
+	SERCOM0->I2CM.ADDR.bit.ADDR = LP5012_ADDR_WRITE;
+	
+	if(SERCOM0->I2CM.STATUS.bit.BUSSTATE == 0x2 && !SERCOM0->I2CM.STATUS.bit.RXNACK) // The MCU has the bus and we have received an ACK, we can now send data
+	{
+		uint8_t received = 0;
+		SERCOM0->I2CM.DATA.reg = reg_addr;
+		SERCOM0->I2CM.CTRLB.bit.CMD = 0x1; // repeated start
+		
+		SERCOM0->I2CM.ADDR.bit.ADDR = LP5012_ADDR_READ;
+		
+		received = SERCOM0->I2CM.DATA.reg;	
+		SERCOM0->I2CM.CTRLB.bit.CMD = 0x3; // STOP condition
+		
+		return received;
+	}
+}
+
+uint8_t i2c_write(uint8_t reg_addr, uint8_t data_to_write)
 {
-	SERCOM0->I2CM.DATA.reg = 0x01; // SLAVE 0, READ DIRECTION
+	SERCOM0->I2CM.ADDR.bit.ADDR = LP5012_ADDR_WRITE;
+	
+	if(SERCOM0->I2CM.STATUS.bit.BUSSTATE == 0x2 && !SERCOM0->I2CM.STATUS.bit.RXNACK) // The MCU has the bus and we have received an ACK, we can now send data
+	{
+		SERCOM0->I2CM.DATA.reg = reg_addr;
+		while(SERCOM0->I2CM.STATUS.bit.RXNACK);
+		SERCOM0->I2CM.DATA.reg = data_to_write;
+		SERCOM0->I2CM.CTRLB.bit.CMD = 0x3; // STOP condition
+	}	 
+	
+	return (i2c_read(reg_addr) == data_to_write);
 }

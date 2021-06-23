@@ -13,15 +13,20 @@
 #define I2C_H_
 
 #include "main.h"
+#include "LP5012PWR.h"
 
 /**
- * \brief 
  * Configures the I2C Peripheral 
- * \param 
- * 
- * \return void
  */
 void i2c_configure(void);
-void i2c_read();
+/**
+ * Reads the specified register and returns the result
+ */
+uint8_t i2c_read(uint8_t reg_addr);
+/**
+ * Writes to the specified register with the given data, returns
+ * true if successful
+ */
+uint8_t i2c_write(uint8_t reg_addr, uint8_t data_to_write); 
 
 #endif /* I2C_H_ */
