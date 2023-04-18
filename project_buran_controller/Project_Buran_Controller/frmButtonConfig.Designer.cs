@@ -47,7 +47,7 @@ namespace Buran_Controller
             // 
             // btnAddButton
             // 
-            this.btnAddButton.Location = new System.Drawing.Point(12, 139);
+            this.btnAddButton.Location = new System.Drawing.Point(12, 215);
             this.btnAddButton.Name = "btnAddButton";
             this.btnAddButton.Size = new System.Drawing.Size(169, 23);
             this.btnAddButton.TabIndex = 0;
@@ -57,7 +57,7 @@ namespace Buran_Controller
             // 
             // btnClose
             // 
-            this.btnClose.Location = new System.Drawing.Point(187, 139);
+            this.btnClose.Location = new System.Drawing.Point(189, 215);
             this.btnClose.Name = "btnClose";
             this.btnClose.Size = new System.Drawing.Size(169, 23);
             this.btnClose.TabIndex = 1;
@@ -96,7 +96,7 @@ namespace Buran_Controller
             // lblFunction
             // 
             this.lblFunction.AutoSize = true;
-            this.lblFunction.Location = new System.Drawing.Point(9, 56);
+            this.lblFunction.Location = new System.Drawing.Point(9, 44);
             this.lblFunction.Name = "lblFunction";
             this.lblFunction.Size = new System.Drawing.Size(48, 13);
             this.lblFunction.TabIndex = 5;
@@ -106,7 +106,7 @@ namespace Buran_Controller
             // cboFunction
             // 
             this.cboFunction.FormattingEnabled = true;
-            this.cboFunction.Location = new System.Drawing.Point(86, 53);
+            this.cboFunction.Location = new System.Drawing.Point(88, 41);
             this.cboFunction.Name = "cboFunction";
             this.cboFunction.Size = new System.Drawing.Size(270, 21);
             this.cboFunction.TabIndex = 6;
@@ -115,7 +115,7 @@ namespace Buran_Controller
             // 
             this.pnlScene.Controls.Add(this.cboSceneSelect);
             this.pnlScene.Controls.Add(this.lblScene);
-            this.pnlScene.Location = new System.Drawing.Point(12, 80);
+            this.pnlScene.Location = new System.Drawing.Point(12, 156);
             this.pnlScene.Name = "pnlScene";
             this.pnlScene.Size = new System.Drawing.Size(346, 53);
             this.pnlScene.TabIndex = 7;
@@ -147,7 +147,7 @@ namespace Buran_Controller
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(370, 173);
+            this.ClientSize = new System.Drawing.Size(370, 250);
             this.Controls.Add(this.pnlScene);
             this.Controls.Add(this.cboFunction);
             this.Controls.Add(this.lblFunction);
@@ -157,7 +157,7 @@ namespace Buran_Controller
             this.Controls.Add(this.btnClose);
             this.Controls.Add(this.btnAddButton);
             this.Name = "frmButtonConfig";
-            this.Text = "frmButtonConfig";
+            this.Text = " ";
             this.Load += new System.EventHandler(this.frmButtonConfig_Load);
             this.pnlScene.ResumeLayout(false);
             this.pnlScene.PerformLayout();

@@ -15,12 +15,12 @@ namespace Buran_Controller
         public frmButtonConfig()
         {
             InitializeComponent();
+            cboFunction.Items.AddRange(Enum.GetNames(typeof(BUTTON_FUNCTION)));
+            cboSceneSelect.Items.AddRange(SLOBSLocal.SceneValuePairs.Keys.ToArray());
         }
 
         private void frmButtonConfig_Load(object sender, EventArgs e)
         {
-            cboFunction.Items.AddRange(Enum.GetNames(typeof(BUTTON_FUNCTION)));
-            //cboSceneSelect.Items.AddRange(SLOBSLocal.SceneValuePairs.Keys.ToArray());
             guiUpdateTimer.Enabled = true;
         }
 
@@ -35,7 +35,8 @@ namespace Buran_Controller
             }
 
             ButtonFactory.Function = (BUTTON_FUNCTION)Enum.Parse(typeof(BUTTON_FUNCTION), cboFunction.SelectedItem.ToString());
-            ButtonFactory.CreateButtonProfile();
+            BuranExecutive.ButtonProfiles.Add(ButtonFactory.CreateButtonProfile());
+            BuranExecutive.UpdateGUI = true;
         }
 
         private void button3_Click(object sender, EventArgs e)
