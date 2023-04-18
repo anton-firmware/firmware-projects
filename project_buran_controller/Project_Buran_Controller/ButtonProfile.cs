@@ -17,13 +17,19 @@ namespace Buran_Controller
         /// <summary>The function of the button</summary>
         public BUTTON_FUNCTION Function { get; set; }
 
+        /// <summary>
+        /// Constructor for generic button profile.
+        /// </summary>
+        /// <param name="ID">The ID for the button for firmware identification</param>
+        /// <param name="ButtonColor">The color of the button.</param>
+        /// <param name="Function">The function of the button.</param>
         public ButtonProfile(int ID, Color ButtonColor, BUTTON_FUNCTION Function)
         {
             this.ID = ID;
             this.ButtonColor = ButtonColor;
             this.Function = Function;
         }
-        /// <summary> Generic function for the button action </summary>
+        /// <summary> Generic method re</summary>
         public abstract void ExecuteFunction();
     }
 }
