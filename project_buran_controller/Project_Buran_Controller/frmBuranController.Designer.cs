@@ -29,22 +29,35 @@ namespace Buran_Controller
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.olvController = new BrightIdeasSoftware.ObjectListView();
-            this.olvBtnName = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+            this.olvBtnID = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+            this.olvBtnColor = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+            this.olvBtnFunction = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.button1 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
+            this.olvTimer = new System.Windows.Forms.Timer(this.components);
+            this.olvSceneName = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
             ((System.ComponentModel.ISupportInitialize)(this.olvController)).BeginInit();
             this.SuspendLayout();
             // 
             // olvController
             // 
-            this.olvController.AllColumns.Add(this.olvBtnName);
+            this.olvController.AllColumns.Add(this.olvBtnID);
+            this.olvController.AllColumns.Add(this.olvBtnColor);
+            this.olvController.AllColumns.Add(this.olvBtnFunction);
+            this.olvController.AllColumns.Add(this.olvSceneName);
+            this.olvController.AutoArrange = false;
             this.olvController.CellEditUseWholeCell = false;
             this.olvController.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.olvBtnName});
+            this.olvBtnID,
+            this.olvBtnColor,
+            this.olvBtnFunction,
+            this.olvSceneName});
             this.olvController.Cursor = System.Windows.Forms.Cursors.Default;
+            this.olvController.HasCollapsibleGroups = false;
             this.olvController.HideSelection = false;
             this.olvController.Location = new System.Drawing.Point(12, 39);
             this.olvController.Name = "olvController";
@@ -52,11 +65,25 @@ namespace Buran_Controller
             this.olvController.TabIndex = 0;
             this.olvController.UseCompatibleStateImageBehavior = false;
             this.olvController.View = System.Windows.Forms.View.Details;
+            this.olvController.SelectedIndexChanged += new System.EventHandler(this.olvController_SelectedIndexChanged);
             // 
-            // olvBtnName
+            // olvBtnID
             // 
-            this.olvBtnName.Text = "";
-            this.olvBtnName.Width = 91;
+            this.olvBtnID.AspectName = "ID";
+            this.olvBtnID.Text = "Button ID";
+            this.olvBtnID.Width = 78;
+            // 
+            // olvBtnColor
+            // 
+            this.olvBtnColor.AspectName = "ButtonColor";
+            this.olvBtnColor.Text = "Button Color";
+            this.olvBtnColor.Width = 120;
+            // 
+            // olvBtnFunction
+            // 
+            this.olvBtnFunction.AspectName = "Function";
+            this.olvBtnFunction.Text = "Button Function";
+            this.olvBtnFunction.Width = 118;
             // 
             // comboBox1
             // 
@@ -96,6 +123,11 @@ namespace Buran_Controller
             this.button3.UseVisualStyleBackColor = true;
             this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
+            // olvTimer
+            // 
+            this.olvTimer.Enabled = true;
+            this.olvTimer.Tick += new System.EventHandler(this.olvTimer_Tick);
+            // 
             // frmBuranController
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -120,8 +152,12 @@ namespace Buran_Controller
         private System.Windows.Forms.ComboBox comboBox1;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button button2;
-        private BrightIdeasSoftware.OLVColumn olvBtnName;
+        private BrightIdeasSoftware.OLVColumn olvBtnID;
         private System.Windows.Forms.Button button3;
+        private BrightIdeasSoftware.OLVColumn olvBtnColor;
+        private BrightIdeasSoftware.OLVColumn olvBtnFunction;
+        private System.Windows.Forms.Timer olvTimer;
+        private BrightIdeasSoftware.OLVColumn olvSceneName;
     }
 }
 
