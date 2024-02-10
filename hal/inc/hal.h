@@ -19,7 +19,7 @@
  */
 hal_result_t hal_init(void);
 
-/** Teardown the HAL. Often the last function to be called.
+/** Teardown resources set up by `hal_init()`.
  * 
  *  \retval #HAL_SUCCESS Teardown was successful.
  *  \retval #HAL_ERROR_REJECTED Teardown failed due to a previous `hal_init()` call not being made.
