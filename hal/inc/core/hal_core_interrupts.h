@@ -12,4 +12,4 @@ void hal_interrupts_enable(void);
 /** Disable global interrupts. */
 void hal_interrupts_disable(void);
 
-#endif
+#endif /* HAL_CORE_INTERRUPTS_H */
