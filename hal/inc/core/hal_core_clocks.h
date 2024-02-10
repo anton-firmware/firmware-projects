@@ -8,6 +8,13 @@
 
 #include "../hal_result.h"
 
+typedef enum CLOCK_TYPE
+{
+    CLOCK_INTERNAL, /*!< Internal clock. (e.g. PLL, HSI) */
+    CLOCK_EXTERNAL, /*!< External clock. */
+
+} clock_type_t; 
+
 /** Initialise non-peripheral related MCU clocks.
  *
  *  \retval #HAL_SUCCESS Initialisation was successful.
@@ -29,5 +36,12 @@ hal_result_t hal_clock_teardown(void);
  *  \return The frequency of the system clock in Hz. 
  */
 uint32_t hal_get_system_clock_frequency(void);
+
+/** Returns the type of the system clock.
+ * 
+ *  \retval #CLOCK_INTERNAL If an internal clock is being used as the system clock.
+ *  \retval #CLOCK_EXTERNAL If an external clock is being used as the system clock.
+ */
+clock_type_t hal_get_system_clock_type(void);
 
 #endif
