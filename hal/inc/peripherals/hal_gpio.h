@@ -1,5 +1,5 @@
-#ifndef HAL_GPIO
-#define HAL_GPIO
+#ifndef HAL_GPIO_H
+#define HAL_GPIO_H
 
 /** \file
  * 
@@ -24,11 +24,12 @@ typedef enum hal_gpio_mode
 
 } hal_gpio_pin_mode_t;
 
+/** Definitions related to GPIO triggers. */
 typedef enum hal_gpio_triggers
 {
-    HAL_GPIO_RISING,
-    HAL_GPIO_FALLING,
-    
+    HAL_GPIO_RISING,  /*!< GPIO trigger on a rising edge. */
+    HAL_GPIO_FALLING, /*!< GPIO trigger on a falling edge. */
+
 } hal_gpio_pin_trigger_t;
 
 /** Definitions related to GPIO speeds. */
@@ -111,4 +112,4 @@ hal_result_t hal_gpio_set_level(hal_gpio_pin_t pin, hal_gpio_level_t level);
  */
 hal_gpio_level_t hal_gpio_read_level(hal_gpio_pin_t pin);
 
-#endif
+#endif /* HAL_GPIO_H */
