@@ -24,14 +24,21 @@ typedef enum hal_gpio_mode
 
 } hal_gpio_pin_mode_t;
 
+typedef enum hal_gpio_triggers
+{
+    HAL_GPIO_RISING,
+    HAL_GPIO_FALLING,
+    
+} hal_gpio_pin_trigger_t;
+
 /** Definitions related to GPIO speeds. */
 typedef enum hal_gpio_speed
 {
-    HAL_GPIO_VERY_SLOW,
-    HAL_GPIO_SLOW,
-    HAL_GPIO_NORMAL,
-    HAL_GPIO_FAST,
-    HAL_GPIO_VERY_FAST,
+    HAL_GPIO_VERY_SLOW, /*!< GPIO very slow mode. */
+    HAL_GPIO_SLOW,      /*!< GPIO slow mode. */
+    HAL_GPIO_NORMAL,    /*!< GPIO normal mode. */
+    HAL_GPIO_FAST,      /*!< GPIO fast mode. */
+    HAL_GPIO_VERY_FAST, /*!< GPIO very fast mode. */
 
 } hal_gpio_pin_speed_t;
 
