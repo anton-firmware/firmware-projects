@@ -1,16 +1,30 @@
 #ifndef HAL_GPIO
 #define HAL_GPIO
 
+/** \file
+ * 
+ * File containing definitions for GPIO functions.
+ */
+
 #include "../hal_result.h"
 
+typedef enum hal_gpio_level
+{
+    HAL_GPIO_LOW,  /*!< GPIO Level low. */
+    HAL_GPIO_HIGH, /*!< GPIO Level high. */
+
+} hal_gpio_level_t;
+
+/** Definitions related to GPIO input modes. */
 typedef enum hal_gpio_mode
 {
-    HAL_GPIO_INPUT,             /*!< Internal clock. (e.g. PLL, HSI) */
-    HAL_GPIO_OUTPUT_PUSH_PULL,  /*!< Internal clock. (e.g. PLL, HSI) */
-    HAL_GPIO_OUTPUT_OPEN_DRAIN, /*!< Internal clock. (e.g. PLL, HSI) */
+    HAL_GPIO_INPUT,             /*!< GPIO Input. */
+    HAL_GPIO_OUTPUT_PUSH_PULL,  /*!< GPIO Output set up in a push-pull configuration. */
+    HAL_GPIO_OUTPUT_OPEN_DRAIN, /*!< GPIO Output set up in an open drain configuration. */
 
 } hal_gpio_pin_mode_t;
 
+/** Definitions related to GPIO speeds. */
 typedef enum hal_gpio_speed
 {
     HAL_GPIO_VERY_SLOW,
@@ -24,11 +38,12 @@ typedef enum hal_gpio_speed
 /** Structure representing a pin on a port on an MCU. */
 typedef struct hal_gpio_pin
 {
-    uint8_t pin;  /*!< Internal clock. (e.g. PLL, HSI) */
-    uint8_t port; /*!< Internal clock. (e.g. PLL, HSI) */
+    uint8_t pin;  /*!< GPIO Pin. */
+    uint8_t port; /*!< GPIO Port. */
 
 } hal_gpio_pin_t;
 
+/** Structure representing a GPIO initialisation structure. */
 typedef struct hal_gpio_init
 {
     hal_gpio_pin_mode_t  pin_mode;
@@ -69,5 +84,24 @@ hal_result_t hal_gpio_clock_teardown(void);
  *  \retval #HAL_ERROR_REJECTED Teardown failed due to a previous `hal_gpio_init()` call not being made.
  */
 hal_result_t hal_gpio_teardown(void);
+
+/** Set the state of a GPIO pin.
+ * 
+ *  \param[in] pin GPIO pin.
+ *  \param[in] level Pin level.
+ * 
+ *  \retval #HAL_SUCCESS Pin state successfully set.
+ *  \retval #HAL_ERROR_REJECTED Pin state unable to be set due to a previous `hal_gpio_init()` call not being made.
+ */
+hal_result_t hal_gpio_set_level(hal_gpio_pin_t pin, hal_gpio_level_t level);
+
+/** Read the state of a GPIO pin.
+ * 
+ *  \param[in] pin GPIO pin.
+ * 
+ *  \retval #HAL_GPIO_LOW GPIO low level.
+ *  \retval #HAL_GPIO_High GPIO high level.
+ */
+hal_gpio_level_t hal_gpio_read_level(hal_gpio_pin_t pin);
 
 #endif
