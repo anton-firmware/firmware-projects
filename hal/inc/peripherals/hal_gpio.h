@@ -43,7 +43,7 @@ typedef struct hal_gpio_pin
 
 } hal_gpio_pin_t;
 
-/** Structure representing a GPIO initialisation structure. */
+/** Structure representing GPIO initialisation. */
 typedef struct hal_gpio_init
 {
     hal_gpio_pin_mode_t  pin_mode;
