@@ -21,6 +21,7 @@ typedef enum hal_gpio_mode
     HAL_GPIO_INPUT,             /*!< GPIO Input. */
     HAL_GPIO_OUTPUT_PUSH_PULL,  /*!< GPIO Output set up in a push-pull configuration. */
     HAL_GPIO_OUTPUT_OPEN_DRAIN, /*!< GPIO Output set up in an open drain configuration. */
+    HAL_GPIO_ALTERNATE,         /*!< GPIO Pin set in an alternate configuration. */
 
 } hal_gpio_pin_mode_t;
 
@@ -54,11 +55,20 @@ typedef struct hal_gpio_pin
 /** Structure representing GPIO initialisation. */
 typedef struct hal_gpio_init
 {
-    hal_gpio_pin_mode_t  pin_mode;
-    hal_gpio_pin_t       pin;
-    hal_gpio_pin_speed_t speed;
+    hal_gpio_pin_mode_t        pin_mode;                 /*!< GPIO mode. */
+    hal_gpio_pin_t             pin;                      /*!< GPIO pin. */
+    hal_gpio_pin_speed_t       speed;                    /*!< GPIO pin speed. */
+    hal_gpio_pin_trigger_t     trigger;                  /*!< GPIO trigger. */
+    hal_gpio_alt_pin_mapping_t alternate_pin_mapping_cb; /*!< GPIO alternate pin callback. */
+    hal_gpio_trigger_event_t   trigger_event_cb;         /*!< GPIO trigger callback. */ 
 
 } hal_gpio_init_t;
+
+/** Callback definition for assigning an alternate pin mapping during GPIO initialisation. */
+typedef void (*hal_gpio_alt_pin_mapping_t)(void);
+
+/** Callback definition for carrying out a user-defined action on a GPIO trigger. */
+typedef void (*hal_gpio_trigger_event_t)(void);
 
 /** Initialise GPIO.
  *
