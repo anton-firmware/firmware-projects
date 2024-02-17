@@ -1,5 +1,5 @@
-#ifndef HAL_GPIO
-#define HAL_GPIO
+#ifndef HAL_GPIO_H
+#define HAL_GPIO_H
 
 /** \file
  * 
@@ -21,17 +21,26 @@ typedef enum hal_gpio_mode
     HAL_GPIO_INPUT,             /*!< GPIO Input. */
     HAL_GPIO_OUTPUT_PUSH_PULL,  /*!< GPIO Output set up in a push-pull configuration. */
     HAL_GPIO_OUTPUT_OPEN_DRAIN, /*!< GPIO Output set up in an open drain configuration. */
+    HAL_GPIO_ALTERNATE,         /*!< GPIO Pin set in an alternate configuration. */
 
 } hal_gpio_pin_mode_t;
+
+/** Definitions related to GPIO triggers. */
+typedef enum hal_gpio_triggers
+{
+    HAL_GPIO_RISING,  /*!< GPIO trigger on a rising edge. */
+    HAL_GPIO_FALLING, /*!< GPIO trigger on a falling edge. */
+
+} hal_gpio_pin_trigger_t;
 
 /** Definitions related to GPIO speeds. */
 typedef enum hal_gpio_speed
 {
-    HAL_GPIO_VERY_SLOW,
-    HAL_GPIO_SLOW,
-    HAL_GPIO_NORMAL,
-    HAL_GPIO_FAST,
-    HAL_GPIO_VERY_FAST,
+    HAL_GPIO_VERY_SLOW, /*!< GPIO very slow mode. */
+    HAL_GPIO_SLOW,      /*!< GPIO slow mode. */
+    HAL_GPIO_NORMAL,    /*!< GPIO normal mode. */
+    HAL_GPIO_FAST,      /*!< GPIO fast mode. */
+    HAL_GPIO_VERY_FAST, /*!< GPIO very fast mode. */
 
 } hal_gpio_pin_speed_t;
 
@@ -46,11 +55,20 @@ typedef struct hal_gpio_pin
 /** Structure representing GPIO initialisation. */
 typedef struct hal_gpio_init
 {
-    hal_gpio_pin_mode_t  pin_mode;
-    hal_gpio_pin_t       pin;
-    hal_gpio_pin_speed_t speed;
+    hal_gpio_pin_mode_t        pin_mode;                 /*!< GPIO mode. */
+    hal_gpio_pin_t             pin;                      /*!< GPIO pin. */
+    hal_gpio_pin_speed_t       speed;                    /*!< GPIO pin speed. */
+    hal_gpio_pin_trigger_t     trigger;                  /*!< GPIO trigger. */
+    hal_gpio_alt_pin_mapping_t alternate_pin_mapping_cb; /*!< GPIO alternate pin callback. */
+    hal_gpio_trigger_event_t   trigger_event_cb;         /*!< GPIO trigger callback. */ 
 
 } hal_gpio_init_t;
+
+/** Callback definition for assigning an alternate pin mapping during GPIO initialisation. */
+typedef void (*hal_gpio_alt_pin_mapping_t)(void);
+
+/** Callback definition for carrying out a user-defined action on a GPIO trigger. */
+typedef void (*hal_gpio_trigger_event_t)(void);
 
 /** Initialise GPIO.
  *
@@ -104,4 +122,4 @@ hal_result_t hal_gpio_set_level(hal_gpio_pin_t pin, hal_gpio_level_t level);
  */
 hal_gpio_level_t hal_gpio_read_level(hal_gpio_pin_t pin);
 
-#endif
+#endif /* HAL_GPIO_H */
