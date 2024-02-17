@@ -75,7 +75,7 @@ typedef void (*hal_gpio_trigger_event_t)(void);
  *  \param[in] init_struct GPIO initialisation structure.
  * 
  *  \retval #HAL_SUCCESS Initialisation was successful.
- *  \retval #HAL_ERROR_REJECTED Initialisation failed due a previous `hal_gpio_clock_init()` call being made.
+ *  \retval #HAL_ERROR_REJECTED Initialisation failed due a previous `hal_gpio_init()` call being made.
  *  \retval #HAL_ERROR_PERIPHERAL_ERROR Initialisation failed due to a peripheral error.
  */
 hal_result_t hal_gpio_init(hal_gpio_init_t init_struct);
@@ -90,9 +90,9 @@ hal_result_t hal_gpio_clock_init(void);
 
 /** Teardown previously intialised GPIO clocks.
  *
- *  \retval #HAL_SUCCESS Initialisation was successful.
- *  \retval #HAL_ERROR_REJECTED Initialisation failed due a previous `hal_gpio_clock_init()` call being made.
- *  \retval #HAL_ERROR_PERIPHERAL_ERROR Initialisation failed due to a peripheral error.
+ *  \retval #HAL_SUCCESS Teardown was successful.
+ *  \retval #HAL_ERROR_REJECTED Teardown failed due a previous `hal_gpio_clock_init()` call not being made.
+ *  \retval #HAL_ERROR_PERIPHERAL_ERROR Teardown failed due to a peripheral error.
  */
 hal_result_t hal_gpio_clock_teardown(void);
 
@@ -119,6 +119,7 @@ hal_result_t hal_gpio_set_level(hal_gpio_pin_t pin, hal_gpio_level_t level);
  * 
  *  \retval #HAL_GPIO_LOW GPIO low level.
  *  \retval #HAL_GPIO_High GPIO high level.
+ *  \retval #HAL_ERROR_REJECTED GPIO level unable to be read due to a previous `hal_gpio_init()` call not being made.
  */
 hal_gpio_level_t hal_gpio_read_level(hal_gpio_pin_t pin);
 
