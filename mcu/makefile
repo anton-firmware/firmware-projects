@@ -1,0 +1,24 @@
+ARM_GCC =  arm-none-eabi-gcc.exe
+ARM_LIB =  arm-none-eabi-ar.exe
+
+HAL_PATH_PERIPHERALS = hal/inc/peripherals/
+HAL_PATH_CORE        = hal/inc/core/
+
+ATSAMD11D14_PACK_INC            = packs/Atmel.SAMD11_DFP.1.1.81/include/
+
+ATSAMD11D14_PERIPHERAL_SOURCES  = atsamd11d14/peripherals/*
+ATSAMD11D14_CORE_SOURCES        = atsamd11d14/core/*
+ATSAMD11D14_INCLUDES            = packs/Atmel.SAMD11_DFP.1.1.81/include/*
+ATSAMD11D14AS                   = __SAMD11D14AS__
+
+CMSIS_5_INC                     = packs/cmsis5/CMSIS/Core/Include
+
+OBJECT_NAME_ATSAMD11D14AS       = ATSAMD11D14AS.o
+LIB_NAME_ATSAMD11D14AS	        = ATSAMD11D14AS.a
+
+atsamd11d14x:
+	$(ARM_GCC) -I$(HAL_PATH_PERIPHERALS) -I$(ATSAMD11D14_PACK_INC) -I$(CMSIS_5_INC) -D$(ATSAMD11D14AS) -c $(ATSAMD11D14_PERIPHERAL_SOURCES) -o$(OBJECT_NAME_ATSAMD11D14AS)
+
+atsamd11d14x_lib: atsamd11d14x
+	$(ARM_LIB) -rc $(LIB_NAME_ATSAMD11D14AS) $(OBJECT_NAME_ATSAMD11D14AS)
+	rm $(OBJECT_NAME_ATSAMD11D14AS)

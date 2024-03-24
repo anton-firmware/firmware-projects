@@ -1,10 +1,9 @@
 #include <stdbool.h>
 
-#include "peripherals/hal_gpio.h"
-#include "packs/Atmel.SAMD11_DFP.1.1.81/include/sam.h"
+#include "hal_gpio.h"
+#include "sam.h"
 
 static volatile bool peripheral_initialised = false;
-static volatile bool clock_initialised = false;
 
 #if   defined(__SAMD11C14A__) || defined(__ATSAMD11C14A__)
     static const uint32_t pin_bitmap = 0x00000000;
@@ -68,22 +67,29 @@ hal_result_t hal_gpio_init(hal_gpio_init_t init_struct)
 
 hal_result_t hal_gpio_clock_init(void)
 {
-
+    /* Not needed on ATSAMD11D14x. */
+    return HAL_SUCCESS;
 }
 
 hal_result_t hal_gpio_clock_teardown(void)
 {
-
+    /* Not needed on ATSAMD11D14x. */
+    return HAL_SUCCESS;
 }
 
 hal_result_t hal_gpio_teardown(void)
 {
+    hal_result_t result = HAL_ERROR_PERIPHERAL_ERROR;
 
+    if (!peripheral_initialised)
+    {
+        result = HAL_ERROR_REJECTED;
+    }
 }
 
 hal_result_t hal_gpio_set_level(hal_gpio_pin_t pin, hal_gpio_level_t level)
 {
-
+    hal_result_t result = HAL_ERROR_PERIPHERAL_ERROR;
 }
 
 hal_gpio_level_t hal_gpio_read_level(hal_gpio_pin_t pin)
