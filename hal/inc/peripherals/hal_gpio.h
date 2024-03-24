@@ -12,7 +12,7 @@ typedef enum hal_gpio_level
 {
     HAL_GPIO_LOW,     /*!< GPIO Level low. */
     HAL_GPIO_HIGH,    /*!< GPIO Level high. */
-    HAL_GPIO_INVALID, /*!< Invalid GPIO Level. */
+    HAL_GPIO_INVALID, /*!< GPIO Level invalid. */
 
 } hal_gpio_level_t;
 
