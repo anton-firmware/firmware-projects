@@ -52,6 +52,12 @@ typedef struct hal_gpio_pin
 
 } hal_gpio_pin_t;
 
+/** Callback definition for assigning an alternate pin mapping during GPIO initialisation. */
+typedef hal_result_t (*hal_gpio_alt_pin_mapping_t)(void);
+
+/** Callback definition for carrying out a user-defined action on a GPIO trigger. */
+typedef void (*hal_gpio_trigger_event_t)(void);
+
 /** Structure representing GPIO initialisation. */
 typedef struct hal_gpio_init
 {
@@ -64,21 +70,16 @@ typedef struct hal_gpio_init
 
 } hal_gpio_init_t;
 
-/** Callback definition for assigning an alternate pin mapping during GPIO initialisation. */
-typedef hal_result_t (*hal_gpio_alt_pin_mapping_t)(void);
-
-/** Callback definition for carrying out a user-defined action on a GPIO trigger. */
-typedef void (*hal_gpio_trigger_event_t)(void);
-
 /** Initialise GPIO.
  *
- *  \param[in] init_struct GPIO initialisation structure.
+ *  \param[in] init_struct Pointer to a GPIO initialisation structure.
  *
  *  \retval #HAL_SUCCESS Initialisation was successful.
+ *  \retval #HAL_ERROR_PARAM_ERROR An invalid parameter was detected.
  *  \retval #HAL_ERROR_REJECTED Initialisation failed due a previous `hal_gpio_init()` call being made.
  *  \retval #HAL_ERROR_PERIPHERAL_ERROR Initialisation failed due to a peripheral error.
  */
-hal_result_t hal_gpio_init(hal_gpio_init_t init_struct);
+hal_result_t hal_gpio_init(hal_gpio_init_t *init_struct);
 
 /** Initialise GPIO clocks.
  *
@@ -105,13 +106,14 @@ hal_result_t hal_gpio_teardown(void);
 
 /** Set the state of a GPIO pin.
  *
- *  \param[in] pin GPIO pin.
+ *  \param[in] pin Pointer to a GPIO pin.
  *  \param[in] level Pin level.
  *
  *  \retval #HAL_SUCCESS Pin state successfully set.
+ *  \retval #HAL_ERROR_PARAM_ERROR An invalid pin, port, or level was specified.
  *  \retval #HAL_ERROR_REJECTED Pin state unable to be set due to a previous `hal_gpio_init()` call not being made.
  */
-hal_result_t hal_gpio_set_level(hal_gpio_pin_t pin, hal_gpio_level_t level);
+hal_result_t hal_gpio_set_level(hal_gpio_pin_t *pin, hal_gpio_level_t level);
 
 /** Read the state of a GPIO pin.
  *
@@ -119,6 +121,7 @@ hal_result_t hal_gpio_set_level(hal_gpio_pin_t pin, hal_gpio_level_t level);
  *
  *  \retval #HAL_GPIO_LOW GPIO low level.
  *  \retval #HAL_GPIO_High GPIO high level.
+ *  \retval #HAL_ERROR_PARAM_ERROR An invalid port or pin was specified.
  *  \retval #HAL_ERROR_REJECTED GPIO level unable to be read due to a previous `hal_gpio_init()` call not being made.
  */
 hal_gpio_level_t hal_gpio_read_level(hal_gpio_pin_t pin);
