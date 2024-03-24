@@ -6,7 +6,7 @@
  * File containing definitions for GPIO functions.
  */
 
-#include "../hal_result.h"
+#include "hal_result.h"
 
 typedef enum hal_gpio_level
 {
@@ -71,7 +71,7 @@ typedef struct hal_gpio_init
 
 } hal_gpio_init_t;
 
-/** Initialise GPIO.
+/** Initialise a GPIO pin given by the \c init_struct.
  *
  *  \param[in] init_struct Pointer to a GPIO initialisation structure.
  *
