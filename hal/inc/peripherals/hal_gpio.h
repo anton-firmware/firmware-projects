@@ -10,8 +10,9 @@
 
 typedef enum hal_gpio_level
 {
-    HAL_GPIO_LOW,  /*!< GPIO Level low. */
-    HAL_GPIO_HIGH, /*!< GPIO Level high. */
+    HAL_GPIO_LOW,     /*!< GPIO Level low. */
+    HAL_GPIO_HIGH,    /*!< GPIO Level high. */
+    HAL_GPIO_INVALID, /*!< Invalid GPIO Level. */
 
 } hal_gpio_level_t;
 
@@ -117,12 +118,11 @@ hal_result_t hal_gpio_set_level(hal_gpio_pin_t *pin, hal_gpio_level_t level);
 
 /** Read the state of a GPIO pin.
  *
- *  \param[in] pin GPIO pin.
+ *  \param[in] pin Pointer to a GPIO pin.
  *
  *  \retval #HAL_GPIO_LOW GPIO low level.
  *  \retval #HAL_GPIO_High GPIO high level.
- *  \retval #HAL_ERROR_PARAM_ERROR An invalid port or pin was specified.
- *  \retval #HAL_ERROR_REJECTED GPIO level unable to be read due to a previous `hal_gpio_init()` call not being made.
+ *  \retval #HAL_GPIO_INVALID Invalid GPIO level due to a peripheral error, or a previous `hal_gpio_init()` call not being made.
  */
 hal_gpio_level_t hal_gpio_read_level(hal_gpio_pin_t *pin);
 
