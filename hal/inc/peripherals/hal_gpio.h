@@ -124,6 +124,6 @@ hal_result_t hal_gpio_set_level(hal_gpio_pin_t *pin, hal_gpio_level_t level);
  *  \retval #HAL_ERROR_PARAM_ERROR An invalid port or pin was specified.
  *  \retval #HAL_ERROR_REJECTED GPIO level unable to be read due to a previous `hal_gpio_init()` call not being made.
  */
-hal_gpio_level_t hal_gpio_read_level(hal_gpio_pin_t pin);
+hal_gpio_level_t hal_gpio_read_level(hal_gpio_pin_t *pin);
 
 #endif /* HAL_GPIO_H */
