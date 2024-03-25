@@ -17,9 +17,9 @@ static volatile bool peripheral_initialised = false;
     static const uint32_t pin_bitmap = 0x00000000;
 #endif
 
-static inline bool is_valid_pin(hal_gpio_pin_t pin)
+static inline bool is_valid_pin(hal_gpio_pin_t *pin)
 {
-    return (pin_bitmap & (1 << pin.pin)) != 0;
+    return (pin_bitmap & (1 << pin->pin)) != 0;
 }
 
 /** Checks if a given port is valid.
@@ -30,13 +30,13 @@ static inline bool is_valid_pin(hal_gpio_pin_t pin)
  * 
  * \return \c true if the port is valid, false otherwise.
  */
-static inline bool is_valid_port(hal_gpio_pin_t pin)
+static inline bool is_valid_port(hal_gpio_pin_t *pin)
 {
     /* A value of 0 corresponds to port A.*/
-    return pin.port == 0;
+    return pin->port == 0;
 }
 
-hal_result_t hal_gpio_init(hal_gpio_init_t init_struct)
+hal_result_t hal_gpio_init(hal_gpio_init_t *init_struct)
 {
     hal_result_t result = HAL_ERROR_PERIPHERAL_ERROR;
 
@@ -44,11 +44,15 @@ hal_result_t hal_gpio_init(hal_gpio_init_t init_struct)
     {
         result = HAL_ERROR_REJECTED;
     }
-    else if (!is_valid_port(init_struct.pin))
+    else if (!init_struct)
     {
         result = HAL_ERROR_PARAM_ERROR;
     }
-    else if (!is_valid_pin(init_struct.pin))
+    else if (!is_valid_port(&init_struct->pin))
+    {
+        result = HAL_ERROR_PARAM_ERROR;
+    }
+    else if (!is_valid_pin(&init_struct->pin))
     {
         result = HAL_ERROR_PARAM_ERROR;
     }
@@ -87,12 +91,31 @@ hal_result_t hal_gpio_teardown(void)
     }
 }
 
-hal_result_t hal_gpio_set_level(hal_gpio_pin_t pin, hal_gpio_level_t level)
+hal_result_t hal_gpio_set_level(hal_gpio_pin_t *pin, hal_gpio_level_t level)
 {
     hal_result_t result = HAL_ERROR_PERIPHERAL_ERROR;
 }
 
-hal_gpio_level_t hal_gpio_read_level(hal_gpio_pin_t pin)
+hal_gpio_level_t hal_gpio_read_level(hal_gpio_pin_t *pin)
 {
+    hal_gpio_level_t result = HAL_GPIO_INVALID;
 
+    if (!pin)
+    {
+        // Do nothing, the pin pointer is invalid.
+    }
+    else if (!is_valid_port(pin))
+    {
+        // Do nothing, the port is invalid.
+    }
+    else if (!is_valid_pin(pin))
+    {
+        // Do nothing, the pin is invalid.
+    }
+    else
+    {
+        result = (PORT->Group[0].IN.reg & pin->pin) ? HAL_GPIO_HIGH : HAL_GPIO_LOW;
+    }
+
+    return result;
 }
