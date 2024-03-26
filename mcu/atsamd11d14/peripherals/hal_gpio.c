@@ -58,12 +58,25 @@ hal_result_t hal_gpio_init(hal_gpio_init_t *init_struct)
     }
     else
     {
-
+        switch (init_struct->pin_mode)
+        {
+            case HAL_GPIO_INPUT:
+                break;
+            case HAL_GPIO_OUTPUT_PUSH_PULL:
+                break;
+            case HAL_GPIO_OUTPUT_OPEN_DRAIN:
+                break;
+            default:
+                result = HAL_ERROR_PARAM_ERROR;
+                break;
+        }
         
 
-        peripheral_initialised = true;
-
-        result = HAL_SUCCESS;
+        if (result != HAL_ERROR_PARAM_ERROR || result != HAL_ERROR_PERIPHERAL_ERROR)
+        {
+            peripheral_initialised = true;
+            result = HAL_SUCCESS;
+        }
     }
 
     return result;
@@ -102,19 +115,23 @@ hal_gpio_level_t hal_gpio_read_level(hal_gpio_pin_t *pin)
 
     if (!pin)
     {
-        // Do nothing, the pin pointer is invalid.
+        /* Do nothing, the pin pointer is invalid. */
+    }
+    else if (!peripheral_initialised)
+    {
+        /* Do nothing, the peripheral is not initialised. */
     }
     else if (!is_valid_port(pin))
     {
-        // Do nothing, the port is invalid.
+        /* Do nothing, the port is invalid. */
     }
     else if (!is_valid_pin(pin))
     {
-        // Do nothing, the pin is invalid.
+        /* Do nothing, the pin is invalid. */
     }
     else
     {
-        result = (PORT->Group[0].IN.reg & pin->pin) ? HAL_GPIO_HIGH : HAL_GPIO_LOW;
+        result = (PORT->Group[0].IN.reg & (1u << pin->pin)) ? HAL_GPIO_HIGH : HAL_GPIO_LOW;
     }
 
     return result;
