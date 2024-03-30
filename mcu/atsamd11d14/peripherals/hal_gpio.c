@@ -5,6 +5,8 @@
 
 static volatile bool peripheral_initialised = false;
 
+static volatile uint32_t initialised_pins_bitmap = 0x00000000;
+
 #if   defined(__SAMD11C14A__) || defined(__ATSAMD11C14A__)
     static const uint32_t pin_bitmap = 0x00000000;
 #elif defined(__SAMD11D14AM__) || defined(__ATSAMD11D14AM__)
@@ -20,6 +22,11 @@ static volatile bool peripheral_initialised = false;
 static inline bool is_valid_pin(hal_gpio_pin_t *pin)
 {
     return (pin_bitmap & (1 << pin->pin)) != 0;
+}
+
+static inline bool is_pin_initialised(hal_gpio_pin_t *pin)
+{
+    return (initialised_pins_bitmap & (1 << pin->pin)) != 0;
 }
 
 /** Checks if a given port is valid.
@@ -61,7 +68,8 @@ hal_result_t hal_gpio_init(hal_gpio_init_t *init_struct)
         switch (init_struct->pin_mode)
         {
             case HAL_GPIO_INPUT:
-                //PORT->Group[0]
+                PORT->Group[0].DIRCLR.reg |= (1u << init_struct->pin.pin);
+                PORT->Group[0].PINCFG[init_struct->pin.pin].reg |= PORT_PINCFG_INEN;
                 break;
             case HAL_GPIO_OUTPUT_PUSH_PULL:
                 break;
@@ -75,7 +83,7 @@ hal_result_t hal_gpio_init(hal_gpio_init_t *init_struct)
 
         if (result != HAL_ERROR_PARAM_ERROR || result != HAL_ERROR_PERIPHERAL_ERROR)
         {
-            peripheral_initialised = true;
+            initialised_pins_bitmap |= (1u << init_struct->pin.pin);
             result = HAL_SUCCESS;
         }
     }
@@ -108,6 +116,29 @@ hal_result_t hal_gpio_teardown(void)
 hal_result_t hal_gpio_set_level(hal_gpio_pin_t *pin, hal_gpio_level_t level)
 {
     hal_result_t result = HAL_ERROR_PERIPHERAL_ERROR;
+
+    if (!pin)
+    {
+        result = HAL_ERROR_PARAM_ERROR;
+    }
+    else if (!is_pin_initialised(pin))
+    {
+        result = HAL_ERROR_REJECTED;
+    }
+    else if (!is_valid_port(pin))
+    {
+        result = HAL_ERROR_PARAM_ERROR;
+    }
+    else if (!is_valid_pin(pin))
+    {
+        result = HAL_ERROR_PARAM_ERROR;
+    }
+    else
+    {
+        PORT->Group[0].OUTSET.reg |= (1u << pin->pin);
+    }
+
+    return result;
 }
 
 hal_gpio_level_t hal_gpio_read_level(hal_gpio_pin_t *pin)
@@ -118,9 +149,9 @@ hal_gpio_level_t hal_gpio_read_level(hal_gpio_pin_t *pin)
     {
         /* Do nothing, the pin pointer is invalid. */
     }
-    else if (!peripheral_initialised)
+    else if (!is_pin_initialised(pin))
     {
-        /* Do nothing, the peripheral is not initialised. */
+        /* Do nothing, the given pin is not initialised. */
     }
     else if (!is_valid_port(pin))
     {
