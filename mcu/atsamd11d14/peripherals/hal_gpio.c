@@ -61,6 +61,7 @@ hal_result_t hal_gpio_init(hal_gpio_init_t *init_struct)
         switch (init_struct->pin_mode)
         {
             case HAL_GPIO_INPUT:
+                //PORT->Group[0]
                 break;
             case HAL_GPIO_OUTPUT_PUSH_PULL:
                 break;
@@ -84,13 +85,13 @@ hal_result_t hal_gpio_init(hal_gpio_init_t *init_struct)
 
 hal_result_t hal_gpio_clock_init(void)
 {
-    /* Not needed on ATSAMD11D14x. */
+    PM->APBBMASK.reg |= PM_APBBMASK_PORT;
     return HAL_SUCCESS;
 }
 
 hal_result_t hal_gpio_clock_teardown(void)
 {
-    /* Not needed on ATSAMD11D14x. */
+    PM->APBBMASK.reg &= ~PM_APBBMASK_PORT;
     return HAL_SUCCESS;
 }
 
