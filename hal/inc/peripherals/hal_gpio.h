@@ -56,8 +56,11 @@ typedef enum hal_gpio_speed
 /** Structure representing a pin on a port on an MCU. */
 typedef struct hal_gpio_pin
 {
-    uint8_t pin;  /*!< GPIO Pin. */
-    uint8_t port; /*!< GPIO Port. */
+    uint8_t pin;                     /*!< GPIO Pin. */
+    uint8_t port;                    /*!< GPIO Port. */
+    hal_gpio_pin_mode_t    pin_mode; /*!< GPIO mode. */
+    hal_gpio_pin_speed_t   speed;    /*!< GPIO pin speed. */
+    hal_gpio_pin_trigger_t trigger;  /*!< GPIO trigger. */
 
 } hal_gpio_pin_t;
 
@@ -70,10 +73,7 @@ typedef void (*hal_gpio_trigger_event_t)(void);
 /** Structure representing GPIO initialisation. */
 typedef struct hal_gpio_init
 {
-    hal_gpio_pin_mode_t        pin_mode;                 /*!< GPIO mode. */
     hal_gpio_pin_t             pin;                      /*!< GPIO pin. */
-    hal_gpio_pin_speed_t       speed;                    /*!< GPIO pin speed. */
-    hal_gpio_pin_trigger_t     trigger;                  /*!< GPIO trigger. */
     hal_gpio_alt_pin_mapping_t alternate_pin_mapping_cb; /*!< GPIO alternate pin callback. */
     hal_gpio_trigger_event_t   trigger_event_cb;         /*!< GPIO trigger callback. */
 
