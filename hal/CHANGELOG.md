@@ -1,3 +1,11 @@
+v0.2
+---
+- Updates to GPIO HAL header.
+> Change name of init/teardown functions from peripheral basis to pin basis.
+> Documentation updates.
+> Parameter updates to use pointers rather than pass-by-value.
+> Pull-up/pull-down enum added.
+
 v0.1
 ---
 - Initial alpha release, includes:
