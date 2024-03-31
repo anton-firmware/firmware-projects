@@ -26,6 +26,14 @@ typedef enum hal_gpio_mode
 
 } hal_gpio_pin_mode_t;
 
+/** Definitions related to GPIO pull-up/pull-down configurations. */
+typedef enum hal_gpio_pull_up_mode
+{
+    HAL_GPIO_PULL_UP,    /*!< GPIO Pull-up enabled. */
+    HAL_GPIO_PULL_DOWN,  /*!< GPIO Pull-down enabled. */
+
+} hal_gpio_pull_up_mode_t;
+
 /** Definitions related to GPIO triggers. */
 typedef enum hal_gpio_triggers
 {
