@@ -1,4 +1,5 @@
 #include <stdbool.h>
+#include <stddef.h>
 
 #include "hal_gpio.h"
 #include "sam.h"
@@ -63,6 +64,11 @@ hal_result_t hal_gpio_init(hal_gpio_init_t *init_struct)
     {
         result = HAL_ERROR_PARAM_ERROR;
     }
+    else if (init_struct->pin_mode == HAL_GPIO_ALTERNATE && init_struct->alternate_pin_mapping_cb == NULL)
+    {
+        /* User attempted to set an alternate function without a corresponding callback. */
+        result = HAL_ERROR_PARAM_ERROR;
+    }
     else
     {
         switch (init_struct->pin_mode)
@@ -72,15 +78,18 @@ hal_result_t hal_gpio_init(hal_gpio_init_t *init_struct)
                 PORT->Group[0].PINCFG[init_struct->pin.pin].reg |= PORT_PINCFG_INEN;
                 break;
             case HAL_GPIO_OUTPUT_PUSH_PULL:
+                PORT->Group[0].DIRSET.reg |= (1u << init_struct->pin.pin);
                 break;
             case HAL_GPIO_OUTPUT_OPEN_DRAIN:
+                break;
+            case HAL_GPIO_ALTERNATE:
+                init_struct->alternate_pin_mapping_cb();
                 break;
             default:
                 result = HAL_ERROR_PARAM_ERROR;
                 break;
         }
         
-
         if (result != HAL_ERROR_PARAM_ERROR || result != HAL_ERROR_PERIPHERAL_ERROR)
         {
             initialised_pins_bitmap |= (1u << init_struct->pin.pin);
