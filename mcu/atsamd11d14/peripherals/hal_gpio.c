@@ -74,14 +74,14 @@ hal_result_t hal_gpio_init(hal_gpio_init_t *init_struct)
     {
         result = HAL_ERROR_PARAM_ERROR;
     }
-    else if (init_struct->pin_mode == HAL_GPIO_ALTERNATE && init_struct->alternate_pin_mapping_cb == NULL)
+    else if (init_struct->pin.pin_mode == HAL_GPIO_ALTERNATE && init_struct->alternate_pin_mapping_cb == NULL)
     {
         /* User attempted to set an alternate function without a corresponding callback. */
         result = HAL_ERROR_PARAM_ERROR;
     }
     else
     {
-        switch (init_struct->pin_mode)
+        switch (init_struct->pin.pin_mode)
         {
             case HAL_GPIO_INPUT:
                 PORT->Group[0].DIRCLR.reg |= (1u << init_struct->pin.pin);
@@ -122,13 +122,44 @@ hal_result_t hal_gpio_clock_teardown(void)
     return HAL_SUCCESS;
 }
 
-hal_result_t hal_gpio_teardown(void)
+hal_result_t hal_gpio_pin_teardown(hal_gpio_pin_t *pin)
 {
     hal_result_t result = HAL_ERROR_PERIPHERAL_ERROR;
 
-    if (!peripheral_initialised)
+    if (!is_valid_pin(pin))
+    {
+        result = HAL_ERROR_PARAM_ERROR;
+    }
+    else if (!is_valid_port(pin))
+    {
+        result = HAL_ERROR_PARAM_ERROR;
+    }
+    else if (!is_pin_initialised(pin))
     {
         result = HAL_ERROR_REJECTED;
+    }
+    else
+    {
+        switch (pin->pin_mode)
+        {
+            case HAL_GPIO_INPUT:
+                PORT->Group[0].DIRCLR.reg |= (1u << pin->pin);
+                PORT->Group[0].PINCFG[pin->pin].reg &= ~PORT_PINCFG_INEN;
+                break;
+            case HAL_GPIO_OUTPUT_PUSH_PULL:
+                PORT->Group[0].DIRCLR.reg |= (1u << pin->pin);
+                break;
+            case HAL_GPIO_OUTPUT_OPEN_DRAIN:
+                break;
+            case HAL_GPIO_ALTERNATE:
+                /* TODO: Clear alternate function. */
+                break;
+            default:
+                result = HAL_ERROR_PARAM_ERROR;
+                break;
+        }
+
+        initialised_pins_bitmap &= ~(1u << pin->pin);
     }
 }
 
