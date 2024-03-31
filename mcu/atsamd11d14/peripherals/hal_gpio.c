@@ -4,11 +4,9 @@
 #include "hal_gpio.h"
 #include "sam.h"
 
-static volatile bool peripheral_initialised = false;
-
 static volatile uint32_t initialised_pins_bitmap = 0x00000000;
 
-#if   defined(__SAMD11C14A__) || defined(__ATSAMD11C14A__)
+#if defined(__SAMD11C14A__) || defined(__ATSAMD11C14A__)
     static const uint32_t pin_bitmap = 0x00000000;
 #elif defined(__SAMD11D14AM__) || defined(__ATSAMD11D14AM__)
     static const uint32_t pin_bitmap = 0x00000000;
@@ -20,14 +18,15 @@ static volatile uint32_t initialised_pins_bitmap = 0x00000000;
     static const uint32_t pin_bitmap = 0x00000000;
 #endif
 
+/** Checks if a given pin is valid on this MCU by checking the pin bitmap.
+ * 
+ * \param[in] pin The pin to check.
+ * 
+ * \return \c true if valid, \c false otherwise.
+ */
 static inline bool is_valid_pin(hal_gpio_pin_t *pin)
 {
-    return (pin_bitmap & (1 << pin->pin)) != 0;
-}
-
-static inline bool is_pin_initialised(hal_gpio_pin_t *pin)
-{
-    return (initialised_pins_bitmap & (1 << pin->pin)) != 0;
+    return ((pin != NULL) && ((pin_bitmap & (1 << pin->pin)) != 0));
 }
 
 /** Checks if a given port is valid.
@@ -41,20 +40,31 @@ static inline bool is_pin_initialised(hal_gpio_pin_t *pin)
 static inline bool is_valid_port(hal_gpio_pin_t *pin)
 {
     /* A value of 0 corresponds to port A.*/
-    return pin->port == 0;
+    return ((pin != NULL) && (pin->port == 0));
+}
+
+/** Checks if a given pin is initialised by accessing the pins bitmap.
+ * 
+ * \param[in] pin The pin to check.
+ * 
+ * \return \c true if initialised, \c false otherwise.
+ */
+static inline bool is_pin_initialised(hal_gpio_pin_t *pin)
+{
+    return (pin != NULL) && ((initialised_pins_bitmap & (1 << pin->pin)) != 0);
 }
 
 hal_result_t hal_gpio_init(hal_gpio_init_t *init_struct)
 {
     hal_result_t result = HAL_ERROR_PERIPHERAL_ERROR;
 
-    if (peripheral_initialised)
-    {
-        result = HAL_ERROR_REJECTED;
-    }
-    else if (!init_struct)
+    if (!init_struct)
     {
         result = HAL_ERROR_PARAM_ERROR;
+    }
+    else if (is_pin_initialised(&init_struct->pin))
+    {
+        result = HAL_ERROR_REJECTED;
     }
     else if (!is_valid_port(&init_struct->pin))
     {
