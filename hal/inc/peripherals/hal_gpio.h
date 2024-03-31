@@ -85,7 +85,7 @@ typedef struct hal_gpio_init
  *
  *  \retval #HAL_SUCCESS Initialisation was successful.
  *  \retval #HAL_ERROR_PARAM_ERROR An invalid parameter was detected.
- *  \retval #HAL_ERROR_REJECTED Initialisation failed due a previous `hal_gpio_init()` call being made.
+ *  \retval #HAL_ERROR_REJECTED Initialisation failed due a previous `hal_gpio_pin_init()` call being made.
  *  \retval #HAL_ERROR_PERIPHERAL_ERROR Initialisation failed due to a peripheral error.
  */
 hal_result_t hal_gpio_pin_init(hal_gpio_init_t *init_struct);
@@ -109,7 +109,7 @@ hal_result_t hal_gpio_clock_teardown(void);
 /** Teardown resources set up by `hal_gpio_init()` for a specific GPIO pin.
  *
  *  \retval #HAL_SUCCESS Teardown was successful.
- *  \retval #HAL_ERROR_REJECTED Teardown failed due to a previous `hal_gpio_init()` call not being made.
+ *  \retval #HAL_ERROR_REJECTED Teardown failed due to a previous `hal_gpio_pin_init()` call not being made.
  *  \retval #HAL_ERROR_PARAM_ERROR Teardown failed due to a parameter error.
  */
 hal_result_t hal_gpio_pin_teardown(hal_gpio_pin_t *pin);
@@ -121,7 +121,7 @@ hal_result_t hal_gpio_pin_teardown(hal_gpio_pin_t *pin);
  *
  *  \retval #HAL_SUCCESS Pin state successfully set.
  *  \retval #HAL_ERROR_PARAM_ERROR An invalid pin, port, or level was specified.
- *  \retval #HAL_ERROR_REJECTED Pin state unable to be set due to a previous `hal_gpio_init()` call not being made.
+ *  \retval #HAL_ERROR_REJECTED Pin state unable to be set due to a previous `hal_gpio_pin_init()` call not being made.
  */
 hal_result_t hal_gpio_set_level(hal_gpio_pin_t *pin, hal_gpio_level_t level);
 
@@ -131,7 +131,7 @@ hal_result_t hal_gpio_set_level(hal_gpio_pin_t *pin, hal_gpio_level_t level);
  *
  *  \retval #HAL_GPIO_LOW GPIO low level.
  *  \retval #HAL_GPIO_High GPIO high level.
- *  \retval #HAL_GPIO_INVALID Invalid GPIO level due to a peripheral error, or a previous `hal_gpio_init()` call not being made.
+ *  \retval #HAL_GPIO_INVALID Invalid GPIO level due to a peripheral error, parameter error, or a previous `hal_gpio_pin_init()` call not being made.
  */
 hal_gpio_level_t hal_gpio_read_level(hal_gpio_pin_t *pin);
 
