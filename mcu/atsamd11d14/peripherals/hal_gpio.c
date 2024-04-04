@@ -163,6 +163,8 @@ hal_result_t hal_gpio_pin_teardown(hal_gpio_pin_t *pin)
 
         initialised_pins_bitmap &= ~(1u << pin->pin);
     }
+
+    return result;
 }
 
 hal_result_t hal_gpio_set_level(hal_gpio_pin_t *pin, hal_gpio_level_t level)
