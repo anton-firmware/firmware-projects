@@ -26,6 +26,14 @@ typedef enum hal_gpio_mode
 
 } hal_gpio_pin_mode_t;
 
+/** Definitions related to GPIO pull-up/pull-down configurations. */
+typedef enum hal_gpio_pull_up_mode
+{
+    HAL_GPIO_PULL_UP,    /*!< GPIO Pull-up enabled. */
+    HAL_GPIO_PULL_DOWN,  /*!< GPIO Pull-down enabled. */
+
+} hal_gpio_pull_up_mode_t;
+
 /** Definitions related to GPIO triggers. */
 typedef enum hal_gpio_triggers
 {
@@ -48,8 +56,11 @@ typedef enum hal_gpio_speed
 /** Structure representing a pin on a port on an MCU. */
 typedef struct hal_gpio_pin
 {
-    uint8_t pin;  /*!< GPIO Pin. */
-    uint8_t port; /*!< GPIO Port. */
+    uint8_t pin;                     /*!< GPIO Pin. */
+    uint8_t port;                    /*!< GPIO Port. */
+    hal_gpio_pin_mode_t    pin_mode; /*!< GPIO mode. */
+    hal_gpio_pin_speed_t   speed;    /*!< GPIO pin speed. */
+    hal_gpio_pin_trigger_t trigger;  /*!< GPIO trigger. */
 
 } hal_gpio_pin_t;
 
@@ -62,10 +73,7 @@ typedef void (*hal_gpio_trigger_event_t)(void);
 /** Structure representing GPIO initialisation. */
 typedef struct hal_gpio_init
 {
-    hal_gpio_pin_mode_t        pin_mode;                 /*!< GPIO mode. */
     hal_gpio_pin_t             pin;                      /*!< GPIO pin. */
-    hal_gpio_pin_speed_t       speed;                    /*!< GPIO pin speed. */
-    hal_gpio_pin_trigger_t     trigger;                  /*!< GPIO trigger. */
     hal_gpio_alt_pin_mapping_t alternate_pin_mapping_cb; /*!< GPIO alternate pin callback. */
     hal_gpio_trigger_event_t   trigger_event_cb;         /*!< GPIO trigger callback. */
 
@@ -77,12 +85,12 @@ typedef struct hal_gpio_init
  *
  *  \retval #HAL_SUCCESS Initialisation was successful.
  *  \retval #HAL_ERROR_PARAM_ERROR An invalid parameter was detected.
- *  \retval #HAL_ERROR_REJECTED Initialisation failed due a previous `hal_gpio_init()` call being made.
+ *  \retval #HAL_ERROR_REJECTED Initialisation failed due a previous `hal_gpio_pin_init()` call being made.
  *  \retval #HAL_ERROR_PERIPHERAL_ERROR Initialisation failed due to a peripheral error.
  */
-hal_result_t hal_gpio_init(hal_gpio_init_t *init_struct);
+hal_result_t hal_gpio_pin_init(hal_gpio_init_t *init_struct);
 
-/** Initialise GPIO clocks.
+/** Initialise clocks used by the GPIO peripheral.
  *
  *  \retval #HAL_SUCCESS Initialisation was successful.
  *  \retval #HAL_ERROR_REJECTED Initialisation failed due a previous `hal_gpio_clock_init()` call being made.
@@ -98,12 +106,13 @@ hal_result_t hal_gpio_clock_init(void);
  */
 hal_result_t hal_gpio_clock_teardown(void);
 
-/** Teardown resources set up by `hal_gpio_init()`.
+/** Teardown resources set up by `hal_gpio_pin_init()` for a specific GPIO pin.
  *
  *  \retval #HAL_SUCCESS Teardown was successful.
- *  \retval #HAL_ERROR_REJECTED Teardown failed due to a previous `hal_gpio_init()` call not being made.
+ *  \retval #HAL_ERROR_REJECTED Teardown failed due to a previous `hal_gpio_pin_init()` call not being made.
+ *  \retval #HAL_ERROR_PARAM_ERROR Teardown failed due to a parameter error.
  */
-hal_result_t hal_gpio_teardown(void);
+hal_result_t hal_gpio_pin_teardown(hal_gpio_pin_t *pin);
 
 /** Set the state of a GPIO pin.
  *
@@ -112,7 +121,7 @@ hal_result_t hal_gpio_teardown(void);
  *
  *  \retval #HAL_SUCCESS Pin state successfully set.
  *  \retval #HAL_ERROR_PARAM_ERROR An invalid pin, port, or level was specified.
- *  \retval #HAL_ERROR_REJECTED Pin state unable to be set due to a previous `hal_gpio_init()` call not being made.
+ *  \retval #HAL_ERROR_REJECTED Pin state unable to be set due to a previous `hal_gpio_pin_init()` call not being made.
  */
 hal_result_t hal_gpio_set_level(hal_gpio_pin_t *pin, hal_gpio_level_t level);
 
@@ -122,7 +131,7 @@ hal_result_t hal_gpio_set_level(hal_gpio_pin_t *pin, hal_gpio_level_t level);
  *
  *  \retval #HAL_GPIO_LOW GPIO low level.
  *  \retval #HAL_GPIO_High GPIO high level.
- *  \retval #HAL_GPIO_INVALID Invalid GPIO level due to a peripheral error, or a previous `hal_gpio_init()` call not being made.
+ *  \retval #HAL_GPIO_INVALID Invalid GPIO level due to a peripheral error, parameter error, or a previous `hal_gpio_pin_init()` call not being made.
  */
 hal_gpio_level_t hal_gpio_read_level(hal_gpio_pin_t *pin);
 
