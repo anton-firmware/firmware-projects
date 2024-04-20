@@ -9,7 +9,7 @@ static volatile uint32_t initialised_pins_bitmap = 0x00000000;
 #if defined(__SAMD11C14A__) || defined(__ATSAMD11C14A__)
     static const uint32_t pin_bitmap = 0x00000000;
 #elif defined(__SAMD11D14AM__) || defined(__ATSAMD11D14AM__)
-    static const uint32_t pin_bitmap = 0x00000000;
+    static const uint32_t pin_bitmap = 0xDBC3CFFC;
 #elif defined(__SAMD11D14AS__) || defined(__ATSAMD11D14AS__)
     static const uint32_t pin_bitmap = 0xD3C1C3FC;
 #elif defined(__SAMD11D14AU__) || defined(__ATSAMD11D14AU__)
