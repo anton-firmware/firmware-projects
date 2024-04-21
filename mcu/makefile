@@ -43,10 +43,12 @@ atsamd11d14am_peripherals:
 atsamd11d14am_core:
 	$(ARM_GCC) -I$(HAL_PATH_CORE) -I$(HAL_PATH) -I$(ATSAMD11D14_PACK_INC) -I$(CMSIS_5_INC) -D$(ATSAMD11D14AM) -mcpu=$(CPU) -g$(DEBUG_DWARF) -g$(DEBUG_LEVEL) -c $(ATSAMD11D14_CORE_SOURCES)  -o$(OBJECT_NAME_ATSAMD11D14AM_CORE)
 
-atsamd11d14as_lib: atsamd11d14x_peripherals atsamd11d14x_core
+atsamd11d14as_lib: atsamd11d14as_peripherals atsamd11d14as_core
 	$(ARM_LIB) -rc $(LIB_NAME_ATSAMD11D14AS) $(OBJECT_NAME_ATSAMD11D14AS_PERIPH) $(OBJECT_NAME_ATSAMD11D14AS_CORE)
 	rm *.o
 
 atsamd11d14am_lib: atsamd11d14am_peripherals atsamd11d14am_core
 	$(ARM_LIB) -rc $(LIB_NAME_ATSAMD11D14AM) $(OBJECT_NAME_ATSAMD11D14AM_PERIPH) $(OBJECT_NAME_ATSAMD11D14AM_CORE)
 	rm *.o
+
+all: atsamd11d14am_lib atsamd11d14as_lib
