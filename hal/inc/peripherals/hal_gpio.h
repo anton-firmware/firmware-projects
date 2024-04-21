@@ -64,8 +64,8 @@ typedef struct hal_gpio_pin
 
 } hal_gpio_pin_t;
 
-/** Callback definition for assigning an alternate pin mapping during GPIO initialisation. */
-typedef hal_result_t (*hal_gpio_alt_pin_mapping_t)(void);
+/** Value representing alternate function for a GPIO pin. The value of which can usually be obtained from the device's datasheet. */
+typedef uint16_t alt_func_t;
 
 /** Callback definition for carrying out a user-defined action on a GPIO trigger. */
 typedef void (*hal_gpio_trigger_event_t)(void);
@@ -74,7 +74,7 @@ typedef void (*hal_gpio_trigger_event_t)(void);
 typedef struct hal_gpio_init
 {
     hal_gpio_pin_t             pin;                      /*!< GPIO pin. */
-    hal_gpio_alt_pin_mapping_t alternate_pin_mapping_cb; /*!< GPIO alternate pin callback. */
+    alt_func_t                 alternate_pin_mapping;    /*!< GPIO alternate function value. */
     hal_gpio_trigger_event_t   trigger_event_cb;         /*!< GPIO trigger callback. */
 
 } hal_gpio_init_t;
