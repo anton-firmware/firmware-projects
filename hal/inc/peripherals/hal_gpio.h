@@ -107,7 +107,9 @@ hal_result_t hal_gpio_clock_init(void);
 hal_result_t hal_gpio_clock_teardown(void);
 
 /** Teardown resources set up by `hal_gpio_pin_init()` for a specific GPIO pin.
- *
+ * 
+ *  Resets the pin to an input state, clears the alternate function and trigger (if selected), disables pull-up (if enabled).
+ * 
  *  \retval #HAL_SUCCESS Teardown was successful.
  *  \retval #HAL_ERROR_REJECTED Teardown failed due to a previous `hal_gpio_pin_init()` call not being made.
  *  \retval #HAL_ERROR_PARAM_ERROR Teardown failed due to a parameter error.
