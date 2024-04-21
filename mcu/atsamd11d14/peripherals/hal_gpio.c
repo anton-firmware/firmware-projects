@@ -33,7 +33,7 @@ static inline bool is_valid_pin(hal_gpio_pin_t *pin)
  * 
  * \param[in] pin The port to check.
  * 
- * \note For the ATSAMD11D14x MCU, there is only one GPIO Port.
+ * \note For the ATSAMD11D14x MCU, there is only one GPIO Port (port A).
  * 
  * \return \c true if the port is valid, false otherwise.
  */
@@ -54,7 +54,26 @@ static inline bool is_pin_initialised(hal_gpio_pin_t *pin)
     return (pin != NULL) && ((initialised_pins_bitmap & (1 << pin->pin)) != 0);
 }
 
-hal_result_t hal_gpio_init(hal_gpio_init_t *init_struct)
+/** Sets the alternate function for a GPIO pin.
+ * 
+ * \param[in] pin The pin to set the alternate function of.
+ * \param[in] alt_func The alternate function of the GPIO pin to set.
+ */
+static inline void set_alternate_function(hal_gpio_pin_t *pin, alt_func_t alt_func)
+{
+    const uint8_t alt_func_group = pin->pin / 2;
+    
+    if (pin->pin % 2)
+    {
+        PORT->Group[0].PMUX[alt_func_group].bit.PMUXE = alt_func;
+    }
+    else 
+    {
+        PORT->Group[0].PMUX[alt_func_group].bit.PMUXO = alt_func;
+    }
+}
+
+hal_result_t hal_gpio_pin_init(hal_gpio_init_t *init_struct)
 {
     hal_result_t result = HAL_ERROR_PERIPHERAL_ERROR;
 
@@ -74,11 +93,6 @@ hal_result_t hal_gpio_init(hal_gpio_init_t *init_struct)
     {
         result = HAL_ERROR_PARAM_ERROR;
     }
-    else if (init_struct->pin.pin_mode == HAL_GPIO_ALTERNATE && init_struct->alternate_pin_mapping_cb == NULL)
-    {
-        /* User attempted to set an alternate function without a corresponding callback. */
-        result = HAL_ERROR_PARAM_ERROR;
-    }
     else
     {
         switch (init_struct->pin.pin_mode)
@@ -94,7 +108,7 @@ hal_result_t hal_gpio_init(hal_gpio_init_t *init_struct)
                 /* TODO: Init open drain. */
                 break;
             case HAL_GPIO_ALTERNATE:
-                init_struct->alternate_pin_mapping_cb();
+                set_alternate_function(&init_struct->pin, init_struct->alternate_pin_mapping);
                 break;
             default:
                 result = HAL_ERROR_PARAM_ERROR;
@@ -154,7 +168,7 @@ hal_result_t hal_gpio_pin_teardown(hal_gpio_pin_t *pin)
                 /* TODO: Clear alternate function. */
                 break;
             case HAL_GPIO_ALTERNATE:
-                /* TODO: Clear alternate function. */
+                set_alternate_function(pin, 0);
                 break;
             default:
                 result = HAL_ERROR_PARAM_ERROR;
