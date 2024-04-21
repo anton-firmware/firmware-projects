@@ -108,6 +108,7 @@ hal_result_t hal_gpio_pin_init(hal_gpio_init_t *init_struct)
                 /* TODO: Init open drain. */
                 break;
             case HAL_GPIO_ALTERNATE:
+                PORT->Group[0].PINCFG[init_struct->pin.pin].bit.PMUXEN = 1;
                 set_alternate_function(&init_struct->pin, init_struct->alternate_pin_mapping);
                 break;
             default:
@@ -165,9 +166,10 @@ hal_result_t hal_gpio_pin_teardown(hal_gpio_pin_t *pin)
                 PORT->Group[0].DIRCLR.reg |= (1u << pin->pin);
                 break;
             case HAL_GPIO_OUTPUT_OPEN_DRAIN:
-                /* TODO: Clear alternate function. */
+                /* TODO: Clear output drain. */
                 break;
             case HAL_GPIO_ALTERNATE:
+                PORT->Group[0].PINCFG[init_struct->pin.pin].bit.PMUXEN = 0;
                 set_alternate_function(pin, 0);
                 break;
             default:
