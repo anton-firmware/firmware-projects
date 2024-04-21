@@ -1,3 +1,8 @@
+v0.x
+---
+- Updates to GPIO header.
+> Remove alternate function callback, replace with singular value.
+
 v0.2
 ---
 - Updates to GPIO HAL header.
