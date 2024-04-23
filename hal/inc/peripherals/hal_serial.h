@@ -90,7 +90,6 @@ hal_result_t hal_serial_teardown(void);
  */
 hal_result_t hal_serial_clock_teardown(void);
 
-
 /** Transmit a number of bytes over the serial periperhal in blocking mode.
  * 
  * \param[in] tx Pointer to data to transmit.
@@ -115,10 +114,10 @@ hal_result_t hal_serial_transmit_blocking(const uint8_t *tx, const uint8_t len);
  */
 hal_result_t hal_serial_transmit_non_blocking(const uint8_t *tx, const uint8_t len);
 
-/** Receive a number of bytes over the serial periperhal in non blocking mode.
+/** Receive a number of bytes over the serial periperhal in blocking mode.
  * 
  * \param[in] tx Pointer to buffer into which to receive data.
- * \param[in] len Number of bytes to Receive.
+ * \param[in] len Number of bytes to receive.
  * 
  * \retval #HAL_SUCCESS The data were successfully received.
  * \retval #HAL_ERROR_REJECTED Reception failed due a previous `hal_serial_init()` call not being made.
@@ -130,7 +129,7 @@ hal_result_t hal_serial_receive_blocking(uint8_t *tx, const uint8_t len);
 /** Receive a number of bytes over the serial periperhal in non blocking mode.
  * 
  * \param[in] tx Pointer to buffer into which to receive data.
- * \param[in] len Number of bytes to Receive.
+ * \param[in] len Number of bytes to receive.
  * 
  * \retval #HAL_SUCCESS The data were successfully transmitted.
  * \retval #HAL_ERROR_REJECTED Reception failed due a previous `hal_serial_init()` call not being made.
