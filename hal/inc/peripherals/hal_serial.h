@@ -74,15 +74,6 @@ hal_result_t hal_serial_teardown(void);
  */
 hal_result_t hal_serial_clock_teardown(void);
 
-/** Transmit a single character over the serial periperhal in blocking mode.
- * 
- * \param[in] tx_char The character to transmit over the serial peripheral.
- * 
- * \retval #HAL_SUCCESS The character was successfully transmitted.
- * \retval #HAL_ERROR_REJECTED Transmission failed due a previous `hal_serial_init()` call not being made.
- * \retval #HAL_ERROR_PERIPHERAL_ERROR Transmission failed due to a peripheral error.
- */
-hal_result_t hal_serial_transmit_character_blocking(const uint8_t tx_char);
 
 /** Transmit a number of bytes over the serial periperhal in blocking mode.
  * 
@@ -96,16 +87,6 @@ hal_result_t hal_serial_transmit_character_blocking(const uint8_t tx_char);
  */
 hal_result_t hal_serial_transmit_blocking(const uint8_t *tx, const uint8_t len);
 
-/** Transmit a single character over the serial periperhal in non blocking mode.
- * 
- * \param[in] tx_char The character to transmit over the serial peripheral.
- * 
- * \retval #HAL_SUCCESS The character was successfully transmitted.
- * \retval #HAL_ERROR_REJECTED Transmission failed due a previous `hal_serial_init()` call not being made.
- * \retval #HAL_ERROR_PERIPHERAL_ERROR Transmission failed due to a peripheral error.
- */
-hal_result_t hal_serial_transmit_character_non_blocking(const uint8_t tx_char);
-
 /** Transmit a number of bytes over the serial periperhal in non blocking mode.
  * 
  * \param[in] tx Pointer to data to transmit.
@@ -117,5 +98,29 @@ hal_result_t hal_serial_transmit_character_non_blocking(const uint8_t tx_char);
  * \retval #HAL_ERROR_PERIPHERAL_ERROR Transmission failed due to a peripheral error.
  */
 hal_result_t hal_serial_transmit_non_blocking(const uint8_t *tx, const uint8_t len);
+
+/** Receive a number of bytes over the serial periperhal in non blocking mode.
+ * 
+ * \param[in] tx Pointer to buffer into which to receive data.
+ * \param[in] len Number of bytes to Receive.
+ * 
+ * \retval #HAL_SUCCESS The data were successfully received.
+ * \retval #HAL_ERROR_REJECTED Reception failed due a previous `hal_serial_init()` call not being made.
+ * \retval #HAL_ERROR_PARAM_ERROR Reception failed due a parameter error.
+ * \retval #HAL_ERROR_PERIPHERAL_ERROR Reception failed due to a peripheral error.
+ */
+hal_result_t hal_serial_receive_blocking(uint8_t *tx, const uint8_t len);
+
+/** Receive a number of bytes over the serial periperhal in non blocking mode.
+ * 
+ * \param[in] tx Pointer to buffer into which to receive data.
+ * \param[in] len Number of bytes to Receive.
+ * 
+ * \retval #HAL_SUCCESS The data were successfully transmitted.
+ * \retval #HAL_ERROR_REJECTED Reception failed due a previous `hal_serial_init()` call not being made.
+ * \retval #HAL_ERROR_PARAM_ERROR Reception failed due a parameter error.
+ * \retval #HAL_ERROR_PERIPHERAL_ERROR Reception failed due to a peripheral error.
+ */
+hal_result_t hal_serial_receive_non_blocking(uint8_t *tx, const uint8_t len);
 
 #endif /* HAL_SERIAL_H */
