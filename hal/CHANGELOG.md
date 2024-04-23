@@ -1,4 +1,4 @@
-v0.x
+v0.3
 ---
 - Updates to GPIO header.
 > Remove alternate function callback, replace with singular value.
