@@ -32,12 +32,28 @@ typedef enum hal_serial_parity_bits
 
 } hal_serial_parity_bits_t;
 
+/** Read-event callback declaration.
+ *
+ * \param[out] buf Pointer to data buffer.
+ *
+ * \return The number of bytes read, 0 otherwise.
+ */
+typedef uint8_t (*hal_serial_read_cb_t)(uint8_t *buf);
+
+/** Write-event callback declaration.
+ *
+ *  \return The number of bytes written, 0 otherwise.
+ */
+typedef uint8_t (*hal_serial_write_cb_t)(void);
+
 /** Structure representing serial initialisation. */
 typedef struct hal_serial_init
 {
-    hal_serial_mode_t        mode;        /*!< Serial mode. */
-    hal_serial_stop_bits_t   stop_bits;   /*!< Serial stop bits. */
-    hal_serial_parity_bits_t parity_bits; /*!< Serial parity bits. */
+    hal_serial_mode_t        mode;           /*!< Serial mode. */
+    hal_serial_stop_bits_t   stop_bits;      /*!< Serial stop bits. */
+    hal_serial_parity_bits_t parity_bits;    /*!< Serial parity bits. */
+    hal_serial_read_cb_t     read_event_cb;  /*!< Serial read callback. */
+    hal_serial_write_cb_t    write_event_cb; /*!< Serial write callback. */
 
 } hal_serial_init_t;
 
