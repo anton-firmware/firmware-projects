@@ -2,6 +2,8 @@ v0.x
 ---
 - Updates to GPIO header.
 > Remove alternate function callback, replace with singular value.
+- Addition of serial header.
+> Add functions to set-up/teardown, transmit and receive, callback.
 
 v0.2
 ---
