@@ -61,15 +61,15 @@ static inline bool is_pin_initialised(hal_gpio_pin_t *pin)
  */
 static inline void set_alternate_function(hal_gpio_pin_t *pin, alt_func_t alt_func)
 {
-    const uint8_t alt_func_group = pin->pin / 2;
+    const uint8_t alt_func_group = pin->pin >> 1;
     
-    if (pin->pin % 2)
+    if (pin->pin & 0x1)
     {
-        PORT->Group[0].PMUX[alt_func_group].bit.PMUXE = alt_func;
+        PORT->Group[0].PMUX[alt_func_group].bit.PMUXO = alt_func;
     }
     else 
     {
-        PORT->Group[0].PMUX[alt_func_group].bit.PMUXO = alt_func;
+        PORT->Group[0].PMUX[alt_func_group].bit.PMUXE = alt_func;
     }
 }
 
