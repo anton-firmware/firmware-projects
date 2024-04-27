@@ -18,7 +18,7 @@ typedef enum CLOCK_TYPE
 /** Initialise non-peripheral related MCU clocks.
  *
  *  \retval #HAL_SUCCESS Initialisation was successful.
- *  \retval #HAL_ERROR_REJECTED Initialisation failed due a previous `hal_clock_init()` call being made.
+ *  \retval #HAL_ERROR_REJECTED Initialisation failed due to a previous `hal_clock_init()` call being made.
  *  \retval #HAL_ERROR_DEVICE_ERROR Initialisation failed due to a device error.
  *  \retval #HAL_ERROR_PERIPHERAL_ERROR Initialisation failed due to a peripheral error.
  */
