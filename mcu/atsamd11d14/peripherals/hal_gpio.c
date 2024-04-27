@@ -169,7 +169,7 @@ hal_result_t hal_gpio_pin_teardown(hal_gpio_pin_t *pin)
                 /* TODO: Clear output drain. */
                 break;
             case HAL_GPIO_ALTERNATE:
-                PORT->Group[0].PINCFG[init_struct->pin.pin].bit.PMUXEN = 0;
+                PORT->Group[0].PINCFG[pin->pin].bit.PMUXEN = 0;
                 set_alternate_function(pin, 0);
                 break;
             default:
