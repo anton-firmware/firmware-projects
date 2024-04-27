@@ -49,7 +49,8 @@ typedef uint8_t (*hal_i2c_write_cb_t)(void);
  *  \param[in] init_struct I2C initialisation structure.
  *
  *  \retval #HAL_SUCCESS Initialisation was successful.
- *  \retval #HAL_ERROR_REJECTED Initialisation failed due a previous `hal_i2c_init()` call being made.
+ *  \retval #HAL_ERROR_REJECTED Initialisation failed due to a previous `hal_i2c_init()` call being made.
+ *  \retval #HAL_ERROR_PARAM_ERROR Transmission failed due to a parameter error.
  *  \retval #HAL_ERROR_PERIPHERAL_ERROR Initialisation failed due to a peripheral error.
  */
 hal_result_t hal_i2c_init(hal_i2c_init_t init_struct);
@@ -57,7 +58,7 @@ hal_result_t hal_i2c_init(hal_i2c_init_t init_struct);
 /** Initialise I2C clocks.
  *
  *  \retval #HAL_SUCCESS Initialisation was successful.
- *  \retval #HAL_ERROR_REJECTED Initialisation failed due a previous `hal_i2c_clock_init()` call being made.
+ *  \retval #HAL_ERROR_REJECTED Initialisation failed due to a previous `hal_i2c_clock_init()` call being made.
  *  \retval #HAL_ERROR_PERIPHERAL_ERROR Initialisation failed due to a peripheral error.
  */
 hal_result_t hal_i2c_clock_init(void);
@@ -65,7 +66,7 @@ hal_result_t hal_i2c_clock_init(void);
 /** Teardown previously intialised I2C clocks.
  *
  *  \retval #HAL_SUCCESS Teardown was successful.
- *  \retval #HAL_ERROR_REJECTED Teardown failed due a previous `hal_i2c_clock_init()` call not being made.
+ *  \retval #HAL_ERROR_REJECTED Teardown failed due to a previous `hal_i2c_clock_init()` call not being made.
  *  \retval #HAL_ERROR_PERIPHERAL_ERROR Teardown failed due to a peripheral error.
  */
 hal_result_t hal_i2c_clock_teardown(void);
@@ -84,6 +85,11 @@ hal_result_t hal_i2c_teardown(void);
  * \param[in] reg Register address on the target to read data from.
  * \param[in] bytes Number of bytes to read from the target.
  * \param[out] buf The buffer into which data from the target are to be stored.
+ * 
+ * \retval #HAL_SUCCESS Reading was successful.
+ * \retval #HAL_ERROR_REJECTED Reading failed due to a previous `hal_i2c_init()` call not being made.
+ * \retval #HAL_ERROR_PARAM_ERROR Reading failed due to a parameter error.
+ * \retval #HAL_ERROR_PERIPHERAL_ERROR Reading failed due to a peripheral error.
  */
 hal_result_t hal_i2c_host_read_blocking(hal_i2c_peripheral_id_t id, uint8_t address, uint8_t reg, uint8_t bytes, uint8_t *buf);
 
@@ -93,6 +99,11 @@ hal_result_t hal_i2c_host_read_blocking(hal_i2c_peripheral_id_t id, uint8_t addr
  * \param[in] address Address of the target to read data from.
  * \param[in] bytes Number of bytes to read from the target.
  * \param[out] buf The buffer into which data from the target are to be stored.
+ * 
+ * \retval #HAL_SUCCESS Transmission was successful.
+ * \retval #HAL_ERROR_REJECTED Transmission failed due to a previous `hal_i2c_init()` call not being made.
+ * \retval #HAL_ERROR_PARAM_ERROR Transmission failed due to a parameter error.
+ * \retval #HAL_ERROR_PERIPHERAL_ERROR Transmission failed due to a peripheral error.
  */
 hal_result_t hal_i2c_host_write_blocking(hal_i2c_peripheral_id_t id, uint8_t address, uint8_t bytes, uint8_t *buf);
 
@@ -103,6 +114,11 @@ hal_result_t hal_i2c_host_write_blocking(hal_i2c_peripheral_id_t id, uint8_t add
  * \param[in] reg Register address on the target to read data from.
  * \param[in] bytes Number of bytes to read from the target.
  * \param[out] buf The buffer into which data from the target are to be stored.
+ * 
+ * \retval #HAL_SUCCESS Reading was successful.
+ * \retval #HAL_ERROR_REJECTED Reading failed due to a previous `hal_i2c_init()` call not being made.
+ * \retval #HAL_ERROR_PARAM_ERROR Reading failed due to a parameter error.
+ * \retval #HAL_ERROR_PERIPHERAL_ERROR Reading failed due to a peripheral error.
  */
 hal_result_t hal_i2c_host_read_non_blocking(hal_i2c_peripheral_id_t id, uint8_t address, uint8_t reg, uint8_t bytes, uint8_t *buf);
 
