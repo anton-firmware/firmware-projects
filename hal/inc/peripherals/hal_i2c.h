@@ -50,7 +50,7 @@ typedef uint8_t (*hal_i2c_write_cb_t)(void);
  *
  *  \retval #HAL_SUCCESS Initialisation was successful.
  *  \retval #HAL_ERROR_REJECTED Initialisation failed due to a previous `hal_i2c_init()` call being made.
- *  \retval #HAL_ERROR_PARAM_ERROR Transmission failed due to a parameter error.
+ *  \retval #HAL_ERROR_PARAM_ERROR Initialisation failed due to a parameter error.
  *  \retval #HAL_ERROR_PERIPHERAL_ERROR Initialisation failed due to a peripheral error.
  */
 hal_result_t hal_i2c_init(hal_i2c_init_t init_struct);
