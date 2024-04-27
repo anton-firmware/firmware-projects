@@ -18,7 +18,7 @@ typedef enum CLOCK_TYPE
 /** Initialise non-peripheral related MCU clocks.
  *
  *  \retval #HAL_SUCCESS Initialisation was successful.
- *  \retval #HAL_ERROR_REJECTED Initialisation failed due a previous `hal_clock_init()` call being made.
+ *  \retval #HAL_ERROR_REJECTED Initialisation failed due to a previous `hal_clock_init()` call being made.
  *  \retval #HAL_ERROR_DEVICE_ERROR Initialisation failed due to a device error.
  *  \retval #HAL_ERROR_PERIPHERAL_ERROR Initialisation failed due to a peripheral error.
  */
@@ -39,9 +39,9 @@ uint32_t hal_get_system_clock_frequency(void);
 
 /** Returns the type of the system clock.
  * 
- *  \retval #CLOCK_INTERNAL If an internal clock is being used as the system clock.
- *  \retval #CLOCK_EXTERNAL If an external clock is being used as the system clock.
+ *  \retval #CLOCK_INTERNAL An internal clock is being used as the system clock.
+ *  \retval #CLOCK_EXTERNAL An external clock is being used as the system clock.
  */
 clock_type_t hal_get_system_clock_type(void);
 
-#endif
+#endif /* HAL_CORE */

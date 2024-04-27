@@ -85,7 +85,7 @@ typedef struct hal_gpio_init
  *
  *  \retval #HAL_SUCCESS Initialisation was successful.
  *  \retval #HAL_ERROR_PARAM_ERROR An invalid parameter was detected.
- *  \retval #HAL_ERROR_REJECTED Initialisation failed due a previous `hal_gpio_pin_init()` call being made.
+ *  \retval #HAL_ERROR_REJECTED Initialisation failed due to a previous `hal_gpio_pin_init()` call being made.
  *  \retval #HAL_ERROR_PERIPHERAL_ERROR Initialisation failed due to a peripheral error.
  */
 hal_result_t hal_gpio_pin_init(hal_gpio_init_t *init_struct);
@@ -93,7 +93,7 @@ hal_result_t hal_gpio_pin_init(hal_gpio_init_t *init_struct);
 /** Initialise clocks used by the GPIO peripheral.
  *
  *  \retval #HAL_SUCCESS Initialisation was successful.
- *  \retval #HAL_ERROR_REJECTED Initialisation failed due a previous `hal_gpio_clock_init()` call being made.
+ *  \retval #HAL_ERROR_REJECTED Initialisation failed due to a previous `hal_gpio_clock_init()` call being made.
  *  \retval #HAL_ERROR_PERIPHERAL_ERROR Initialisation failed due to a peripheral error.
  */
 hal_result_t hal_gpio_clock_init(void);
@@ -101,7 +101,7 @@ hal_result_t hal_gpio_clock_init(void);
 /** Teardown previously intialised GPIO clocks.
  *
  *  \retval #HAL_SUCCESS Teardown was successful.
- *  \retval #HAL_ERROR_REJECTED Teardown failed due a previous `hal_gpio_clock_init()` call not being made.
+ *  \retval #HAL_ERROR_REJECTED Teardown failed due to a previous `hal_gpio_clock_init()` call not being made.
  *  \retval #HAL_ERROR_PERIPHERAL_ERROR Teardown failed due to a peripheral error.
  */
 hal_result_t hal_gpio_clock_teardown(void);
