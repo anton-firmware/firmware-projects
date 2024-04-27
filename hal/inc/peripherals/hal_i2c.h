@@ -130,4 +130,4 @@ hal_result_t hal_i2c_host_read_non_blocking(hal_i2c_peripheral_id_t id, uint8_t 
  */
 hal_result_t hal_i2c_host_write_non_blocking(hal_i2c_peripheral_id_t id, uint8_t address, uint8_t bytes, uint8_t *buf);
 
-#endif
+#endif /* HAL_I2C_H */
