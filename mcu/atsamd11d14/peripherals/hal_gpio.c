@@ -203,9 +203,19 @@ hal_result_t hal_gpio_set_level(hal_gpio_pin_t *pin, hal_gpio_level_t level)
     {
         result = HAL_ERROR_PARAM_ERROR;
     }
-    else
+    else 
     {
-        PORT->Group[0].OUTSET.reg |= (1u << pin->pin);
+        if (level == HAL_GPIO_HIGH)
+        {
+            PORT->Group[0].OUTSET.reg |= (1u << pin->pin);
+        }
+        else 
+        {
+            PORT->Group[0].OUTCLR.reg |= (1u << pin->pin);
+            
+        }
+        
+        result = HAL_SUCCESS;
     }
 
     return result;
