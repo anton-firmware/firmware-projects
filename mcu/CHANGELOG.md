@@ -1,3 +1,8 @@
+vx.x
+---
+- Second alpha release.
+> Serial implementation
+
 v0.1
 ---
 - Initial alpha release, includes:
