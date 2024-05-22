@@ -10,17 +10,17 @@ ATSAMD11D14_PACK_INC := packs/Atmel.SAMD11_DFP.1.1.81/include/
 CMSIS_5_INC          := packs/cmsis5/CMSIS/Core/Include
 
 # Source Files
-ATSAMD11D14_PERIPHERAL_SOURCES := atsamd11d14/peripherals/*.c
-ATSAMD11D14_CORE_SOURCES       := atsamd11d14/core/*.c
+ATSAMD11D14_PERIPHERAL_SOURCES := $(wildcard atsamd11d14/peripherals/*.c)
+ATSAMD11D14_CORE_SOURCES       := $(wildcard atsamd11d14/core/*.c)
 
 # Compiler Flags
-CPU                            := cortex-m0plus
-DEBUG_FLAGS 				   := dwarf-3 -g3
-COMMON_FLAGS                   := -mcpu=$(CPU) $(DEBUG_FLAGS) -c
-INCLUDES                       := -I$(HAL_PATH) -I$(ATSAMD11D14_PACK_INC) -I$(CMSIS_5_INC)
+CPU                              := cortex-m0plus
+DEBUG_FLAGS 				     := dwarf-3 -g3
+COMMON_FLAGS                     := -mcpu=$(CPU) $(DEBUG_FLAGS) -c
+INCLUDES                         := -I$(HAL_PATH) -I$(ATSAMD11D14_PACK_INC) -I$(CMSIS_5_INC)
 
-ATSAMD11D14AS                  := __SAMD11D14AS__
-ATSAMD11D14AM                  := __SAMD11D14AM__
+ATSAMD11D14AS                    := __SAMD11D14AS__
+ATSAMD11D14AM                    := __SAMD11D14AM__
 
 OBJECT_NAME_ATSAMD11D14AS_PERIPH = ATSAMD11D14AS_PERIPH.o
 OBJECT_NAME_ATSAMD11D14AS_CORE   = ATSAMD11D14AS_CORE.o
@@ -54,3 +54,6 @@ atsamd11d14am_lib: atsamd11d14am_peripherals atsamd11d14am_core
 	rm *.o
 
 all: atsamd11d14am_lib atsamd11d14as_lib
+
+echo:
+	@echo $(ATSAMD11D14_PERIPHERAL_SOURCES)
