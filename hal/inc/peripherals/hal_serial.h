@@ -13,7 +13,7 @@
 typedef enum hal_serial_mode
 {
     HAL_SERIAL_MODE_RX,    /*!< Serial RX Only mode. */
-    HAL_SERIAL_MODE_TX,    /*!< Serial TX Only modee. */
+    HAL_SERIAL_MODE_TX,    /*!< Serial TX Only mode. */
     HAL_SERIAL_MODE_RX_TX, /*!< Serial RX/TX mode. */
 
 } hal_serial_mode_t;
