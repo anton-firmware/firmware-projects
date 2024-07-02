@@ -8,12 +8,12 @@
  * \warning The current implementation assumes only one peripheral. 
  */
 
-#include "../hal_result.h"
+#include "hal_result.h"
 
 typedef enum hal_serial_mode
 {
     HAL_SERIAL_MODE_RX,    /*!< Serial RX Only mode. */
-    HAL_SERIAL_MODE_TX,    /*!< Serial TX Only modee. */
+    HAL_SERIAL_MODE_TX,    /*!< Serial TX Only mode. */
     HAL_SERIAL_MODE_RX_TX, /*!< Serial RX/TX mode. */
 
 } hal_serial_mode_t;
@@ -75,7 +75,7 @@ typedef struct hal_serial_init
  *  \retval #HAL_ERROR_PARAM_ERROR Initialisation failed due to a parameter error.
  *  \retval #HAL_ERROR_PERIPHERAL_ERROR Initialisation failed due to a peripheral error.
  */
-hal_result_t hal_serial_init(hal_serial_init_t init_struct);
+hal_result_t hal_serial_init(hal_serial_init_t *init_struct);
 
 /** Initialise clocks used by the serial peripheral.
  *

@@ -1,3 +1,8 @@
+v0.x
+---   
+- Fixes to serial header.
+> Minor documentation fixes, init struct takes a pointer.
+
 v0.3
 ---
 - Updates to GPIO header.
