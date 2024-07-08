@@ -12,6 +12,29 @@
 
 static bool sercom_usart_enabled;
 
+/** Function(s) to wait for syncronization.
+ *  
+ * See page 451 - Atmel SAMD11 reference manual.
+ * See page 472, 25.8.9, Synchronization Busy register.
+ * 
+ * This is required due to the asynchronicity between CLK_SERCOMx_APB and GCLK_SERCOMx_CORE.
+ * 
+ */
+static inline void wait_for_sync_swrst(void)
+{
+    while (SERCOM0->USART.SYNCBUSY.reg & SERCOM_USART_SYNCBUSY_SWRST);
+}
+
+static inline void wait_for_sync_enable(void)
+{
+    while (SERCOM0->USART.SYNCBUSY.reg & SERCOM_USART_SYNCBUSY_ENABLE);
+}
+
+static inline void wait_for_sync_ctrl_b(void)
+{
+    while (SERCOM0->USART.SYNCBUSY.reg & SERCOM_USART_SYNCBUSY_CTRLB);
+}
+
 hal_result_t hal_serial_init(hal_serial_init_t *init_struct)
 {
     hal_result_t result = HAL_ERROR_PARAM_ERROR;
@@ -30,13 +53,13 @@ hal_result_t hal_serial_init(hal_serial_init_t *init_struct)
         switch (init_struct->mode)
         {
             case HAL_SERIAL_MODE_RX:
-                // TODO: SERCOM[0] RX Only.
+                SERCOM0->USART.CTRLB.reg |= SERCOM_USART_CTRLB_RXEN;
                 break;
             case HAL_SERIAL_MODE_TX:
-                // TODO: SERCOM[0] TX Only.
+                SERCOM0->USART.CTRLB.reg |= SERCOM_USART_CTRLB_TXEN;
                 break;
             case HAL_SERIAL_MODE_RX_TX:
-                // TODO: SERCOM[0] RX/TX.
+                SERCOM0->USART.CTRLB.reg |= (SERCOM_USART_CTRLB_TXEN | SERCOM_USART_CTRLB_RXEN);
                 break;
             default:
                 // Cry, invalid USART mode.
@@ -87,6 +110,9 @@ hal_result_t hal_serial_init(hal_serial_init_t *init_struct)
         
         // TODO, callback initialisation.
 
+        SERCOM0->USART.CTRLA.reg |= SERCOM_USART_CTRLA_ENABLE;
+        wait_for_sync_enable();
+
         sercom_usart_enabled = true;
     }
 
@@ -95,14 +121,16 @@ hal_result_t hal_serial_init(hal_serial_init_t *init_struct)
 
 hal_result_t hal_serial_clock_init()
 {
-    hal_result_t result = HAL_ERROR_PERIPHERAL_ERROR;
+    /** Enable APB clock for SERCOM0. */
+    PM->APBCMASK.reg |= PM_APBCMASK_SERCOM0;
 
-    return result;
+    return HAL_SUCCESS;
 }
 
 hal_result_t hal_serial_teardown()
 {
-    hal_result_t result = HAL_ERROR_PERIPHERAL_ERROR;
+    /** Enable APB clock for SERCOM0. */
+    PM->APBCMASK.reg &= ~PM_APBCMASK_SERCOM0;
 
-    return result;    
+    return HAL_SUCCESS;    
 }
