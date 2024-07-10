@@ -124,6 +124,23 @@ hal_result_t hal_serial_init(hal_serial_init_t *init_struct)
     return result;
 }
 
+hal_result_t hal_serial_teardown()
+{
+    hal_result_t result = HAL_ERROR_REJECTED;
+
+    if (!sercom_usart_enabled)
+    {
+        /* Do nothing, USART not initialised. */
+    }
+    else
+    {
+        /* Reset the SERCOM back to normal state, disable USART. */
+        SERCOM0->USART.CTRLA.reg |= SERCOM_USART_CTRLA_SWRST;
+        
+        wait_for_sync_swrst();
+    }
+}
+
 hal_result_t hal_serial_clock_init()
 {
     /** Enable APB clock for SERCOM0. */
@@ -132,7 +149,7 @@ hal_result_t hal_serial_clock_init()
     return HAL_SUCCESS;
 }
 
-hal_result_t hal_serial_teardown()
+hal_result_t hal_serial_clock_teardown()
 {
     /** Disable APB clock for SERCOM0. */
     PM->APBCMASK.reg &= ~PM_APBCMASK_SERCOM0;
