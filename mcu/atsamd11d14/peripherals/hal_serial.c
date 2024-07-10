@@ -18,7 +18,6 @@ static bool sercom_usart_enabled;
  * See page 472, 25.8.9, Synchronization Busy register.
  * 
  * This is required due to the asynchronicity between CLK_SERCOMx_APB and GCLK_SERCOMx_CORE.
- * 
  */
 static inline void wait_for_sync_swrst(void)
 {
@@ -41,15 +40,18 @@ hal_result_t hal_serial_init(hal_serial_init_t *init_struct)
 
     if (!init_struct)
     {
-        // Do nothing, invalid init structure.
+        /* Do nothing, invalid init structure. */
     }
     else if (sercom_usart_enabled)
     {
-        // Trying to initialise already initialised USART.
+        /* Trying to initialise already initialised USART. */
         result = HAL_ERROR_REJECTED;
     }
     else 
     {
+        /* USART with internal clock. */
+        SERCOM0->USART.CTRLA.reg |= SERCOM_USART_CTRLA_MODE(0x1);
+
         switch (init_struct->mode)
         {
             case HAL_SERIAL_MODE_RX:
@@ -62,33 +64,35 @@ hal_result_t hal_serial_init(hal_serial_init_t *init_struct)
                 SERCOM0->USART.CTRLB.reg |= (SERCOM_USART_CTRLB_TXEN | SERCOM_USART_CTRLB_RXEN);
                 break;
             default:
-                // Cry, invalid USART mode.
+                /* Cry, invalid USART mode. */
                 break;
         }
 
         switch (init_struct->stop_bits)
         {
             case HAL_SERIAL_STOP_BITS_ONE:
-                // TODO: One stop bit.
+                SERCOM0->USART.CTRLB.reg &= ~SERCOM_USART_CTRLB_SBMODE;
                 break;
             case HAL_SERIAL_STOP_BITS_TWO:
-                // TODO: Two stop bits.
+                SERCOM0->USART.CTRLB.reg |= SERCOM_USART_CTRLB_SBMODE;
                 break;
             default:
-                // Cry, invalid stop bits.
+                /* Cry, invalid stop bits. */
                 break;
         }
 
+        /* This driver currently only supports even parity. */
         switch (init_struct->parity_bits)
         {
             case HAL_SERIAL_PARITY_BITS_NONE:
-                // TODO: No parity bits.
+                SERCOM0->USART.CTRLA.reg &= ~SERCOM_USART_CTRLA_FORM(0x1);
                 break;
             case HAL_SERIAL_PARITY_BITS_ONE:
-                // TODO: One parity bit.
+                /* FORM 0x1 = USART frame with parity, see Table 25-6, ATSAMD11 reference manual.*/
+                SERCOM0->USART.CTRLA.reg |= SERCOM_USART_CTRLA_FORM(0x1);
                 break;
             default:
-                // Cry, invalid parity bits.
+                /* Cry, invalid parity bits. */
                 break;
         }
 
@@ -104,13 +108,14 @@ hal_result_t hal_serial_init(hal_serial_init_t *init_struct)
                 // TODO: 115200 baud.
                 break;
             default:
-                // Cry, invalid baud rate.
+                /* Cry, invalid baud rate. */
                 break;
         }
         
         // TODO, callback initialisation.
 
         SERCOM0->USART.CTRLA.reg |= SERCOM_USART_CTRLA_ENABLE;
+
         wait_for_sync_enable();
 
         sercom_usart_enabled = true;
@@ -129,7 +134,7 @@ hal_result_t hal_serial_clock_init()
 
 hal_result_t hal_serial_teardown()
 {
-    /** Enable APB clock for SERCOM0. */
+    /** Disable APB clock for SERCOM0. */
     PM->APBCMASK.reg &= ~PM_APBCMASK_SERCOM0;
 
     return HAL_SUCCESS;    
