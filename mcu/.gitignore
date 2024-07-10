@@ -4,3 +4,4 @@ tmp
 
 # File extensions
 *.a
+*.o
