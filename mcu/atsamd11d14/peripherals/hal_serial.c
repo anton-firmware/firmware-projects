@@ -1,3 +1,10 @@
+/** \file
+ *
+ * Implementation for HAL Serial peripheral.
+ * 
+ * \warning The current implementation only works for SERCOM[0].
+ */
+
 #include <stdbool.h>
 
 #include "hal_serial.h"
@@ -6,16 +13,9 @@
 #define F_REF 8000000 /* Reference frequency. */
 #define S     16      /* Samples per bit. */
 
-/** \file
- *
- * Implementation for HAL Serial peripheral.
- * 
- * \warning The current implementation only works for SERCOM[0].
- */
-
 static bool sercom_usart_enabled;
 
-/** Function(s) to wait for syncronization.
+/** Wait for syncronisation after software reset of the SERCOM peripheral.
  *  
  * See page 451 - Atmel SAMD11 reference manual.
  * See page 472, 25.8.9, Synchronization Busy register.
@@ -27,21 +27,25 @@ static inline void wait_for_sercom_sync_swrst(void)
     while (SERCOM0->USART.SYNCBUSY.reg & SERCOM_USART_SYNCBUSY_SWRST);
 }
 
+/** Wait for syncronisation after enabling the SERCOM peripheral. */
 static inline void wait_for_sercom_sync_enable(void)
 {
     while (SERCOM0->USART.SYNCBUSY.reg & SERCOM_USART_SYNCBUSY_ENABLE);
 }
 
+/** Wait for syncronisation after modifying CTRLB register. */
 static inline void wait_for_sercom_sync_ctrl_b(void)
 {
     while (SERCOM0->USART.SYNCBUSY.reg & SERCOM_USART_SYNCBUSY_CTRLB);
 }
 
+/** Helper function to set up the clock source for the SERCOM0 peripheral.
+ * 
+ * In order to set a generic clock, we do a 16 bit write of the configurations 
+ * and the ID, see page 99 of ATSAMD11 reference manual.
+ */
 static inline void setup_sercom_0_gclk(void)
 {
-    /* In order to set a generic clock, we do a 16 bit write of the configurations 
-       and the ID, see page 99 of ATSAMD11 reference manual. */
-
     uint16_t clk_ctl_reg_value = 0;
 
     /* Set the SERCOM0 core clock to be Generic Clock Generator 0 (Internal 8MHz oscilator). */
@@ -50,18 +54,27 @@ static inline void setup_sercom_0_gclk(void)
     GCLK->CLKCTRL.reg = clk_ctl_reg_value; 
 }
 
+/** Helper function to calculate the value of the SERCOM BAUD register.
+ * 
+ * See page 434 ATSAMD11 reference manual for baud rate calulcation.
+ * BAUD = 65,536 * (1 - (S * F_BAUD)/F_REF)
+ * 
+ * S - Number of samples per bit (16, 8, or 3).
+ * F_BAUD - Baud rate.
+ * F_REF - Reference frequency.
+ * 
+ * \param[in] baud_rate The baud rate.
+ * 
+ * \return The 16-bit BAUD rate register value.
+ */
 static inline uint16_t calculate_baud_register(uint32_t baud_rate)
 {
-    /** See page 434 ATSAMD11 reference manual for baud rate calulcation.
-     *  
-     *  BAUD = 65,536 * (1 - (S * F_BAUD)/F_REF)
-     * 
-     *  S - Number of samples per bit (16, 8, or 3).
-     *  F_BAUD - Baud rate.
-     *  F_REF - Reference frequency.
-     */
-
     return 65536u * (1u - (S) * (baud_rate / F_REF));
+}
+
+void SERCOM0_Handler(void)
+{
+    // TODO: Implement interrupt.
 }
 
 hal_result_t hal_serial_init(hal_serial_init_t *init_struct)
@@ -145,11 +158,15 @@ hal_result_t hal_serial_init(hal_serial_init_t *init_struct)
         }
         
         // TODO, callback initialisation.
-        // TODO, clock initialisation -> A generic clock (GCLK_SERCOMx_CORE) is required to clock the SERCOMx_CORE. (Page 440)
 
+        /* Enable receive complete, and transmit complete interrupts. */
+        SERCOM0->USART.INTENSET.reg |= (SERCOM_USART_INTENSET_RXC | SERCOM_USART_INTENSET_TXC);
         SERCOM0->USART.CTRLA.reg |= SERCOM_USART_CTRLA_ENABLE;
 
         wait_for_sercom_sync_enable();
+
+        /* Enable interrupts. */
+        NVIC_EnableIRQ(SERCOM0_IRQn);
 
         sercom_usart_enabled = true;
     }
@@ -188,4 +205,67 @@ hal_result_t hal_serial_clock_teardown()
     PM->APBCMASK.reg &= ~PM_APBCMASK_SERCOM0;
 
     return HAL_SUCCESS;    
+}
+
+hal_result_t hal_serial_transmit_blocking(const uint8_t *tx, const uint8_t len)
+{
+    hal_result_t result = HAL_ERROR_REJECTED;
+
+    if (!sercom_usart_enabled)
+    {
+        /* Do nothing, peripheral not enabled. */
+    }
+    else if (!tx)
+    {
+        /* Invalid tx pointer. */
+        result = HAL_ERROR_PARAM_ERROR;
+    }
+    else if (len == 0)
+    {
+        /* Invalid transmit length. */
+        result = HAL_ERROR_PARAM_ERROR;
+    }
+    else 
+    {
+        for (uint8_t i = 0; i < len; i++)
+        {
+            SERCOM0->USART.DATA.reg = *tx++;
+        }
+    }
+
+    return result;
+}
+
+hal_result_t hal_serial_receive_blocking(uint8_t *tx, const uint8_t len)
+{
+    hal_result_t result = HAL_ERROR_REJECTED;
+
+    if (!sercom_usart_enabled)
+    {
+        /* Do nothing, peripheral not enabled. */
+    }
+    else if (!tx)
+    {
+        /* Invalid tx pointer. */
+        result = HAL_ERROR_PARAM_ERROR;
+    }
+    else if (len == 0)
+    {
+        /* Invalid transmit length. */
+        result = HAL_ERROR_PARAM_ERROR;
+    }
+    else 
+    {
+        for (uint8_t i = 0; i < len; i++)
+        {
+            while !(SERCOM0->USART.INTFLAG.RXC)
+            {
+                /* Do nothing, wait for receive flag to be set. */
+            }
+
+            *tx++ = SERCOM0->USART.DATA.reg;
+        }
+    }
+
+    return result;
 }
