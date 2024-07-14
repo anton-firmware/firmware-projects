@@ -3,6 +3,9 @@
 #include "hal_serial.h"
 #include "sam.h"
 
+#define F_REF 8000000 /* Reference frequency. */
+#define S     16      /* Samples per bit. */
+
 /** \file
  *
  * Implementation for HAL Serial peripheral.
@@ -19,19 +22,46 @@ static bool sercom_usart_enabled;
  * 
  * This is required due to the asynchronicity between CLK_SERCOMx_APB and GCLK_SERCOMx_CORE.
  */
-static inline void wait_for_sync_swrst(void)
+static inline void wait_for_sercom_sync_swrst(void)
 {
     while (SERCOM0->USART.SYNCBUSY.reg & SERCOM_USART_SYNCBUSY_SWRST);
 }
 
-static inline void wait_for_sync_enable(void)
+static inline void wait_for_sercom_sync_enable(void)
 {
     while (SERCOM0->USART.SYNCBUSY.reg & SERCOM_USART_SYNCBUSY_ENABLE);
 }
 
-static inline void wait_for_sync_ctrl_b(void)
+static inline void wait_for_sercom_sync_ctrl_b(void)
 {
     while (SERCOM0->USART.SYNCBUSY.reg & SERCOM_USART_SYNCBUSY_CTRLB);
+}
+
+static inline void setup_sercom_0_gclk(void)
+{
+    /* In order to set a generic clock, we do a 16 bit write of the configurations 
+       and the ID, see page 99 of ATSAMD11 reference manual. */
+
+    uint16_t clk_ctl_reg_value = 0;
+
+    /* Set the SERCOM0 core clock to be Generic Clock Generator 0 (Internal 8MHz oscilator). */
+    clk_ctl_reg_value |= (GCLK_CLKCTRL_ID_SERCOM0_CORE | GCLK_CLKCTRL_CLKEN | GCLK_CLKCTRL_GEN_GCLK0);
+
+    GCLK->CLKCTRL.reg = clk_ctl_reg_value; 
+}
+
+static inline uint16_t calculate_baud_register(uint32_t baud_rate)
+{
+    /** See page 434 ATSAMD11 reference manual for baud rate calulcation.
+     *  
+     *  BAUD = 65,536 * (1 - (S * F_BAUD)/F_REF)
+     * 
+     *  S - Number of samples per bit (16, 8, or 3).
+     *  F_BAUD - Baud rate.
+     *  F_REF - Reference frequency.
+     */
+
+    return 65536u * (1u - (S) * (baud_rate / F_REF));
 }
 
 hal_result_t hal_serial_init(hal_serial_init_t *init_struct)
@@ -49,6 +79,8 @@ hal_result_t hal_serial_init(hal_serial_init_t *init_struct)
     }
     else 
     {
+        setup_sercom_0_gclk();
+
         /* USART with internal clock. */
         SERCOM0->USART.CTRLA.reg |= SERCOM_USART_CTRLA_MODE(0x1);
 
@@ -99,13 +131,13 @@ hal_result_t hal_serial_init(hal_serial_init_t *init_struct)
         switch (init_struct->baud_rate)
         {
             case HAL_SERIAL_BAUD_RATE_4800:
-                // TODO: 4800 baud.
+                SERCOM0->USART.BAUD.reg = calculate_baud_register(4800);
                 break;
             case HAL_SERIAL_BAUD_RATE_9600:
-                // TODO: 9600 baud.
+                 SERCOM0->USART.BAUD.reg = calculate_baud_register(9600);
                 break;
             case HAL_SERIAL_BAUD_RATE_115200:
-                // TODO: 115200 baud.
+                 SERCOM0->USART.BAUD.reg = calculate_baud_register(115200);
                 break;
             default:
                 /* Cry, invalid baud rate. */
@@ -113,10 +145,11 @@ hal_result_t hal_serial_init(hal_serial_init_t *init_struct)
         }
         
         // TODO, callback initialisation.
+        // TODO, clock initialisation -> A generic clock (GCLK_SERCOMx_CORE) is required to clock the SERCOMx_CORE. (Page 440)
 
         SERCOM0->USART.CTRLA.reg |= SERCOM_USART_CTRLA_ENABLE;
 
-        wait_for_sync_enable();
+        wait_for_sercom_sync_enable();
 
         sercom_usart_enabled = true;
     }
@@ -137,7 +170,7 @@ hal_result_t hal_serial_teardown()
         /* Reset the SERCOM back to normal state, disable USART. */
         SERCOM0->USART.CTRLA.reg |= SERCOM_USART_CTRLA_SWRST;
         
-        wait_for_sync_swrst();
+        wait_for_sercom_sync_swrst();
     }
 }
 
