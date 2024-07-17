@@ -42,17 +42,15 @@ typedef enum hal_serial_baud_rate
 
 /** Read-event callback declaration.
  *
- * \param[out] buf Pointer to data buffer.
- *
- * \return The number of bytes read, 0 otherwise.
+ * \param[out] buf Byte that was read.
  */
-typedef uint8_t (*hal_serial_read_cb_t)(uint8_t *buf);
+typedef void (*hal_serial_read_cb_t)(uint8_t buf);
 
 /** Write-event callback declaration.
  *
- *  \return The number of bytes written, 0 otherwise.
+ * \param[in] bytes The number of bytes written.
  */
-typedef uint8_t (*hal_serial_write_cb_t)(void);
+typedef void (*hal_serial_write_cb_t)(const uint8_t bytes);
 
 /** Structure representing serial initialisation. */
 typedef struct hal_serial_init
@@ -63,6 +61,9 @@ typedef struct hal_serial_init
     hal_serial_baud_rates_t  baud_rate;      /*!< Serial baud rate. */
     hal_serial_read_cb_t     read_event_cb;  /*!< Serial read callback. */
     hal_serial_write_cb_t    write_event_cb; /*!< Serial write callback. */
+    
+    uint8_t                  *tx_buf;        /*!< Pointer to transmit buffer. */
+    uint8_t                   tx_buf_len;    /*!< Length (in bytes) of transmit buffer. */
 
 } hal_serial_init_t;
 
