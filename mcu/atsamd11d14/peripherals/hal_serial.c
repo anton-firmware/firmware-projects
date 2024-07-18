@@ -13,7 +13,13 @@
 #define F_REF 8000000 /* Reference frequency. */
 #define S     16      /* Samples per bit. */
 
-static bool sercom_usart_enabled;
+static volatile bool sercom_usart_enabled;
+
+static volatile uint8_t tx_len = 0;
+static volatile uint8_t *tx_pointer;
+
+static hal_serial_read_cb_t read_callback;
+static hal_serial_write_cb_t write_callback;
 
 /** Wait for syncronisation after software reset of the SERCOM peripheral.
  *  
@@ -72,9 +78,32 @@ static inline uint16_t calculate_baud_register(uint32_t baud_rate)
     return 65536u * (1u - (S) * (baud_rate / F_REF));
 }
 
+/* ISR for the SERCOM0 peripheral. */
 void SERCOM0_Handler(void)
 {
-    // TODO: Implement interrupt.
+    /* Cache the current state of the interrupt flags. */
+    uint8_t interrupt_status = SERCOM0->USART.INTFLAG.reg;
+
+    if (interrupt_status & SERCOM_USART_INTFLAG_DRE)
+    {
+        if (tx_len > 0)
+        {
+            SERCOM0->USART.DATA.reg = *tx_pointer++;
+            tx_len--;
+        }
+        else 
+        {
+            /* We've transmitted all the data, turn off TX interrupts for now. */
+            SERCOM0->USART.INTENCLR.reg |= SERCOM_USART_INTFLAG_DRE;
+            tx_len = 0;
+            write_callback();
+        }
+    }
+
+    if (interrupt_status & SERCOM_USART_INTFLAG_RXC)
+    {
+
+    }
 }
 
 hal_result_t hal_serial_init(hal_serial_init_t *init_struct)
@@ -157,10 +186,16 @@ hal_result_t hal_serial_init(hal_serial_init_t *init_struct)
                 break;
         }
         
-        // TODO, callback initialisation.
+        if (init_struct->read_event_cb)
+        {
+            read_callback = init_struct->read_event_cb;
+        }
 
-        /* Enable receive complete, and transmit complete interrupts. */
-        SERCOM0->USART.INTENSET.reg |= (SERCOM_USART_INTENSET_RXC | SERCOM_USART_INTENSET_TXC);
+        if (init_struct->write_event_cb)
+        {
+            write_callback = init_struct->write_event_cb;
+        }
+
         SERCOM0->USART.CTRLA.reg |= SERCOM_USART_CTRLA_ENABLE;
 
         wait_for_sercom_sync_enable();
@@ -258,7 +293,7 @@ hal_result_t hal_serial_receive_blocking(uint8_t *tx, const uint8_t len)
     {
         for (uint8_t i = 0; i < len; i++)
         {
-            while !(SERCOM0->USART.INTFLAG.RXC)
+            while (SERCOM0->USART.INTFLAG.bit.RXC == 0)
             {
                 /* Do nothing, wait for receive flag to be set. */
             }
