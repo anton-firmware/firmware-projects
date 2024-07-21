@@ -3,8 +3,9 @@ v0.x
 - Fixes to serial header.
 1. Minor documentation fixes, init struct takes a pointer.
 - Updates to serial header.
-1. Change return type of tx/rx callbacks.
+1. Change return type of `tx`/`rx` callbacks.
 2. Add `tx` buffer length/pointer to `init` struct.
+3. Remove buffer param from `rx` non-blocking function.
 
 v0.3
 ---
