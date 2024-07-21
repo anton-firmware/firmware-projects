@@ -117,6 +117,9 @@ hal_result_t hal_serial_transmit_blocking(const uint8_t *tx, const uint8_t len);
 
 /** Transmit a number of bytes over the serial periperhal in non blocking mode.
  *
+ * \note This function will return immediately, but will set up the driver to transmit the requested
+ * number of bytes given by \c len.
+ *
  * \param[in] tx Pointer to data to transmit.
  * \param[in] len Number of bytes to transmit.
  *
@@ -129,7 +132,7 @@ hal_result_t hal_serial_transmit_non_blocking(const uint8_t *tx, const uint8_t l
 
 /** Receive a number of bytes over the serial periperhal in blocking mode.
  *
- * \param[in] tx Pointer to buffer into which to receive data.
+ * \param[in] rx Pointer to buffer into which to receive data.
  * \param[in] len Number of bytes to receive.
  *
  * \retval #HAL_SUCCESS The data were successfully received.
@@ -137,11 +140,13 @@ hal_result_t hal_serial_transmit_non_blocking(const uint8_t *tx, const uint8_t l
  * \retval #HAL_ERROR_PARAM_ERROR Reception failed due to a parameter error.
  * \retval #HAL_ERROR_PERIPHERAL_ERROR Reception failed due to a peripheral error.
  */
-hal_result_t hal_serial_receive_blocking(uint8_t *tx, const uint8_t len);
+hal_result_t hal_serial_receive_blocking(uint8_t *rx, const uint8_t len);
 
 /** Receive a number of bytes over the serial periperhal in non blocking mode.
  *
- * \param[in] tx Pointer to buffer into which to receive data.
+ * \note This function will return immediately, but will set up the driver to receive the requested
+ * number of bytes given by \c len.
+ *
  * \param[in] len Number of bytes to receive.
  *
  * \retval #HAL_SUCCESS The data were successfully transmitted.
@@ -149,6 +154,6 @@ hal_result_t hal_serial_receive_blocking(uint8_t *tx, const uint8_t len);
  * \retval #HAL_ERROR_PARAM_ERROR Reception failed due to a parameter error.
  * \retval #HAL_ERROR_PERIPHERAL_ERROR Reception failed due to a peripheral error.
  */
-hal_result_t hal_serial_receive_non_blocking(uint8_t *tx, const uint8_t len);
+hal_result_t hal_serial_receive_non_blocking(const uint8_t len);
 
 #endif /* HAL_SERIAL_H */
