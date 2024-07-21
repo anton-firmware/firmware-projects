@@ -64,8 +64,8 @@ typedef struct hal_serial_init
 
     uint8_t                  *tx_buf;        /*!< Pointer to transmit buffer. */
     uint8_t                   tx_buf_len;    /*!< Length (in bytes) of transmit buffer. */
-    uint8_t                  *rx_buf;        /*!< Pointer to transmit buffer. */
-    uint8_t                   rx_buf_len;    /*!< Length (in bytes) of transmit buffer. */
+    uint8_t                  *rx_buf;        /*!< Pointer to receive buffer. */
+    uint8_t                   rx_buf_len;    /*!< Length (in bytes) of receive buffer. */
 
 } hal_serial_init_t;
 
