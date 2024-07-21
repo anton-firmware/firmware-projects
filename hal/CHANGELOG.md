@@ -1,7 +1,9 @@
 v0.x
----   
+---
 - Fixes to serial header.
 > Minor documentation fixes, init struct takes a pointer.
+- Updates to serial header.
+> Change return type of tx/rx callbacks.
 
 v0.3
 ---
