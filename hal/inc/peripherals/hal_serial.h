@@ -4,8 +4,8 @@
 /** \file
  *
  * File containing definitions for serial (UART) functions.
- * 
- * \warning The current implementation assumes only one peripheral. 
+ *
+ * \warning The current implementation assumes only one peripheral.
  */
 
 #include "hal_result.h"
@@ -61,9 +61,11 @@ typedef struct hal_serial_init
     hal_serial_baud_rates_t  baud_rate;      /*!< Serial baud rate. */
     hal_serial_read_cb_t     read_event_cb;  /*!< Serial read callback. */
     hal_serial_write_cb_t    write_event_cb; /*!< Serial write callback. */
-    
+
     uint8_t                  *tx_buf;        /*!< Pointer to transmit buffer. */
     uint8_t                   tx_buf_len;    /*!< Length (in bytes) of transmit buffer. */
+    uint8_t                  *rx_buf;        /*!< Pointer to transmit buffer. */
+    uint8_t                   rx_buf_len;    /*!< Length (in bytes) of transmit buffer. */
 
 } hal_serial_init_t;
 
@@ -102,10 +104,10 @@ hal_result_t hal_serial_teardown(void);
 hal_result_t hal_serial_clock_teardown(void);
 
 /** Transmit a number of bytes over the serial periperhal in blocking mode.
- * 
+ *
  * \param[in] tx Pointer to data to transmit.
  * \param[in] len Number of bytes to transmit.
- * 
+ *
  * \retval #HAL_SUCCESS The data were successfully transmitted.
  * \retval #HAL_ERROR_REJECTED Transmission failed due to a previous `hal_serial_init()` call not being made.
  * \retval #HAL_ERROR_PARAM_ERROR Transmission failed due to a parameter error.
@@ -114,10 +116,10 @@ hal_result_t hal_serial_clock_teardown(void);
 hal_result_t hal_serial_transmit_blocking(const uint8_t *tx, const uint8_t len);
 
 /** Transmit a number of bytes over the serial periperhal in non blocking mode.
- * 
+ *
  * \param[in] tx Pointer to data to transmit.
  * \param[in] len Number of bytes to transmit.
- * 
+ *
  * \retval #HAL_SUCCESS The data were successfully transmitted.
  * \retval #HAL_ERROR_REJECTED Transmission failed due to a previous `hal_serial_init()` call not being made.
  * \retval #HAL_ERROR_PARAM_ERROR Transmission failed due to a parameter error.
@@ -126,10 +128,10 @@ hal_result_t hal_serial_transmit_blocking(const uint8_t *tx, const uint8_t len);
 hal_result_t hal_serial_transmit_non_blocking(const uint8_t *tx, const uint8_t len);
 
 /** Receive a number of bytes over the serial periperhal in blocking mode.
- * 
+ *
  * \param[in] tx Pointer to buffer into which to receive data.
  * \param[in] len Number of bytes to receive.
- * 
+ *
  * \retval #HAL_SUCCESS The data were successfully received.
  * \retval #HAL_ERROR_REJECTED Reception failed due to a previous `hal_serial_init()` call not being made.
  * \retval #HAL_ERROR_PARAM_ERROR Reception failed due to a parameter error.
@@ -138,10 +140,10 @@ hal_result_t hal_serial_transmit_non_blocking(const uint8_t *tx, const uint8_t l
 hal_result_t hal_serial_receive_blocking(uint8_t *tx, const uint8_t len);
 
 /** Receive a number of bytes over the serial periperhal in non blocking mode.
- * 
+ *
  * \param[in] tx Pointer to buffer into which to receive data.
  * \param[in] len Number of bytes to receive.
- * 
+ *
  * \retval #HAL_SUCCESS The data were successfully transmitted.
  * \retval #HAL_ERROR_REJECTED Reception failed due to a previous `hal_serial_init()` call not being made.
  * \retval #HAL_ERROR_PARAM_ERROR Reception failed due to a parameter error.
