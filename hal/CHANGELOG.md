@@ -1,4 +1,4 @@
-v0.x
+v0.4
 ---
 - Fixes to serial header.
 1. Minor documentation fixes, init struct takes a pointer.
