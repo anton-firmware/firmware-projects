@@ -16,7 +16,9 @@
 static volatile bool sercom_usart_enabled;
 
 static volatile uint8_t tx_len = 0;
-static volatile uint8_t *tx_pointer;
+static const volatile uint8_t *tx_pointer;
+static volatile uint8_t rx_len = 0;
+static volatile uint8_t *rx_pointer;
 
 static hal_serial_read_cb_t read_callback;
 static hal_serial_write_cb_t write_callback;
@@ -95,14 +97,12 @@ void SERCOM0_Handler(void)
         {
             /* We've transmitted all the data, turn off TX interrupts for now. */
             SERCOM0->USART.INTENCLR.reg |= SERCOM_USART_INTFLAG_DRE;
-            tx_len = 0;
-            write_callback();
         }
     }
 
     if (interrupt_status & SERCOM_USART_INTFLAG_RXC)
     {
-
+        read_callback(SERCOM0->USART.DATA.reg);
     }
 }
 
@@ -300,6 +300,35 @@ hal_result_t hal_serial_receive_blocking(uint8_t *tx, const uint8_t len)
 
             *tx++ = SERCOM0->USART.DATA.reg;
         }
+    }
+
+    return result;
+}
+
+hal_result_t hal_serial_transmit_non_blocking(const uint8_t *tx, const uint8_t len)
+{
+    hal_result_t result = HAL_ERROR_REJECTED;
+
+    if (!sercom_usart_enabled)
+    {
+        /* Do nothing, peripheral not enabled. */
+    }
+    else if (tx == 0)
+    {
+        /* Invalid tx pointer. */
+        result = HAL_ERROR_PARAM_ERROR;
+    }
+    else if (len == 0)
+    {
+        /* Invalid transmit length. */
+        result = HAL_ERROR_PARAM_ERROR;
+    }
+    else 
+    {
+        tx_len = len;
+        tx_pointer = tx;
+
+        SERCOM0->USART.INTENSET.reg |= SERCOM_USART_INTFLAG_DRE;
     }
 
     return result;
