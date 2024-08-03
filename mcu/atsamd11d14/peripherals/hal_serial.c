@@ -280,6 +280,11 @@ hal_result_t hal_serial_transmit_blocking(const uint8_t *tx, const uint8_t len)
         for (uint8_t i = 0; i < len; i++)
         {
             SERCOM1->USART.DATA.reg = *tx++;
+
+            while (SERCOM1->USART.INTFLAG.bit.TXC == 0)
+            {
+                /* Do nothing, wait for transmit flag to be set. */
+            }
         }
     }
 
