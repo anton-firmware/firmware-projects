@@ -91,7 +91,7 @@ void SERCOM1_Handler(void)
     /* Cache the current state of the interrupt flags. */
     uint8_t interrupt_status = SERCOM1->USART.INTFLAG.reg;
 
-    if (interrupt_status & (SERCOM_USART_INTFLAG_DRE | )SERCOM_USART_INTFLAG_TXC)
+    if (interrupt_status & (SERCOM_USART_INTFLAG_DRE | SERCOM_USART_INTFLAG_TXC))
     {
         if (tx_len > 0)
         {
