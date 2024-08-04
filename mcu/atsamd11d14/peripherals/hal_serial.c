@@ -26,7 +26,7 @@ static hal_serial_write_cb_t write_callback;
 /** Wait for syncronisation after software reset of the SERCOM peripheral.
  *  
  * See page 451 - Atmel SAMD11 reference manual.
- * See page 472, 25.8.9, Synchronization Busy register.
+ * See page 472, 25.8.9, Synchronization Busy register - Atmel SAMD11 reference manual.
  * 
  * This is required due to the asynchronicity between CLK_SERCOMx_APB and GCLK_SERCOMx_CORE.
  */
@@ -56,7 +56,9 @@ static inline void setup_sercom_1_gclk(void)
 {
     uint16_t clk_ctl_reg_value = 0;
 
-    /* Set the SERCOM1 core clock to be Generic Clock Generator 0 (Internal 8MHz oscilator). */
+    /* Set the SERCOM1 core clock to be Generic Clock Generator 0 (Internal 8MHz oscilator). 
+     * Note: On reset, the OSC8M is fed through a divide by 8 step, so this clock is actually 1MHz. 
+     */
     clk_ctl_reg_value |= (GCLK_CLKCTRL_ID_SERCOM1_CORE | GCLK_CLKCTRL_CLKEN | GCLK_CLKCTRL_GEN_GCLK0);
 
     GCLK->CLKCTRL.reg = clk_ctl_reg_value; 
@@ -83,13 +85,13 @@ static inline uint16_t calculate_baud_register(uint32_t baud_rate)
     return (uint16_t)(65536.0f * (1.0f - (float)(S) * ((float)baud_rate / (float)F_REF)));
 }
 
-/* ISR for the SERCOM1 peripheral. */
+/** ISR for the SERCOM1 peripheral. */
 void SERCOM1_Handler(void)
 {
     /* Cache the current state of the interrupt flags. */
     uint8_t interrupt_status = SERCOM1->USART.INTFLAG.reg;
 
-    if (interrupt_status & SERCOM_USART_INTFLAG_DRE)
+    if (interrupt_status & (SERCOM_USART_INTFLAG_DRE | )SERCOM_USART_INTFLAG_TXC)
     {
         if (tx_len > 0)
         {
@@ -99,13 +101,13 @@ void SERCOM1_Handler(void)
         else 
         {
             /* We've transmitted all the data, turn off TX interrupts for now. */
-            SERCOM1->USART.INTENCLR.reg |= SERCOM_USART_INTFLAG_DRE;
+            SERCOM1->USART.INTENCLR.reg |= SERCOM_USART_INTFLAG_TXC;
         }
     }
 
     if (interrupt_status & SERCOM_USART_INTFLAG_RXC)
     {
-        //read_callback(SERCOM1->USART.DATA.reg);
+        read_callback(SERCOM1->USART.DATA.reg);
     }
 
     SERCOM1->USART.INTFLAG.reg = interrupt_status;
@@ -186,14 +188,16 @@ hal_result_t hal_serial_init(hal_serial_init_t *init_struct)
 
         switch (init_struct->baud_rate)
         {
+            // TODO: Precalulcate these values because the floating point library is FUCKING MASSIVE
+
             case HAL_SERIAL_BAUD_RATE_4800:
                 SERCOM1->USART.BAUD.reg = calculate_baud_register(4800);
                 break;
             case HAL_SERIAL_BAUD_RATE_9600:
-                 SERCOM1->USART.BAUD.reg = calculate_baud_register(9600);
+                SERCOM1->USART.BAUD.reg = calculate_baud_register(9600);
                 break;
             case HAL_SERIAL_BAUD_RATE_115200:
-                 SERCOM1->USART.BAUD.reg = calculate_baud_register(115200);
+                SERCOM1->USART.BAUD.reg = calculate_baud_register(115200);
                 break;
             default:
                 /* Cry, invalid baud rate. */
@@ -203,6 +207,7 @@ hal_result_t hal_serial_init(hal_serial_init_t *init_struct)
         if (init_struct->read_event_cb)
         {
             read_callback = init_struct->read_event_cb;
+            SERCOM1->USART.INTENSET.reg |= SERCOM_USART_INTENSET_RXC;
         }
 
         if (init_struct->write_event_cb)
@@ -216,7 +221,6 @@ hal_result_t hal_serial_init(hal_serial_init_t *init_struct)
 
         /* Enable interrupts. */
         NVIC_EnableIRQ(SERCOM1_IRQn);
-        SERCOM1->USART.INTENSET.reg |= SERCOM_USART_INTENSET_RXC;
 
         sercom_usart_enabled = true;
     }
@@ -243,7 +247,7 @@ hal_result_t hal_serial_teardown()
 
 hal_result_t hal_serial_clock_init()
 {
-    /** Enable APB clock for SERCOM1. */
+    /* Enable APB clock for SERCOM1. */
     PM->APBCMASK.reg |= PM_APBCMASK_SERCOM1;
 
     return HAL_SUCCESS;
@@ -251,7 +255,7 @@ hal_result_t hal_serial_clock_init()
 
 hal_result_t hal_serial_clock_teardown()
 {
-    /** Disable APB clock for SERCOM1. */
+    /* Disable APB clock for SERCOM1. */
     PM->APBCMASK.reg &= ~PM_APBCMASK_SERCOM1;
 
     return HAL_SUCCESS;    
@@ -291,7 +295,7 @@ hal_result_t hal_serial_transmit_blocking(const uint8_t *tx, const uint8_t len)
     return result;
 }
 
-hal_result_t hal_serial_receive_blocking(uint8_t *tx, const uint8_t len)
+hal_result_t hal_serial_receive_blocking(uint8_t *rx, const uint8_t len)
 {
     hal_result_t result = HAL_ERROR_REJECTED;
 
@@ -299,7 +303,7 @@ hal_result_t hal_serial_receive_blocking(uint8_t *tx, const uint8_t len)
     {
         /* Do nothing, peripheral not enabled. */
     }
-    else if (!tx)
+    else if (!rx)
     {
         /* Invalid tx pointer. */
         result = HAL_ERROR_PARAM_ERROR;
@@ -318,7 +322,7 @@ hal_result_t hal_serial_receive_blocking(uint8_t *tx, const uint8_t len)
                 /* Do nothing, wait for receive flag to be set. */
             }
 
-            *tx++ = SERCOM1->USART.DATA.reg;
+            *rx++ = SERCOM1->USART.DATA.reg;
         }
     }
 
@@ -348,7 +352,7 @@ hal_result_t hal_serial_transmit_non_blocking(const uint8_t *tx, const uint8_t l
         tx_len = len;
         tx_pointer = tx;
 
-        SERCOM1->USART.INTENSET.reg |= SERCOM_USART_INTFLAG_DRE;
+        SERCOM1->USART.INTENSET.reg |= (SERCOM_USART_INTFLAG_TXC | SERCOM_USART_INTFLAG_DRE);
     }
 
     return result;
