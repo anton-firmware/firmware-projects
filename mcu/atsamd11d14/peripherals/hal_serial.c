@@ -88,29 +88,29 @@ static inline uint16_t calculate_baud_register(uint32_t baud_rate)
 /** ISR for the SERCOM1 peripheral. */
 void SERCOM1_Handler(void)
 {
-    /* Cache the current state of the interrupt flags. */
-    uint8_t interrupt_status = SERCOM1->USART.INTFLAG.reg;
-
+	uint8_t interrupt_status = SERCOM1->USART.INTFLAG.reg;
+	
     if (interrupt_status & (SERCOM_USART_INTFLAG_DRE | SERCOM_USART_INTFLAG_TXC))
     {
         if (tx_len > 0)
         {
             SERCOM1->USART.DATA.reg = *tx_pointer++;
             tx_len--;
+			SERCOM1->USART.INTFLAG.reg = (SERCOM_USART_INTFLAG_TXC | SERCOM_USART_INTFLAG_DRE);
         }
         else 
         {
             /* We've transmitted all the data, turn off TX interrupts for now. */
-            SERCOM1->USART.INTENCLR.reg |= SERCOM_USART_INTFLAG_TXC;
+            SERCOM1->USART.INTENCLR.reg = (SERCOM_USART_INTENCLR_TXC | SERCOM_USART_INTFLAG_DRE);
         }
     }
 
     if (interrupt_status & SERCOM_USART_INTFLAG_RXC)
     {
-        read_callback(SERCOM1->USART.DATA.reg);
+		const uint8_t byte = SERCOM1->USART.DATA.reg;
+        read_callback(byte);
     }
 
-    SERCOM1->USART.INTFLAG.reg = interrupt_status;
 }
 
 hal_result_t hal_serial_init(hal_serial_init_t *init_struct)
@@ -207,7 +207,7 @@ hal_result_t hal_serial_init(hal_serial_init_t *init_struct)
         if (init_struct->read_event_cb)
         {
             read_callback = init_struct->read_event_cb;
-            SERCOM1->USART.INTENSET.reg |= SERCOM_USART_INTENSET_RXC;
+            SERCOM1->USART.INTENSET.reg = SERCOM_USART_INTENSET_RXC;
         }
 
         if (init_struct->write_event_cb)
@@ -289,6 +289,8 @@ hal_result_t hal_serial_transmit_blocking(const uint8_t *tx, const uint8_t len)
             {
                 /* Do nothing, wait for transmit flag to be set. */
             }
+
+            SERCOM1->USART.INTFLAG.reg |= (SERCOM_USART_INTFLAG_TXC | SERCOM_USART_INTFLAG_DRE);
         }
     }
 
@@ -352,7 +354,7 @@ hal_result_t hal_serial_transmit_non_blocking(const uint8_t *tx, const uint8_t l
         tx_len = len;
         tx_pointer = tx;
 
-        SERCOM1->USART.INTENSET.reg |= (SERCOM_USART_INTFLAG_TXC | SERCOM_USART_INTFLAG_DRE);
+        SERCOM1->USART.INTENSET.reg = (SERCOM_USART_INTFLAG_TXC | SERCOM_USART_INTFLAG_DRE);
     }
 
     return result;
