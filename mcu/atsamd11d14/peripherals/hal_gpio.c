@@ -98,11 +98,11 @@ hal_result_t hal_gpio_pin_init(hal_gpio_init_t *init_struct)
         switch (init_struct->pin.pin_mode)
         {
             case HAL_GPIO_INPUT:
-                PORT->Group[0].DIRCLR.reg |= (1u << init_struct->pin.pin);
+                PORT->Group[0].DIRCLR.reg = (1u << init_struct->pin.pin);
                 PORT->Group[0].PINCFG[init_struct->pin.pin].reg |= PORT_PINCFG_INEN;
                 break;
             case HAL_GPIO_OUTPUT_PUSH_PULL:
-                PORT->Group[0].DIRSET.reg |= (1u << init_struct->pin.pin);
+                PORT->Group[0].DIRSET.reg = (1u << init_struct->pin.pin);
                 break;
             case HAL_GPIO_OUTPUT_OPEN_DRAIN:
                 /* TODO: Init open drain. */
@@ -159,11 +159,11 @@ hal_result_t hal_gpio_pin_teardown(hal_gpio_pin_t *pin)
         switch (pin->pin_mode)
         {
             case HAL_GPIO_INPUT:
-                PORT->Group[0].DIRCLR.reg |= (1u << pin->pin);
+                PORT->Group[0].DIRCLR.reg = (1u << pin->pin);
                 PORT->Group[0].PINCFG[pin->pin].reg &= ~PORT_PINCFG_INEN;
                 break;
             case HAL_GPIO_OUTPUT_PUSH_PULL:
-                PORT->Group[0].DIRCLR.reg |= (1u << pin->pin);
+                PORT->Group[0].DIRCLR.reg = (1u << pin->pin);
                 break;
             case HAL_GPIO_OUTPUT_OPEN_DRAIN:
                 /* TODO: Clear output drain. */
@@ -207,11 +207,11 @@ hal_result_t hal_gpio_set_level(hal_gpio_pin_t *pin, hal_gpio_level_t level)
     {
         if (level == HAL_GPIO_HIGH)
         {
-            PORT->Group[0].OUTSET.reg |= (1u << pin->pin);
+            PORT->Group[0].OUTSET.reg = (1u << pin->pin);
         }
         else 
         {
-            PORT->Group[0].OUTCLR.reg |= (1u << pin->pin);
+            PORT->Group[0].OUTCLR.reg = (1u << pin->pin);
             
         }
         
