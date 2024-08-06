@@ -17,8 +17,6 @@ static volatile bool sercom_usart_enabled;
 
 static volatile uint8_t tx_len = 0;
 static const volatile uint8_t *tx_pointer;
-static volatile uint8_t rx_len = 0;
-static volatile uint8_t *rx_pointer;
 
 static hal_serial_read_cb_t read_callback;
 static hal_serial_write_cb_t write_callback;
