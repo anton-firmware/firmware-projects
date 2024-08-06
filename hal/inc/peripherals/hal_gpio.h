@@ -127,6 +127,19 @@ hal_result_t hal_gpio_pin_teardown(hal_gpio_pin_t *pin);
  */
 hal_result_t hal_gpio_set_level(hal_gpio_pin_t *pin, hal_gpio_level_t level);
 
+/** Toggle the state of a GPIO pin.
+ *
+ *  Toggles between #HAL_GPIO_LOW and #HAL_GPIO_HIGH.  
+ * 
+ *  \param[in] pin Pointer to a GPIO pin.
+ *  \param[in] level Pin level.
+ *
+ *  \retval #HAL_SUCCESS Pin state successfully toggled.
+ *  \retval #HAL_ERROR_PARAM_ERROR An invalid pin, port, or level was specified.
+ *  \retval #HAL_ERROR_REJECTED Pin state unable to be toggled due to a previous `hal_gpio_pin_init()` call not being made.
+ */
+hal_result_t hal_gpio_toggle_level(hal_gpio_pin_t *pin, hal_gpio_level_t level);
+
 /** Read the state of a GPIO pin.
  *
  *  \param[in] pin Pointer to a GPIO pin.
