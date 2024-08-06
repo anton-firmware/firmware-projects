@@ -272,6 +272,8 @@ hal_gpio_level_t hal_gpio_read_level(hal_gpio_pin_t *pin)
     else
     {
         PORT->Group[0].OUTTGL.reg = (1u << pin->pin);
+
+        result = HAL_SUCCESS;
     }
 
     return result;
