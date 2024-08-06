@@ -223,7 +223,7 @@ hal_result_t hal_gpio_set_level(hal_gpio_pin_t *pin, hal_gpio_level_t level)
 
 hal_result_t hal_gpio_toggle_level(hal_gpio_pin_t *pin)
 {
-    hal_result_t result = HAL_GPIO_INVALID;
+    hal_result_t result = HAL_ERROR_PARAM_ERROR;
 
     if (!pin)
     {
@@ -231,7 +231,7 @@ hal_result_t hal_gpio_toggle_level(hal_gpio_pin_t *pin)
     }
     else if (!is_pin_initialised(pin))
     {
-        /* Do nothing, the given pin is not initialised. */
+        result = HAL_ERROR_REJECTED;
     }
     else if (!is_valid_port(pin))
     {
