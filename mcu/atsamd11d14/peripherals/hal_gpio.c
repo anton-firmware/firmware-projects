@@ -243,7 +243,9 @@ hal_result_t hal_gpio_toggle_level(hal_gpio_pin_t *pin)
     }
     else
     {
-        result = (PORT->Group[0].IN.reg & (1u << pin->pin)) ? HAL_GPIO_HIGH : HAL_GPIO_LOW;
+        PORT->Group[0].OUTTGL.reg = (1u << pin->pin);
+
+        result = HAL_SUCCESS;
     }
 
     return result;
@@ -271,9 +273,7 @@ hal_gpio_level_t hal_gpio_read_level(hal_gpio_pin_t *pin)
     }
     else
     {
-        PORT->Group[0].OUTTGL.reg = (1u << pin->pin);
-
-        result = HAL_SUCCESS;
+        result = (PORT->Group[0].IN.reg & (1u << pin->pin)) ? HAL_GPIO_HIGH : HAL_GPIO_LOW;
     }
 
     return result;
