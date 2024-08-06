@@ -223,7 +223,7 @@ hal_result_t hal_gpio_set_level(hal_gpio_pin_t *pin, hal_gpio_level_t level)
 
 hal_result_t hal_gpio_toggle_level(hal_gpio_pin_t *pin)
 {
-    hal_gpio_level_t result = HAL_GPIO_INVALID;
+    hal_result_t result = HAL_GPIO_INVALID;
 
     if (!pin)
     {
