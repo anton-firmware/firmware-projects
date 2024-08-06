@@ -138,7 +138,7 @@ hal_result_t hal_gpio_set_level(hal_gpio_pin_t *pin, hal_gpio_level_t level);
  *  \retval #HAL_ERROR_PARAM_ERROR An invalid pin, port, or level was specified.
  *  \retval #HAL_ERROR_REJECTED Pin state unable to be toggled due to a previous `hal_gpio_pin_init()` call not being made.
  */
-hal_result_t hal_gpio_toggle_level(hal_gpio_pin_t *pin, hal_gpio_level_t level);
+hal_result_t hal_gpio_toggle_level(hal_gpio_pin_t *pin);
 
 /** Read the state of a GPIO pin.
  *
