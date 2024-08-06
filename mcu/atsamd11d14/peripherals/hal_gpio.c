@@ -221,6 +221,36 @@ hal_result_t hal_gpio_set_level(hal_gpio_pin_t *pin, hal_gpio_level_t level)
     return result;
 }
 
+hal_result_t hal_gpio_toggle_level(hal_gpio_pin_t *pin)
+{
+    hal_result_t result = HAL_ERROR_PARAM_ERROR;
+
+    if (!pin)
+    {
+        /* Do nothing, the pin pointer is invalid. */
+    }
+    else if (!is_pin_initialised(pin))
+    {
+        result = HAL_ERROR_REJECTED;
+    }
+    else if (!is_valid_port(pin))
+    {
+        /* Do nothing, the port is invalid. */
+    }
+    else if (!is_valid_pin(pin))
+    {
+        /* Do nothing, the pin is invalid. */
+    }
+    else
+    {
+        PORT->Group[0].OUTTGL.reg = (1u << pin->pin);
+
+        result = HAL_SUCCESS;
+    }
+
+    return result;
+}
+
 hal_gpio_level_t hal_gpio_read_level(hal_gpio_pin_t *pin)
 {
     hal_gpio_level_t result = HAL_GPIO_INVALID;
