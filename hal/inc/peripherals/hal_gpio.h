@@ -132,7 +132,6 @@ hal_result_t hal_gpio_set_level(hal_gpio_pin_t *pin, hal_gpio_level_t level);
  *  Toggles between #HAL_GPIO_LOW and #HAL_GPIO_HIGH.  
  * 
  *  \param[in] pin Pointer to a GPIO pin.
- *  \param[in] level Pin level.
  *
  *  \retval #HAL_SUCCESS Pin state successfully toggled.
  *  \retval #HAL_ERROR_PARAM_ERROR An invalid pin, port, or level was specified.
