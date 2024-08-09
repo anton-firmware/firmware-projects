@@ -1,3 +1,7 @@
+vx.x
+---
+- New timer header.
+
 v0.4
 ---
 - Fixes to serial header.
