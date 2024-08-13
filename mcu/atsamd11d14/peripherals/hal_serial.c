@@ -10,8 +10,12 @@
 #include "hal_serial.h"
 #include "sam.h"
 
-#define F_REF 1000000 /* Reference frequency. */
-#define S     16      /* Samples per bit. */
+#define F_REF 1000000 /* Reference frequency. Unused at the moment due to floating point library. */
+#define S     16      /* Samples per bit. Unused at the moment due to floating point library. */
+
+#define BAUD_REG_4800 60503u
+#define BAUD_REG_9600 55469u
+#define BAUD_REG_115200 0u /* Unused at current reference frequency.*/
 
 static volatile bool sercom_usart_enabled;
 
@@ -65,6 +69,7 @@ static inline void setup_sercom_1_gclk(void)
     while (GCLK->STATUS.reg & GCLK_STATUS_SYNCBUSY);
 }
 
+#if 0
 /** Helper function to calculate the value of the SERCOM BAUD register.
  * 
  * See page 434 ATSAMD11 reference manual for baud rate calulcation.
@@ -82,6 +87,7 @@ static inline uint16_t calculate_baud_register(uint32_t baud_rate)
 {
     return (uint16_t)(65536.0f * (1.0f - (float)(S) * ((float)baud_rate / (float)F_REF)));
 }
+#endif
 
 /** ISR for the SERCOM1 peripheral. */
 void SERCOM1_Handler(void)
@@ -189,14 +195,13 @@ hal_result_t hal_serial_init(hal_serial_init_t *init_struct)
             // TODO: Precalulcate these values because the floating point library is FUCKING MASSIVE
 
             case HAL_SERIAL_BAUD_RATE_4800:
-                SERCOM1->USART.BAUD.reg = calculate_baud_register(4800);
+                SERCOM1->USART.BAUD.reg = BAUD_REG_4800;
                 break;
             case HAL_SERIAL_BAUD_RATE_9600:
-                SERCOM1->USART.BAUD.reg = calculate_baud_register(9600);
+                SERCOM1->USART.BAUD.reg = BAUD_REG_9600;
                 break;
+            /* TODO: Change reference freq to make 115200 usable. */
             case HAL_SERIAL_BAUD_RATE_115200:
-                SERCOM1->USART.BAUD.reg = calculate_baud_register(115200);
-                break;
             default:
                 /* Cry, invalid baud rate. */
                 break;
