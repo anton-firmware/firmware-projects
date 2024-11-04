@@ -8,6 +8,8 @@
  * \warning Currently only supports a simple delay.
  */
 
+#include <stdint.h>
+
 #include "hal_result.h"
 
 /** Timer 'tick' event call-back declaration. */
@@ -16,7 +18,7 @@ typedef void (*hal_timer_event_cb_t)(void);
 /** Structure representing timer initialisation. */
 typedef struct hal_timer_init
 {
-    uint16_t        period;         /*!< The period of the timer in seconds. */
+    uint16_t             period;    /*!< The period of the timer in seconds. */
     hal_timer_event_cb_t call_back; /*!< Callback for timer tick. */
 
 } hal_timer_init_t;
