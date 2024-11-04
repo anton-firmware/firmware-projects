@@ -81,6 +81,6 @@ hal_result_t hal_timer_start(void);
  *  \retval #HAL_ERROR_REJECTED Delay failed due to a previous `hal_timer_init()` call not being made.
  *  \retval #HAL_ERROR_PERIPHERAL_ERROR Initialisation failed due to a peripheral error.
  */
-hal_result_t hal_timer_start(void);
+hal_result_t hal_timer_stop(void);
 
 #endif /* HAL_TIMER_H */
