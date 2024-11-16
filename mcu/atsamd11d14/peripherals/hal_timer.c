@@ -23,7 +23,7 @@ void SysTick_Handler(void)
     {
         callback();
     }
-    
+
     sys_tick_count++;
 }
 
@@ -55,6 +55,8 @@ hal_result_t hal_timer_init(hal_timer_init_t *init_struct)
         {
             callback = init_struct->call_back;
         }
+
+        result =  HAL_SUCCESS;
     }
     
     return result;
