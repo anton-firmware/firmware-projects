@@ -13,15 +13,12 @@
 
 #define DEFAULT_SYSTEM_CLOCK_HZ 1000000u
 
-// /** Structure representing timer initialisation. */
-// typedef struct hal_timer_init
-// {
-//     uint16_t             period;    /*!< The period of the timer in seconds. */
-//     hal_timer_event_cb_t call_back; /*!< Callback for timer tick. */
-
-// } hal_timer_init_t;
-
 static hal_timer_event_cb_t callback;
+
+void SysTick_Handler(void)
+{
+    callback();
+}
 
 hal_result_t hal_timer_init(hal_timer_init_t *init_struct)
 {
