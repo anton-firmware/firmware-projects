@@ -19,7 +19,11 @@ static uint32_t period;
 
 void SysTick_Handler(void)
 {
-    callback();
+    if (callback)
+    {
+        callback();
+    }
+    
     sys_tick_count++;
 }
 
@@ -29,22 +33,31 @@ hal_result_t hal_timer_init(hal_timer_init_t *init_struct)
      * The correct SYSTICK calibration value is 0x40000000. 
      * See 38.2.4 Device ATSAMD11 reference manual.*/
 
-    const uint32_t reload_value = (DEFAULT_SYSTEM_CLOCK_HZ / period) - 1u;
-    period = init_struct->period;
+    hal_result_t result = HAL_ERROR_PARAM_ERROR;
 
-    /* SYSTICK using processor clock, enable tick interrupt. */
-    SysTick->CTRL |= (SysTick_CTRL_CLKSOURCE_Msk | SysTick_CTRL_TICKINT_Msk);
-
-    /* SYSTICK load value according to passed period. */
-    SysTick->LOAD = reload_value;
-
-    /* Assign callback if present. */
-    if (init_struct->call_back)
+    /* Timer period of 0 is invalid. */
+    if (init_struct->period != 0)
     {
-        callback = init_struct->call_back;
+        period = init_struct->period;
+        const uint32_t reload_value = (DEFAULT_SYSTEM_CLOCK_HZ / period) - 1u;
+
+        /* SYSTICK using processor clock, enable tick interrupt. */
+        SysTick->CTRL |= (SysTick_CTRL_CLKSOURCE_Msk | SysTick_CTRL_TICKINT_Msk);
+
+        /* SYSTICK load value according to passed period. */
+        SysTick->LOAD = reload_value;
+
+        /* Reset the SysTick to 0. */
+        SysTick->VAL = 0;
+
+        /* Assign callback if present. */
+        if (init_struct->call_back)
+        {
+            callback = init_struct->call_back;
+        }
     }
     
-    return HAL_SUCCESS;
+    return result;
 }
 
 hal_result_t hal_timer_clock_init(void)
