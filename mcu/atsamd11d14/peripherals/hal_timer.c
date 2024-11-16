@@ -14,10 +14,13 @@
 #define DEFAULT_SYSTEM_CLOCK_HZ 1000000u
 
 static hal_timer_event_cb_t callback;
+static volatile uint32_t sys_tick_count;
+static uint32_t period;
 
 void SysTick_Handler(void)
 {
     callback();
+    sys_tick_count++;
 }
 
 hal_result_t hal_timer_init(hal_timer_init_t *init_struct)
@@ -26,7 +29,8 @@ hal_result_t hal_timer_init(hal_timer_init_t *init_struct)
      * The correct SYSTICK calibration value is 0x40000000. 
      * See 38.2.4 Device ATSAMD11 reference manual.*/
 
-    const uint32_t reload_value = (DEFAULT_SYSTEM_CLOCK_HZ / init_struct->period) - 1u;
+    const uint32_t reload_value = (DEFAULT_SYSTEM_CLOCK_HZ / period) - 1u;
+    period = init_struct->period;
 
     /* SYSTICK using processor clock, enable tick interrupt. */
     SysTick->CTRL |= (SysTick_CTRL_CLKSOURCE_Msk | SysTick_CTRL_TICKINT_Msk);
@@ -51,7 +55,11 @@ hal_result_t hal_timer_clock_init(void)
 
 hal_result_t hal_timer_teardown(void)
 {
+    /* Make sure the timer is disabled. */
+    SysTick->CTRL &= ~SysTick_CTRL_ENABLE_Msk;
 
+    /* Return clock source and disable interrupt. */
+    SysTick->CTRL &= ~(SysTick_CTRL_CLKSOURCE_Msk | SysTick_CTRL_TICKINT_Msk);
 }
 
 hal_result_t hal_timer_clock_teardown(void)
@@ -62,7 +70,13 @@ hal_result_t hal_timer_clock_teardown(void)
 
 hal_result_t hal_timer_delay(uint16_t ms)
 {
+    uint32_t start = sys_tick_count;
+    uint32_t ticks_in_delay = ((ms * period) / 1000u);
 
+    while ((sys_tick_count - start) < ticks_in_delay)
+    {
+        /* Blocking delay. */
+    }
 }
 
 hal_result_t hal_timer_start(void)
