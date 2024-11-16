@@ -3,6 +3,7 @@ vx.x
 - Second alpha release, includes: 
 1. Serial driver implementation.
 2. GPIO driver toggle feature.
+3. Simple timer implementation.
 
 v0.1
 ---
