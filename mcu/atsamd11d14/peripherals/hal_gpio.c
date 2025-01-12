@@ -73,6 +73,10 @@ static inline void set_alternate_function(hal_gpio_pin_t *pin, alt_func_t alt_fu
     }
 }
 
+/** Sets the pull up/pull down function for a GPIO pin.
+ * 
+ * \param[in] pin The pin to set the pull up/pull down function of.
+ */
 static inline void set_pull_up_pull_down (hal_gpio_pin_t *pin)
 {
     if (pin->pin_mode)
