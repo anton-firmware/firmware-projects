@@ -115,6 +115,7 @@ hal_result_t hal_gpio_pin_init(hal_gpio_init_t *init_struct)
             case HAL_GPIO_INPUT:
                 PORT->Group[0].DIRCLR.reg = (1u << init_struct->pin.pin);
                 PORT->Group[0].PINCFG[init_struct->pin.pin].reg |= PORT_PINCFG_INEN;
+                set_pull_up_pull_down(&init_struct->pin);
                 break;
             case HAL_GPIO_OUTPUT_PUSH_PULL:
                 PORT->Group[0].DIRSET.reg = (1u << init_struct->pin.pin);
@@ -176,6 +177,7 @@ hal_result_t hal_gpio_pin_teardown(hal_gpio_pin_t *pin)
             case HAL_GPIO_INPUT:
                 PORT->Group[0].DIRCLR.reg = (1u << pin->pin);
                 PORT->Group[0].PINCFG[pin->pin].reg &= ~PORT_PINCFG_INEN;
+                PORT->Group[0].PINCFG[pin->pin].bit.PULLEN = 0u;
                 break;
             case HAL_GPIO_OUTPUT_PUSH_PULL:
                 PORT->Group[0].DIRCLR.reg = (1u << pin->pin);
