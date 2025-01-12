@@ -65,11 +65,11 @@ static inline void set_alternate_function(hal_gpio_pin_t *pin, alt_func_t alt_fu
     
     if (pin->pin & 0x1u)
     {
-        PORT->Group[0uu].PMUX[alt_func_group].bit.PMUXO = alt_func;
+        PORT->Group[0u].PMUX[alt_func_group].bit.PMUXO = alt_func;
     }
     else 
     {
-        PORT->Group[0uu].PMUX[alt_func_group].bit.PMUXE = alt_func;
+        PORT->Group[0u].PMUX[alt_func_group].bit.PMUXE = alt_func;
     }
 }
 
