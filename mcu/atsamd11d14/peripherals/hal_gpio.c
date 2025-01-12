@@ -73,6 +73,21 @@ static inline void set_alternate_function(hal_gpio_pin_t *pin, alt_func_t alt_fu
     }
 }
 
+static inline void set_pull_up_pull_down (hal_gpio_pin_t *pin)
+{
+    if (pin->pin_mode)
+    {
+        if (pin->pin_mode == HAL_GPIO_PULL_UP)
+        {
+            PORT->Group[0].PINCFG[pin->pin].bit.PULLEN = 1u;
+        }
+        else
+        {
+            PORT->Group[0].PINCFG[pin->pin].bit.PULLEN = 0u;
+        }
+    }
+}
+
 hal_result_t hal_gpio_pin_init(hal_gpio_init_t *init_struct)
 {
     hal_result_t result = HAL_ERROR_PERIPHERAL_ERROR;
