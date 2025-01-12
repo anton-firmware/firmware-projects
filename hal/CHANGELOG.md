@@ -1,6 +1,8 @@
-vx.x
+v0.5
 ---
 - New timer header.
+- Updates to GPIO header.
+1. Pull up/pull down in GPIO struct.
 
 v0.4
 ---
