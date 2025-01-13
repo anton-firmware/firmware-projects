@@ -79,9 +79,9 @@ static inline void set_alternate_function(hal_gpio_pin_t *pin, alt_func_t alt_fu
  */
 static inline void set_pull_up_pull_down (hal_gpio_pin_t *pin)
 {
-    if (pin->pin_mode)
+    if (pin->pull_up_mode)
     {
-        if (pin->pin_mode == HAL_GPIO_PULL_UP)
+        if (pin->pull_up_mode == HAL_GPIO_PULL_UP)
         {
             PORT->Group[0u].PINCFG[pin->pin].bit.PULLEN = 1u;
         }
