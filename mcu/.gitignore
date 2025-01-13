@@ -1,0 +1,7 @@
+# Directories
+.vscode
+tmp
+
+# File extensions
+*.a
+*.o

@@ -1,0 +1,6 @@
+[submodule "hal"]
+	path = hal
+	url = https://github.com/antonnikitin97/hal/
+[submodule "packs/cmsis5"]
+	path = packs/cmsis5
+	url = https://github.com/ARM-software/CMSIS_5
