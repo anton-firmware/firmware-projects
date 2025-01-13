@@ -12,9 +12,9 @@
     <OutputFileName>$(MSBuildProjectName)</OutputFileName>
     <OutputFileExtension>.elf</OutputFileExtension>
     <OutputDirectory>$(MSBuildProjectDirectory)\$(Configuration)</OutputDirectory>
-    <AssemblyName>project_buran_fw</AssemblyName>
-    <Name>project_buran_fw</Name>
-    <RootNamespace>project_buran_fw</RootNamespace>
+    <AssemblyName>Test</AssemblyName>
+    <Name>Buran FW</Name>
+    <RootNamespace>Test</RootNamespace>
     <ToolchainFlavour>Native</ToolchainFlavour>
     <KeepTimersRunning>true</KeepTimersRunning>
     <OverrideVtor>false</OverrideVtor>
@@ -36,18 +36,42 @@
         <documentation help="" />
         <offline-documentation help="" />
         <dependencies>
-          <content-extension eid="atmel.asf" uuidref="Atmel.ASF" version="3.50.0" />
+          <content-extension eid="atmel.asf" uuidref="Atmel.ASF" version="3.49.1" />
         </dependencies>
       </framework-data>
     </AsfFrameworkConfig>
-    <avrtool>com.atmel.avrdbg.tool.atmelice</avrtool>
-    <avrtoolserialnumber>J42700034450</avrtoolserialnumber>
+    <avrtool>com.atmel.avrdbg.tool.samice</avrtool>
+    <avrtoolserialnumber>852001713</avrtoolserialnumber>
     <avrdeviceexpectedsignature>0x10030103</avrdeviceexpectedsignature>
+    <custom>
+      <ToolOptions>
+        <InterfaceProperties>
+        </InterfaceProperties>
+        <InterfaceName>
+        </InterfaceName>
+      </ToolOptions>
+      <ToolType>custom</ToolType>
+      <ToolNumber>
+      </ToolNumber>
+      <ToolName>Custom Programming Tool</ToolName>
+    </custom>
     <avrtoolinterface>SWD</avrtoolinterface>
+    <com_atmel_avrdbg_tool_edbg>
+      <ToolOptions>
+        <InterfaceProperties>
+          <SwdClock>2000000</SwdClock>
+        </InterfaceProperties>
+        <InterfaceName>SWD</InterfaceName>
+      </ToolOptions>
+      <ToolType>com.atmel.avrdbg.tool.edbg</ToolType>
+      <ToolNumber>ATML2178051800002829</ToolNumber>
+      <ToolName>EDBG</ToolName>
+    </com_atmel_avrdbg_tool_edbg>
+    <avrtoolinterfaceclock>4000000</avrtoolinterfaceclock>
     <com_atmel_avrdbg_tool_atmelice>
       <ToolOptions>
         <InterfaceProperties>
-          <SwdClock>100000</SwdClock>
+          <SwdClock>2000000</SwdClock>
         </InterfaceProperties>
         <InterfaceName>SWD</InterfaceName>
       </ToolOptions>
@@ -55,10 +79,17 @@
       <ToolNumber>J42700034450</ToolNumber>
       <ToolName>Atmel-ICE</ToolName>
     </com_atmel_avrdbg_tool_atmelice>
-    <avrtoolinterfaceclock>100000</avrtoolinterfaceclock>
-    <UseGdbCustomPath>False</UseGdbCustomPath>
-    <GdbCustomPath>C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\arm\arm-gnu-toolchain\bin\arm-none-eabi-gdb.exe</GdbCustomPath>
-    <UseGdb>False</UseGdb>
+    <com_atmel_avrdbg_tool_samice>
+      <ToolOptions>
+        <InterfaceProperties>
+          <SwdClock>4000000</SwdClock>
+        </InterfaceProperties>
+        <InterfaceName>SWD</InterfaceName>
+      </ToolOptions>
+      <ToolType>com.atmel.avrdbg.tool.samice</ToolType>
+      <ToolNumber>852001713</ToolNumber>
+      <ToolName>J-Link</ToolName>
+    </com_atmel_avrdbg_tool_samice>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <ToolchainSettings>
@@ -89,6 +120,8 @@
   </armgcc.linker.libraries.Libraries>
   <armgcc.linker.libraries.LibrarySearchPaths>
     <ListValues>
+      <Value>D:\mcu</Value>
+      <Value>D:\mcu\tmp</Value>
       <Value>%24(ProjectDir)\Device_Startup</Value>
     </ListValues>
   </armgcc.linker.libraries.LibrarySearchPaths>
@@ -124,26 +157,37 @@
   </armgcc.compiler.symbols.DefSymbols>
   <armgcc.compiler.directories.IncludePaths>
     <ListValues>
+      <Value>../../../mcu/hal/inc</Value>
+      <Value>../../../mcu/hal/inc/core</Value>
+      <Value>../../../mcu/hal/inc/peripherals</Value>
       <Value>%24(PackRepoDir)\arm\CMSIS\5.4.0\CMSIS\Core\Include\</Value>
       <Value>%24(PackRepoDir)\atmel\SAMD11_DFP\1.1.81\include</Value>
     </ListValues>
   </armgcc.compiler.directories.IncludePaths>
-  <armgcc.compiler.optimization.level>Optimize debugging experience (-Og)</armgcc.compiler.optimization.level>
   <armgcc.compiler.optimization.PrepareFunctionsForGarbageCollection>True</armgcc.compiler.optimization.PrepareFunctionsForGarbageCollection>
   <armgcc.compiler.optimization.DebugLevel>Maximum (-g3)</armgcc.compiler.optimization.DebugLevel>
   <armgcc.compiler.warnings.AllWarnings>True</armgcc.compiler.warnings.AllWarnings>
+  <armgcc.compiler.miscellaneous.Verbose>True</armgcc.compiler.miscellaneous.Verbose>
   <armgcc.linker.libraries.Libraries>
     <ListValues>
       <Value>libm</Value>
+      <Value>libATSAMD11D14AS.a</Value>
     </ListValues>
   </armgcc.linker.libraries.Libraries>
   <armgcc.linker.libraries.LibrarySearchPaths>
     <ListValues>
+      <Value>D:\mcu\tmp</Value>
       <Value>%24(ProjectDir)\Device_Startup</Value>
     </ListValues>
   </armgcc.linker.libraries.LibrarySearchPaths>
   <armgcc.linker.optimization.GarbageCollectUnusedSections>True</armgcc.linker.optimization.GarbageCollectUnusedSections>
+  <armgcc.linker.memorysettings.ExternalRAM />
   <armgcc.linker.miscellaneous.LinkerFlags>-Tsamd11d14as_flash.ld</armgcc.linker.miscellaneous.LinkerFlags>
+  <armgcc.linker.miscellaneous.OtherOptions>
+    <ListValues>
+      <Value>--verbose</Value>
+    </ListValues>
+  </armgcc.linker.miscellaneous.OtherOptions>
   <armgcc.assembler.general.IncludePaths>
     <ListValues>
       <Value>%24(PackRepoDir)\arm\CMSIS\5.4.0\CMSIS\Core\Include\</Value>
@@ -162,33 +206,33 @@
     </ToolchainSettings>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="buran_defs\buran.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="Device_Startup\startup_samd11.c">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="Device_Startup\system_samd11.c">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="GPIO.c">
+    <Compile Include="hal\hal.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="GPIO.h">
+    <Compile Include="hal\hal_result.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="i2c.c">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="i2c.h">
+    <Compile Include="hal\peripherals\hal_gpio.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="main.c">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="main.h">
-      <SubType>compile</SubType>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Device_Startup\" />
+    <Folder Include="hal" />
+    <Folder Include="hal\peripherals" />
+    <Folder Include="buran_defs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Device_Startup\samd11d14as_flash.ld">
