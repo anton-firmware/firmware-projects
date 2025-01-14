@@ -1,7 +1,10 @@
 # Directories
 .vscode
 tmp
+Debug
 
 # File extensions
 *.a
 *.o
+*.log
+*.config
