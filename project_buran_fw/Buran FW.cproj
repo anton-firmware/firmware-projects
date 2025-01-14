@@ -157,11 +157,11 @@
   </armgcc.compiler.symbols.DefSymbols>
   <armgcc.compiler.directories.IncludePaths>
     <ListValues>
-      <Value>../../../mcu/hal/inc</Value>
-      <Value>../../../mcu/hal/inc/core</Value>
-      <Value>../../../mcu/hal/inc/peripherals</Value>
       <Value>%24(PackRepoDir)\arm\CMSIS\5.4.0\CMSIS\Core\Include\</Value>
       <Value>%24(PackRepoDir)\atmel\SAMD11_DFP\1.1.81\include</Value>
+      <Value>../../hal/inc</Value>
+      <Value>../../hal/inc/core</Value>
+      <Value>../../hal/inc/peripherals</Value>
     </ListValues>
   </armgcc.compiler.directories.IncludePaths>
   <armgcc.compiler.optimization.PrepareFunctionsForGarbageCollection>True</armgcc.compiler.optimization.PrepareFunctionsForGarbageCollection>
@@ -171,12 +171,10 @@
   <armgcc.linker.libraries.Libraries>
     <ListValues>
       <Value>libm</Value>
-      <Value>libATSAMD11D14AS.a</Value>
     </ListValues>
   </armgcc.linker.libraries.Libraries>
   <armgcc.linker.libraries.LibrarySearchPaths>
     <ListValues>
-      <Value>D:\mcu\tmp</Value>
       <Value>%24(ProjectDir)\Device_Startup</Value>
     </ListValues>
   </armgcc.linker.libraries.LibrarySearchPaths>
@@ -206,6 +204,22 @@
     </ToolchainSettings>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="..\mcu\atsamd11d14\core\hal_core_interrupts.c">
+      <SubType>compile</SubType>
+      <Link>mcu\core\hal_core_interrupts.c</Link>
+    </Compile>
+    <Compile Include="..\mcu\atsamd11d14\peripherals\hal_gpio.c">
+      <SubType>compile</SubType>
+      <Link>mcu\peripherals\hal_gpio.c</Link>
+    </Compile>
+    <Compile Include="..\mcu\atsamd11d14\peripherals\hal_serial.c">
+      <SubType>compile</SubType>
+      <Link>mcu\peripherals\hal_serial.c</Link>
+    </Compile>
+    <Compile Include="..\mcu\atsamd11d14\peripherals\hal_timer.c">
+      <SubType>compile</SubType>
+      <Link>mcu\peripherals\hal_timer.c</Link>
+    </Compile>
     <Compile Include="buran_defs\buran.h">
       <SubType>compile</SubType>
     </Compile>
@@ -215,24 +229,16 @@
     <Compile Include="Device_Startup\system_samd11.c">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="hal\hal.h">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="hal\hal_result.h">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="hal\peripherals\hal_gpio.h">
-      <SubType>compile</SubType>
-    </Compile>
     <Compile Include="main.c">
       <SubType>compile</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Device_Startup\" />
-    <Folder Include="hal" />
-    <Folder Include="hal\peripherals" />
     <Folder Include="buran_defs" />
+    <Folder Include="mcu" />
+    <Folder Include="mcu\core" />
+    <Folder Include="mcu\peripherals" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Device_Startup\samd11d14as_flash.ld">
