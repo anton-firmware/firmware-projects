@@ -1,6 +1,0 @@
-[submodule "mcu"]
-	path = mcu
-	url = https://github.com/antonnikitin97/mcu
-[submodule "hal"]
-	path = hal
-	url = https://github.com/antonnikitin97/hal
