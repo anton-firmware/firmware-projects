@@ -1,3 +1,0 @@
-[submodule "mcu/packs/cmsis5"]
-	path = mcu/packs/cmsis5
-	url = https://github.com/ARM-software/CMSIS_5
