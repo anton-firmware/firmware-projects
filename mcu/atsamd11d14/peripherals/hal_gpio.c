@@ -92,6 +92,27 @@ static inline void set_pull_up_pull_down (hal_gpio_pin_t *pin)
     }
 }
 
+static inline void set_input_trigger_type(hal_gpio_pin_t *pin)
+{
+    if (pin->trigger)
+    {
+        if (pin->pull_up_mode == HAL_GPIO_RISING)
+        {
+            PORT->Group[0u].PINCFG[pin->pin].bit.PULLEN = 1u;
+        }
+        else
+        {
+            PORT->Group[0u].PINCFG[pin->pin].bit.PULLEN = 0u;
+        }
+    }   
+}
+
+static inline void initialise_external_interrupt_controller(void)
+{
+    PM->APBAMASK.reg |= PM_APBAMASK_EIC;
+	EIC->CONFIG[]
+}
+
 hal_result_t hal_gpio_pin_init(hal_gpio_init_t *init_struct)
 {
     hal_result_t result = HAL_ERROR_PERIPHERAL_ERROR;
@@ -120,6 +141,7 @@ hal_result_t hal_gpio_pin_init(hal_gpio_init_t *init_struct)
                 PORT->Group[0u].DIRCLR.reg = (1u << init_struct->pin.pin);
                 PORT->Group[0u].PINCFG[init_struct->pin.pin].reg |= PORT_PINCFG_INEN;
                 set_pull_up_pull_down(&init_struct->pin);
+                set_input_trigger_type(&init_struct->pin);
                 break;
             case HAL_GPIO_OUTPUT_PUSH_PULL:
                 PORT->Group[0u].DIRSET.reg = (1u << init_struct->pin.pin);
