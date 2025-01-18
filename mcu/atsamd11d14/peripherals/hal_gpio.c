@@ -4,6 +4,8 @@
 #include "hal_gpio.h"
 #include "sam.h"
 
+static hal_gpio_pin_t external_interrupt_pins[7u];
+
 static uint32_t initialised_pins_bitmap = 0x00000000u;
 
 #if defined(__SAMD11C14A__) || defined(__ATSAMD11C14A__)
@@ -107,10 +109,41 @@ static inline void set_input_trigger_type(hal_gpio_pin_t *pin)
     }   
 }
 
+/** Helper function to set up the clock source for the EIC peripheral.
+ * 
+ * In order to set a generic clock, we do a 16 bit write of the configurations 
+ * and the ID, see page 99 of ATSAMD11 reference manual.
+ */
+static inline void setup_eic_gclk(void)
+{
+    uint16_t clk_ctl_reg_value = 0;
+
+    /* Set the EIC core clock to be Generic Clock Generator 0 (Internal 8MHz oscilator). 
+     * Note: On reset, the OSC8M is fed through a divide by 8 step, so this clock is actually 1MHz. 
+     */
+    clk_ctl_reg_value |= (GCLK_CLKCTRL_ID_EIC | GCLK_CLKCTRL_CLKEN | GCLK_CLKCTRL_GEN_GCLK0);
+
+    GCLK->CLKCTRL.reg = clk_ctl_reg_value; 
+
+    /* Wait for syncronisation. */
+    while (GCLK->STATUS.reg & GCLK_STATUS_SYNCBUSY);
+}
+
 static inline void initialise_external_interrupt_controller(void)
 {
     PM->APBAMASK.reg |= PM_APBAMASK_EIC;
-	EIC->CONFIG[]
+	/* We're using filtering, so enable GCLK, see 20.6.2.1 Initialization ATSAMD11 reference manual. */
+	setup_eic_gclk();
+	EIC->CTRL.bit.ENABLE = 1u;
+	
+    /* Wait for syncronisation. */
+	while (EIC->STATUS.reg & EIC_STATUS_SYNCBUSY);
+}
+
+static inline void teardown_external_interrupt_controller(void)
+{
+    
+	PM->APBAMASK.reg &= ~PM_APBAMASK_EIC;
 }
 
 hal_result_t hal_gpio_pin_init(hal_gpio_init_t *init_struct)
