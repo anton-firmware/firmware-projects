@@ -39,7 +39,7 @@ hal_result_t hal_timer_init(hal_timer_init_t *init_struct)
     if (init_struct->period != 0)
     {
         period = init_struct->period;
-        const uint32_t reload_value = (DEFAULT_SYSTEM_CLOCK_HZ / period) - 1u;
+        const uint32_t reload_value = (DEFAULT_SYSTEM_CLOCK_HZ / (1000u / period)) - 1u;
 
         /* SYSTICK using processor clock, enable tick interrupt. */
         SysTick->CTRL |= (SysTick_CTRL_CLKSOURCE_Msk | SysTick_CTRL_TICKINT_Msk);
@@ -92,6 +92,11 @@ hal_result_t hal_timer_delay(uint16_t ms)
     {
         /* Blocking delay. */
     }
+}
+
+uint32_t hal_timer_get_tick(void)
+{
+	return sys_tick_count;
 }
 
 hal_result_t hal_timer_start(void)
