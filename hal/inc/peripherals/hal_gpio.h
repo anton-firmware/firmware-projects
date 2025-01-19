@@ -1,6 +1,8 @@
 #ifndef HAL_GPIO_H
 #define HAL_GPIO_H
 
+#include <stdint.h>
+
 /** \file
  *
  * File containing definitions for GPIO functions.
