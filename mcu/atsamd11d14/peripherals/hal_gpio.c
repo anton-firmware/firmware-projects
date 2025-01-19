@@ -9,7 +9,7 @@
 #define EXTERNAL_INTERRUPT_LINES              7u
 #define PINS_ON_MCU                           32u
 #define EXTERNAL_INTERRUPT_ALTERNATE_FUNCTION 0x00u
-#define BUTTON_DEBOUNCING_THRESHOLD           125u
+#define BUTTON_DEBOUNCING_THRESHOLD           22u
 
 static hal_gpio_trigger_event_t external_interrupt_pins[EXTERNAL_INTERRUPT_LINES];
 
@@ -185,7 +185,7 @@ static inline void teardown_external_interrupt_controller(void)
  */
 static inline void set_input_trigger_type(hal_gpio_pin_t *pin, hal_gpio_trigger_event_t callback)
 {
-	if (pin->trigger)
+	if (pin->trigger && callback)
 	{
 		const uint8_t external_interrupt_line = pin_external_line_map[pin->pin];
 		/* Set bit 4 to 1, FILTEN. */
