@@ -3,13 +3,18 @@
 #include <stdint.h>
 
 #include "hal_gpio.h"
+#include "hal_timer.h"
 #include "sam.h"
 
 #define EXTERNAL_INTERRUPT_LINES              7u
 #define PINS_ON_MCU                           32u
 #define EXTERNAL_INTERRUPT_ALTERNATE_FUNCTION 0x00u
+#define BUTTON_DEBOUNCING_THRESHOLD           125u
 
-static hal_gpio_pin_t external_interrupt_pins[EXTERNAL_INTERRUPT_LINES];
+static hal_gpio_trigger_event_t external_interrupt_pins[EXTERNAL_INTERRUPT_LINES];
+
+static volatile uint32_t last_interrupt_time;
+static volatile uint32_t current_interrupt_time;
 
 /* Array mapping pin number to external interrupt lines. Some pins map to the same interrupt line. 
    See Table 6-1. PORT Function Multiplexing. */
@@ -108,7 +113,7 @@ static inline void set_alternate_function(hal_gpio_pin_t *pin, alt_func_t alt_fu
 {
     const uint8_t alt_func_group = pin->pin >> 1u;
 	
-    PORT->Group[0u].PINCFG[pin.pin].bit.PMUXEN = 1u;
+    PORT->Group[0u].PINCFG[pin->pin].bit.PMUXEN = 1u;
     
     if (pin->pin & 0x1u)
     {
@@ -159,6 +164,7 @@ static inline void setup_eic_gclk(void)
     while (GCLK->STATUS.reg & GCLK_STATUS_SYNCBUSY);
 }
 
+/** Enables the external interrupt controller (EIC). */
 static inline void enable_external_interrupt_controller(void)
 {
 	EIC->CTRL.bit.ENABLE = 1u;
@@ -166,30 +172,107 @@ static inline void enable_external_interrupt_controller(void)
 	while (EIC->STATUS.reg & EIC_STATUS_SYNCBUSY);
 }
 
+/** Disables the external interrupt controller (EIC). */
 static inline void teardown_external_interrupt_controller(void)
 {
 	/* TODO: Teardown EIC. */
 }
 
-static inline void set_input_trigger_type(hal_gpio_pin_t *pin)
+/** Sets up the external interrupt line for a pin to the given trigger.
+ * 
+ * \param[in] pin The pin to set the pull up/pull down function of.
+ * \param[in] callback The callback function to be used when the button is pressed.
+ */
+static inline void set_input_trigger_type(hal_gpio_pin_t *pin, hal_gpio_trigger_event_t callback)
 {
 	if (pin->trigger)
 	{
-		set_alternate_function(&init_struct->pin, EXTERNAL_INTERRUPT_ALTERNATE_FUNCTION);
 		const uint8_t external_interrupt_line = pin_external_line_map[pin->pin];
+		/* Set bit 4 to 1, FILTEN. */
+		uint8_t config_nibble = 0x08u;
+		
+		set_alternate_function(pin, EXTERNAL_INTERRUPT_ALTERNATE_FUNCTION);
 	
 		if (pin->trigger == HAL_GPIO_RISING)
 		{
-			EIC->CONFIG[0].reg |= (0x1u << (external_interrupt_line << 2u));
+			//EIC->CONFIG[0].reg |= (0x1u << (external_interrupt_line << 2u));
+			config_nibble |= 0x1u;
 		}
 		else
 		{
-			EIC->CONFIG[0].reg |= (0x2u << (external_interrupt_line << 2u));
+			//EIC->CONFIG[0].reg |= (0x2u << (external_interrupt_line << 2u));
+			config_nibble |= 0x2u;
 		}
 		
 		/* Enable filter for the given pin. */
-		EIC->CONFIG[0].reg |= (0x1u << (external_interrupt_line << 3u));
+		EIC->CONFIG[0].reg |= (config_nibble << (external_interrupt_line << 2u));
+		EIC->INTENSET.reg |= (0x1u << external_interrupt_line);
+		NVIC_EnableIRQ(EIC_IRQn);
+		external_interrupt_pins[external_interrupt_line] = callback;
 	}
+}
+
+/** ISR for the external interrupt controller. */
+void EIC_Handler(void)
+{
+	current_interrupt_time = hal_timer_get_tick();
+	
+	if (current_interrupt_time - last_interrupt_time > BUTTON_DEBOUNCING_THRESHOLD)
+	{
+		if (EIC->INTFLAG.reg & EIC_INTFLAG_EXTINT0)
+		{
+			external_interrupt_pins[0]();
+			EIC->INTFLAG.bit.EXTINT0 = 1u;
+		}
+		
+		if (EIC->INTFLAG.reg & EIC_INTFLAG_EXTINT1)
+		{
+			external_interrupt_pins[1]();
+			EIC->INTFLAG.bit.EXTINT1 = 1u;
+		}
+		
+		if (EIC->INTFLAG.reg & EIC_INTFLAG_EXTINT2)
+		{
+			external_interrupt_pins[2]();
+			EIC->INTFLAG.bit.EXTINT2 = 1u;
+		}
+		
+		if (EIC->INTFLAG.reg & EIC_INTFLAG_EXTINT3)
+		{
+			external_interrupt_pins[3]();
+			EIC->INTFLAG.bit.EXTINT3 = 1u;
+		}
+		
+		if (EIC->INTFLAG.reg & EIC_INTFLAG_EXTINT4)
+		{
+			external_interrupt_pins[4]();
+			EIC->INTFLAG.bit.EXTINT4 = 1u;
+		}
+		
+		if (EIC->INTFLAG.reg & EIC_INTFLAG_EXTINT5)
+		{
+			external_interrupt_pins[5]();
+			EIC->INTFLAG.bit.EXTINT5 = 1u;
+		}
+		
+		if (EIC->INTFLAG.reg & EIC_INTFLAG_EXTINT6)
+		{
+			external_interrupt_pins[6]();
+			EIC->INTFLAG.bit.EXTINT6 = 1u;
+		}
+		
+		if (EIC->INTFLAG.reg & EIC_INTFLAG_EXTINT7)
+		{
+			external_interrupt_pins[7]();
+			EIC->INTFLAG.bit.EXTINT7 = 1u;
+		}
+		
+		last_interrupt_time = current_interrupt_time;
+	}
+	else
+	{
+		EIC->INTFLAG.reg = 0xFF;
+	}	
 }
 
 hal_result_t hal_gpio_pin_init(hal_gpio_init_t *init_struct)
@@ -220,7 +303,7 @@ hal_result_t hal_gpio_pin_init(hal_gpio_init_t *init_struct)
                 PORT->Group[0u].DIRCLR.reg = (1u << init_struct->pin.pin);
                 PORT->Group[0u].PINCFG[init_struct->pin.pin].reg |= PORT_PINCFG_INEN;
                 set_pull_up_pull_down(&init_struct->pin);
-                set_input_trigger_type(&init_struct->pin);
+                set_input_trigger_type(&init_struct->pin, init_struct->trigger_event_cb);
                 enable_external_interrupt_controller();
                 break;
             case HAL_GPIO_OUTPUT_PUSH_PULL:
