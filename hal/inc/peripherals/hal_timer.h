@@ -18,7 +18,7 @@ typedef void (*hal_timer_event_cb_t)(void);
 /** Structure representing timer initialisation. */
 typedef struct hal_timer_init
 {
-    uint16_t             period;    /*!< The period of the timer in seconds. */
+    uint16_t             period;    /*!< The period of the timer in ms. */
     hal_timer_event_cb_t call_back; /*!< Callback for timer tick. */
 
 } hal_timer_init_t;
@@ -66,6 +66,12 @@ hal_result_t hal_timer_clock_teardown(void);
  *  \retval #HAL_ERROR_PERIPHERAL_ERROR Initialisation failed due to a peripheral error.
  */
 hal_result_t hal_timer_delay(uint16_t ms);
+
+/** Get the current 'tick' count of the timer.
+ *  
+ *  \retval The current tick value of the running timer.
+ */
+uint32_t hal_timer_get_tick(void);
 
 /** Start a previously initialised timer.
  *  
