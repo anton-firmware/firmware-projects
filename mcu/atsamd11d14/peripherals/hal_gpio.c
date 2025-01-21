@@ -175,6 +175,7 @@ static inline void enable_external_interrupt_controller(void)
 /** Disables the external interrupt controller (EIC). */
 static inline void teardown_external_interrupt_controller(void)
 {
+    NVIC_DisableIRQ(EIC_IRQn);
 	EIC->CTRL |= EIC_CTRL_SWRST;
     /* Wait for syncronisation. */
     while (EIC->STATUS.reg & EIC_STATUS_SYNCBUSY);
@@ -190,23 +191,20 @@ static inline void set_input_trigger_type(hal_gpio_pin_t *pin, hal_gpio_trigger_
 	if (pin->trigger && callback)
 	{
 		const uint8_t external_interrupt_line = pin_external_line_map[pin->pin];
-		/* Set bit 4 to 1, FILTEN. */
+		/* Set bit 4 to 1, filter enable, see 20.8.10 Configuration - ATSAMD11 reference manual. */
 		uint8_t config_nibble = 0x08u;
 		
 		set_alternate_function(pin, EXTERNAL_INTERRUPT_ALTERNATE_FUNCTION);
 	
 		if (pin->trigger == HAL_GPIO_RISING)
 		{
-			//EIC->CONFIG[0].reg |= (0x1u << (external_interrupt_line << 2u));
 			config_nibble |= 0x1u;
 		}
 		else
 		{
-			//EIC->CONFIG[0].reg |= (0x2u << (external_interrupt_line << 2u));
 			config_nibble |= 0x2u;
 		}
 		
-		/* Enable filter for the given pin. */
 		EIC->CONFIG[0].reg |= (config_nibble << (external_interrupt_line << 2u));
 		EIC->INTENSET.reg |= (0x1u << external_interrupt_line);
 		NVIC_EnableIRQ(EIC_IRQn);
