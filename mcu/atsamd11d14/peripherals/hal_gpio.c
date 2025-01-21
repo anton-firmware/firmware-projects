@@ -175,7 +175,9 @@ static inline void enable_external_interrupt_controller(void)
 /** Disables the external interrupt controller (EIC). */
 static inline void teardown_external_interrupt_controller(void)
 {
-	/* TODO: Teardown EIC. */
+	EIC->CTRL |= EIC_CTRL_SWRST;
+    /* Wait for syncronisation. */
+    while (EIC->STATUS.reg & EIC_STATUS_SYNCBUSY);
 }
 
 /** Sets up the external interrupt line for a pin to the given trigger.
@@ -387,6 +389,7 @@ hal_result_t hal_gpio_pin_teardown(hal_gpio_pin_t *pin)
         }
 
         initialised_pins_bitmap &= ~(1u << pin->pin);
+		teardown_external_interrupt_controller();
     }
 
     return result;
