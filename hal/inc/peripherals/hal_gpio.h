@@ -1,6 +1,8 @@
 #ifndef HAL_GPIO_H
 #define HAL_GPIO_H
 
+#include <stdint.h>
+
 /** \file
  *
  * File containing definitions for GPIO functions.
@@ -29,7 +31,7 @@ typedef enum hal_gpio_mode
 /** Definitions related to GPIO pull-up/pull-down configurations. */
 typedef enum hal_gpio_pull_up_mode
 {
-    HAL_GPIO_PULL_UP,    /*!< GPIO Pull-up enabled. */
+    HAL_GPIO_PULL_UP = 1,    /*!< GPIO Pull-up enabled. */
     HAL_GPIO_PULL_DOWN,  /*!< GPIO Pull-down enabled. */
 
 } hal_gpio_pull_up_mode_t;
@@ -37,7 +39,7 @@ typedef enum hal_gpio_pull_up_mode
 /** Definitions related to GPIO triggers. */
 typedef enum hal_gpio_triggers
 {
-    HAL_GPIO_RISING,  /*!< GPIO trigger on a rising edge. */
+    HAL_GPIO_RISING = 1,  /*!< GPIO trigger on a rising edge. */
     HAL_GPIO_FALLING, /*!< GPIO trigger on a falling edge. */
 
 } hal_gpio_pin_trigger_t;
@@ -45,7 +47,7 @@ typedef enum hal_gpio_triggers
 /** Definitions related to GPIO speeds. */
 typedef enum hal_gpio_speed
 {
-    HAL_GPIO_VERY_SLOW, /*!< GPIO very slow mode. */
+    HAL_GPIO_VERY_SLOW = 1, /*!< GPIO very slow mode. */
     HAL_GPIO_SLOW,      /*!< GPIO slow mode. */
     HAL_GPIO_NORMAL,    /*!< GPIO normal mode. */
     HAL_GPIO_FAST,      /*!< GPIO fast mode. */

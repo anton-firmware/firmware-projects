@@ -1,8 +1,58 @@
 #include <stdbool.h>
 #include <stddef.h>
+#include <stdint.h>
 
 #include "hal_gpio.h"
+#include "hal_timer.h"
 #include "sam.h"
+
+#define EXTERNAL_INTERRUPT_LINES              7u
+#define PINS_ON_MCU                           32u
+#define EXTERNAL_INTERRUPT_ALTERNATE_FUNCTION 0x00u
+#define BUTTON_DEBOUNCING_THRESHOLD           22u
+
+static hal_gpio_trigger_event_t external_interrupt_pins[EXTERNAL_INTERRUPT_LINES];
+
+static volatile uint32_t last_interrupt_time;
+static volatile uint32_t current_interrupt_time;
+
+/* Array mapping pin number to external interrupt lines. Some pins map to the same interrupt line. 
+   See Table 6-1. PORT Function Multiplexing. */
+static uint8_t pin_external_line_map[PINS_ON_MCU] = 
+{
+	0xFFu, /* PA00 - NONE.   */ 
+	0u, /* PA01 - NONE.      */
+	2u, /* PA02 - EXTINT[2]. */
+	3u, /* PA03 - EXTINT[3]. */
+	4u, /* PA04 - EXTINT[4]. */
+	5u, /* PA05 - EXTINT[5]. */
+	6u, /* PA06 - EXTINT[6]. */
+	7u, /* PA07 - EXTINT[7]. */
+	6u, /* PA08 - EXTINT[6]. */
+	7u, /* PA09 - EXTINT[7]. */
+	2u, /* PA10 - EXTINT[2]. */
+	3u, /* PA11 - EXTINT[3]. */
+	0xFFu, /* PA12 - NONE.   */
+	0xFFu, /* PA13 - NONE.   */
+	0u, /* PA14 - NMI.       */
+	1u, /* PA15 - EXTINT[1]. */
+	0u, /* PA16 - EXTINT[0]. */
+	1u, /* PA17 - EXTINT[1]. */
+	0xFFu, /* PA18 - NONE.   */
+	0xFFu, /* PA19 - NONE.   */
+	0xFFu, /* PA20 - NONE.   */
+	0xFFu, /* PA21 - NONE.   */
+	6u, /* PA22 - EXTINT[6]. */
+	7u, /* PA23 - EXTINT[7]. */
+	4u, /* PA24 - EXTINT[4]. */
+	5u, /* PA25 - EXTINT[5]. */
+	0xFFu, /* PA26 - NONE.   */
+	7u, /* PA27 - EXTINT[7]. */
+	0xFFu, /* PA28 - NONE    */
+	0xFFu, /* PA29 - NONE.   */
+	2u, /* PA30 - EXTINT[2]. */
+	3u, /* PA31 - EXTINT[3]. */
+};
 
 static uint32_t initialised_pins_bitmap = 0x00000000u;
 
@@ -62,6 +112,8 @@ static inline bool is_pin_initialised(hal_gpio_pin_t *pin)
 static inline void set_alternate_function(hal_gpio_pin_t *pin, alt_func_t alt_func)
 {
     const uint8_t alt_func_group = pin->pin >> 1u;
+	
+    PORT->Group[0u].PINCFG[pin->pin].bit.PMUXEN = 1u;
     
     if (pin->pin & 0x1u)
     {
@@ -77,7 +129,7 @@ static inline void set_alternate_function(hal_gpio_pin_t *pin, alt_func_t alt_fu
  * 
  * \param[in] pin The pin to set the pull up/pull down function of.
  */
-static inline void set_pull_up_pull_down (hal_gpio_pin_t *pin)
+static inline void set_pull_up_pull_down(hal_gpio_pin_t *pin)
 {
     if (pin->pull_up_mode)
     {
@@ -90,6 +142,137 @@ static inline void set_pull_up_pull_down (hal_gpio_pin_t *pin)
             PORT->Group[0u].PINCFG[pin->pin].bit.PULLEN = 0u;
         }
     }
+}
+
+/** Helper function to set up the clock source for the EIC peripheral.
+ * 
+ * In order to set a generic clock, we do a 16 bit write of the configurations 
+ * and the ID, see page 99 of ATSAMD11 reference manual.
+ */
+static inline void setup_eic_gclk(void)
+{
+    uint16_t clk_ctl_reg_value = 0;
+
+    /* Set the EIC core clock to be Generic Clock Generator 0 (Internal 8MHz oscilator). 
+     * Note: On reset, the OSC8M is fed through a divide by 8 step, so this clock is actually 1MHz. 
+     */
+    clk_ctl_reg_value |= (GCLK_CLKCTRL_ID_EIC | GCLK_CLKCTRL_CLKEN | GCLK_CLKCTRL_GEN_GCLK0);
+
+    GCLK->CLKCTRL.reg = clk_ctl_reg_value; 
+
+    /* Wait for syncronisation. */
+    while (GCLK->STATUS.reg & GCLK_STATUS_SYNCBUSY);
+}
+
+/** Enables the external interrupt controller (EIC). */
+static inline void enable_external_interrupt_controller(void)
+{
+	EIC->CTRL.bit.ENABLE = 1u;
+    /* Wait for syncronisation. */
+	while (EIC->STATUS.reg & EIC_STATUS_SYNCBUSY);
+}
+
+/** Disables the external interrupt controller (EIC). */
+static inline void teardown_external_interrupt_controller(void)
+{
+    NVIC_DisableIRQ(EIC_IRQn);
+	EIC->CTRL |= EIC_CTRL_SWRST;
+    /* Wait for syncronisation. */
+    while (EIC->STATUS.reg & EIC_STATUS_SYNCBUSY);
+}
+
+/** Sets up the external interrupt line for a pin to the given trigger.
+ * 
+ * \param[in] pin The pin to set the pull up/pull down function of.
+ * \param[in] callback The callback function to be used when the button is pressed.
+ */
+static inline void set_input_trigger_type(hal_gpio_pin_t *pin, hal_gpio_trigger_event_t callback)
+{
+	if (pin->trigger && callback)
+	{
+		const uint8_t external_interrupt_line = pin_external_line_map[pin->pin];
+		/* Set bit 4 to 1, filter enable, see 20.8.10 Configuration - ATSAMD11 reference manual. */
+		uint8_t config_nibble = 0x08u;
+		
+		set_alternate_function(pin, EXTERNAL_INTERRUPT_ALTERNATE_FUNCTION);
+	
+		if (pin->trigger == HAL_GPIO_RISING)
+		{
+			config_nibble |= 0x1u;
+		}
+		else
+		{
+			config_nibble |= 0x2u;
+		}
+		
+		EIC->CONFIG[0].reg |= (config_nibble << (external_interrupt_line << 2u));
+		EIC->INTENSET.reg |= (0x1u << external_interrupt_line);
+		NVIC_EnableIRQ(EIC_IRQn);
+		external_interrupt_pins[external_interrupt_line] = callback;
+	}
+}
+
+/** ISR for the external interrupt controller. */
+void EIC_Handler(void)
+{
+	current_interrupt_time = hal_timer_get_tick();
+	
+	if (current_interrupt_time - last_interrupt_time > BUTTON_DEBOUNCING_THRESHOLD)
+	{
+		if (EIC->INTFLAG.reg & EIC_INTFLAG_EXTINT0)
+		{
+			external_interrupt_pins[0]();
+			EIC->INTFLAG.bit.EXTINT0 = 1u;
+		}
+		
+		if (EIC->INTFLAG.reg & EIC_INTFLAG_EXTINT1)
+		{
+			external_interrupt_pins[1]();
+			EIC->INTFLAG.bit.EXTINT1 = 1u;
+		}
+		
+		if (EIC->INTFLAG.reg & EIC_INTFLAG_EXTINT2)
+		{
+			external_interrupt_pins[2]();
+			EIC->INTFLAG.bit.EXTINT2 = 1u;
+		}
+		
+		if (EIC->INTFLAG.reg & EIC_INTFLAG_EXTINT3)
+		{
+			external_interrupt_pins[3]();
+			EIC->INTFLAG.bit.EXTINT3 = 1u;
+		}
+		
+		if (EIC->INTFLAG.reg & EIC_INTFLAG_EXTINT4)
+		{
+			external_interrupt_pins[4]();
+			EIC->INTFLAG.bit.EXTINT4 = 1u;
+		}
+		
+		if (EIC->INTFLAG.reg & EIC_INTFLAG_EXTINT5)
+		{
+			external_interrupt_pins[5]();
+			EIC->INTFLAG.bit.EXTINT5 = 1u;
+		}
+		
+		if (EIC->INTFLAG.reg & EIC_INTFLAG_EXTINT6)
+		{
+			external_interrupt_pins[6]();
+			EIC->INTFLAG.bit.EXTINT6 = 1u;
+		}
+		
+		if (EIC->INTFLAG.reg & EIC_INTFLAG_EXTINT7)
+		{
+			external_interrupt_pins[7]();
+			EIC->INTFLAG.bit.EXTINT7 = 1u;
+		}
+		
+		last_interrupt_time = current_interrupt_time;
+	}
+	else
+	{
+		EIC->INTFLAG.reg = 0xFF;
+	}	
 }
 
 hal_result_t hal_gpio_pin_init(hal_gpio_init_t *init_struct)
@@ -120,6 +303,8 @@ hal_result_t hal_gpio_pin_init(hal_gpio_init_t *init_struct)
                 PORT->Group[0u].DIRCLR.reg = (1u << init_struct->pin.pin);
                 PORT->Group[0u].PINCFG[init_struct->pin.pin].reg |= PORT_PINCFG_INEN;
                 set_pull_up_pull_down(&init_struct->pin);
+                set_input_trigger_type(&init_struct->pin, init_struct->trigger_event_cb);
+                enable_external_interrupt_controller();
                 break;
             case HAL_GPIO_OUTPUT_PUSH_PULL:
                 PORT->Group[0u].DIRSET.reg = (1u << init_struct->pin.pin);
@@ -128,7 +313,6 @@ hal_result_t hal_gpio_pin_init(hal_gpio_init_t *init_struct)
                 /* TODO: Init open drain. */
                 break;
             case HAL_GPIO_ALTERNATE:
-                PORT->Group[0u].PINCFG[init_struct->pin.pin].bit.PMUXEN = 1u;
                 set_alternate_function(&init_struct->pin, init_struct->alternate_pin_mapping);
                 break;
             default:
@@ -149,12 +333,16 @@ hal_result_t hal_gpio_pin_init(hal_gpio_init_t *init_struct)
 hal_result_t hal_gpio_clock_init(void)
 {
     PM->APBBMASK.reg |= PM_APBBMASK_PORT;
+    PM->APBAMASK.reg |= PM_APBAMASK_EIC;
+	/* We're using filtering, so enable GCLK, see 20.6.2.1 Initialization ATSAMD11 reference manual. */
+	setup_eic_gclk();
     return HAL_SUCCESS;
 }
 
 hal_result_t hal_gpio_clock_teardown(void)
 {
     PM->APBBMASK.reg &= ~PM_APBBMASK_PORT;
+	PM->APBAMASK.reg &= ~PM_APBAMASK_EIC;
     return HAL_SUCCESS;
 }
 
@@ -199,6 +387,7 @@ hal_result_t hal_gpio_pin_teardown(hal_gpio_pin_t *pin)
         }
 
         initialised_pins_bitmap &= ~(1u << pin->pin);
+		teardown_external_interrupt_controller();
     }
 
     return result;
