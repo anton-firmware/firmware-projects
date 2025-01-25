@@ -25,7 +25,7 @@ typedef struct
  * 
  * \returns \c true if successful, \c false otherwise.
  */
-bool event_queue_initialise(uint8_t *buffer, size_t length);
+bool event_queue_initialise(event_t *buffer, size_t length);
 
 /** Teardown the event queue. */
 void event_queue_teardown(void);
