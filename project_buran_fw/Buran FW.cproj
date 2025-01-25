@@ -159,6 +159,7 @@
     <ListValues>
       <Value>%24(PackRepoDir)\arm\CMSIS\5.4.0\CMSIS\Core\Include\</Value>
       <Value>%24(PackRepoDir)\atmel\SAMD11_DFP\1.1.81\include</Value>
+      <Value>../../event_queue/inc</Value>
       <Value>../../hal/inc</Value>
       <Value>../../hal/inc/core</Value>
       <Value>../../hal/inc/peripherals</Value>
@@ -204,6 +205,10 @@
     </ToolchainSettings>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="..\event_queue\src\event_queue.c">
+      <SubType>compile</SubType>
+      <Link>event_queue\src\event_queue.c</Link>
+    </Compile>
     <Compile Include="..\mcu\atsamd11d14\core\hal_core_interrupts.c">
       <SubType>compile</SubType>
       <Link>mcu\core\hal_core_interrupts.c</Link>
@@ -236,6 +241,8 @@
   <ItemGroup>
     <Folder Include="Device_Startup\" />
     <Folder Include="buran_defs" />
+    <Folder Include="event_queue\" />
+    <Folder Include="event_queue\src\" />
     <Folder Include="mcu" />
     <Folder Include="mcu\core" />
     <Folder Include="mcu\peripherals" />
