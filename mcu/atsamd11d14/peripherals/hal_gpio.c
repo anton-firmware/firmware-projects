@@ -176,7 +176,7 @@ static inline void enable_external_interrupt_controller(void)
 static inline void teardown_external_interrupt_controller(void)
 {
     NVIC_DisableIRQ(EIC_IRQn);
-	EIC->CTRL |= EIC_CTRL_SWRST;
+	EIC->CTRL.reg |= EIC_CTRL_SWRST;
     /* Wait for syncronisation. */
     while (EIC->STATUS.reg & EIC_STATUS_SYNCBUSY);
 }
