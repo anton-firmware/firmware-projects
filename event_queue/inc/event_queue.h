@@ -5,17 +5,19 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+/** Structure representing an event. */
 typedef struct 
 {
-    uint8_t id;
+    uint8_t id; /*!< ID of the event. */
 } event_t;
 
+/** Structure representing the event queue. */
 typedef struct 
 {
-    size_t buffer_length;
-    event_t *buffer;
-    uint16_t head;
-    uint16_t tail;
+    size_t buffer_length; /*!< Size of the buffer in bytes. */
+    event_t *buffer; /*!< Pointer to an array of events. */
+    uint16_t head; /*!< Index of the front of the queue. */
+    uint16_t tail; /*!< Index of the back of the queue. */
 } event_queue_t;
 
 /** Initialise the event queue.
