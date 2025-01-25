@@ -73,6 +73,7 @@ bool event_queue_dequeue(event_t *event)
     {
         *event = queue.buffer[queue.tail];
         queue.tail = (queue.tail + 1u) % queue.buffer_length;
+		result = true;
     }
 
     return result;
