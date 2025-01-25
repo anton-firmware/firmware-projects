@@ -19,13 +19,20 @@ static inline bool is_queue_empty(void)
 
 bool event_queue_initialise(event_t *buffer, size_t length)
 {
-    queue.buffer = buffer;
-    queue.buffer_length = length;
-    queue.head = 0u;
-    queue.tail = 0u;
+    bool result = false;
+
+    if (buffer != NULL && length != 0)
+    {
+        queue.buffer = buffer;
+        queue.buffer_length = length;
+        queue.head = 0u;
+        queue.tail = 0u;
+    }
+    
+    return result;
 }
 
-bool event_queue_teardown(void)
+void event_queue_teardown(void)
 {
     queue.buffer = NULL;
     queue.buffer_length = 0;
@@ -37,7 +44,7 @@ bool event_queue_enqueue(event_t event)
 {
     bool result = false;
 
-    if (!is_queue_full())
+    if (queue.buffer != NULL && !is_queue_full())
     {
         queue.buffer[queue.head] = event;
         queue.head = (queue.head + 1u) % queue.buffer_length;
@@ -62,7 +69,7 @@ bool event_queue_dequeue(event_t *event)
 {
     bool result = false;
 
-    if (event != NULL && !is_queue_empty())
+    if (event != NULL && queue.buffer != NULL && !is_queue_empty())
     {
         *event = queue.buffer[queue.tail];
         queue.tail = (queue.tail + 1u) % queue.buffer_length;
