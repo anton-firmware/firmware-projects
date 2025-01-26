@@ -22,10 +22,11 @@
 #define BURAN_SWITCH_4_EVENT      3u
 #define BURAN_BYTE_RECEIVED_EVENT 4u
 
-const uint8_t switch_1_pressed[] = "S1\r\n";
-const uint8_t switch_2_pressed[] = "S2\r\n";
-const uint8_t switch_3_pressed[] = "S3\r\n";
-const uint8_t switch_4_pressed[] = "S4\r\n";
+static const uint8_t buran_switch_1_pressed[] = "S1\r\n";
+static const uint8_t buran_switch_2_pressed[] = "S2\r\n";
+static const uint8_t buran_switch_3_pressed[] = "S3\r\n";
+static const uint8_t buran_switch_4_pressed[] = "S4\r\n";
+static const uint8_t buran_bootup_info[] = "Buran2025V1 - Firmware v1.0\r\n";
 
 static event_t event_queue[EVENT_QUEUE_SIZE];
 
@@ -183,6 +184,8 @@ int main(void)
 	
 	event_queue_initialise(event_queue, EVENT_QUEUE_SIZE);
 	
+	hal_serial_transmit_non_blocking(buran_bootup_info, sizeof(buran_bootup_info));
+	
 	event_t dequeued_event;
 
     while (1) 
@@ -195,16 +198,16 @@ int main(void)
 					buran_command_handler(dequeued_event.byte);
 					break;
 				case BURAN_SWITCH_1_EVENT:
-					hal_serial_transmit_non_blocking(switch_1_pressed, sizeof(switch_1_pressed));
+					hal_serial_transmit_non_blocking(buran_switch_1_pressed, sizeof(buran_switch_1_pressed));
 					break;
 				case BURAN_SWITCH_2_EVENT:
-					hal_serial_transmit_non_blocking(switch_2_pressed, sizeof(switch_2_pressed));
+					hal_serial_transmit_non_blocking(buran_switch_2_pressed, sizeof(buran_switch_2_pressed));
 					break;
 				case BURAN_SWITCH_3_EVENT:
-					hal_serial_transmit_non_blocking(switch_3_pressed, sizeof(switch_3_pressed));
+					hal_serial_transmit_non_blocking(buran_switch_3_pressed, sizeof(buran_switch_3_pressed));
 					break;
 				case BURAN_SWITCH_4_EVENT:
-					hal_serial_transmit_non_blocking(switch_4_pressed, sizeof(switch_4_pressed));
+					hal_serial_transmit_non_blocking(buran_switch_4_pressed, sizeof(buran_switch_4_pressed));
 					break;
 				default:
 					break;
