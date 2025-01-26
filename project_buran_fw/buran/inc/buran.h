@@ -17,6 +17,10 @@
 #define BURAN_PORT_A_INDEX      0u
 #define BURAN_USART_GROUP_C_ALT 2u /* SERCOM Pad is in Group C, see Table 6-1 PORT Function Multiplexing. */
 
+#define BURAN_PCB_YEAR          0x2025u
+#define BURAN_PCB_VERSION       1u
+#define BURAN_PCB_BUTTONS       4u
+
 #define BURAN_DEBUG_LED_1_PIN   5u
 #define BURAN_DEBUG_LED_2_PIN   6u
 

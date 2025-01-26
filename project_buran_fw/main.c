@@ -6,6 +6,7 @@
  */ 
 
 #include "buran.h"
+#include "command_handler.h"
 #include "event_queue.h"
 #include "hal_core_interrupts.h"
 #include "hal_gpio.h"
@@ -21,10 +22,10 @@
 #define BURAN_SWITCH_4_EVENT      3u
 #define BURAN_BYTE_RECEIVED_EVENT 4u
 
-const uint8_t switch_1_pressed[] = "Switch 1 pressed!\r\n";
-const uint8_t switch_2_pressed[] = "Switch 2 pressed!\r\n";
-const uint8_t switch_3_pressed[] = "Switch 3 pressed!\r\n";
-const uint8_t switch_4_pressed[] = "Switch 4 pressed!\r\n";
+const uint8_t switch_1_pressed[] = "S1\r\n";
+const uint8_t switch_2_pressed[] = "S2\r\n";
+const uint8_t switch_3_pressed[] = "S3\r\n";
+const uint8_t switch_4_pressed[] = "S4\r\n";
 
 static event_t event_queue[EVENT_QUEUE_SIZE];
 
@@ -191,6 +192,7 @@ int main(void)
 			switch (dequeued_event.id)
 			{
 				case BURAN_BYTE_RECEIVED_EVENT:
+					buran_command_handler(dequeued_event.byte);
 					break;
 				case BURAN_SWITCH_1_EVENT:
 					hal_serial_transmit_non_blocking(switch_1_pressed, sizeof(switch_1_pressed));
