@@ -226,10 +226,10 @@
       <SubType>compile</SubType>
       <Link>mcu\peripherals\hal_timer.c</Link>
     </Compile>
-    <Compile Include="buran\src\buran.c">
+    <Compile Include="buran\inc\buran.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="buran_defs\inc\buran.h">
+    <Compile Include="buran\src\buran.c">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="Device_Startup\startup_samd11.c">
