@@ -14,17 +14,30 @@
 #include "hal_result.h"
 #include "sam.h"
 
-#define EVENT_QUEUE_SIZE     256u
-#define BURAN_SWITCH_1_EVENT 0u
-#define BURAN_SWITCH_2_EVENT 1u
-#define BURAN_SWITCH_3_EVENT 2u
-#define BURAN_SWITCH_4_EVENT 3u
+#define EVENT_QUEUE_SIZE          256u
+#define BURAN_SWITCH_1_EVENT      0u
+#define BURAN_SWITCH_2_EVENT      1u
+#define BURAN_SWITCH_3_EVENT      2u
+#define BURAN_SWITCH_4_EVENT      3u
+#define BURAN_BYTE_RECEIVED_EVENT 4u
+
+const uint8_t switch_1_pressed[] = "Switch 1 pressed!\r\n";
+const uint8_t switch_2_pressed[] = "Switch 2 pressed!\r\n";
+const uint8_t switch_3_pressed[] = "Switch 3 pressed!\r\n";
+const uint8_t switch_4_pressed[] = "Switch 4 pressed!\r\n";
 
 static event_t event_queue[EVENT_QUEUE_SIZE];
 
 static void buran_callback_serial(uint8_t byte)
 {
-	(void)byte;
+	event_t serial_received_event =
+	{
+		.id = BURAN_BYTE_RECEIVED_EVENT,
+		.byte = byte,
+	};
+	
+	/* Critical section not needed as we're executing within a handler context. */
+	event_queue_enqueue(serial_received_event);
 }
 
 static void buran_callback_switch_1(void)
@@ -172,11 +185,25 @@ int main(void)
 	event_t dequeued_event;
 
     while (1) 
-    {
+    {	
 		if (event_queue_dequeue_critical(&dequeued_event))
 		{
 			switch (dequeued_event.id)
 			{
+				case BURAN_BYTE_RECEIVED_EVENT:
+					break;
+				case BURAN_SWITCH_1_EVENT:
+					hal_serial_transmit_non_blocking(switch_1_pressed, sizeof(switch_1_pressed));
+					break;
+				case BURAN_SWITCH_2_EVENT:
+					hal_serial_transmit_non_blocking(switch_2_pressed, sizeof(switch_2_pressed));
+					break;
+				case BURAN_SWITCH_3_EVENT:
+					hal_serial_transmit_non_blocking(switch_3_pressed, sizeof(switch_3_pressed));
+					break;
+				case BURAN_SWITCH_4_EVENT:
+					hal_serial_transmit_non_blocking(switch_4_pressed, sizeof(switch_4_pressed));
+					break;
 				default:
 					break;
 			}
