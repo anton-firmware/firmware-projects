@@ -136,6 +136,7 @@ static inline void set_pull_up_pull_down(hal_gpio_pin_t *pin)
         if (pin->pull_up_mode == HAL_GPIO_PULL_UP)
         {
             PORT->Group[0u].PINCFG[pin->pin].bit.PULLEN = 1u;
+			PORT->Group[0u].OUTSET.reg |= (1u << pin->pin);
         }
         else
         {

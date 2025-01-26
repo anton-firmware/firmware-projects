@@ -226,6 +226,8 @@ hal_result_t hal_serial_init(hal_serial_init_t *init_struct)
         NVIC_EnableIRQ(SERCOM1_IRQn);
 
         sercom_usart_enabled = true;
+		
+		result = HAL_SUCCESS;
     }
 
     return result;
@@ -245,7 +247,11 @@ hal_result_t hal_serial_teardown()
         SERCOM1->USART.CTRLA.reg |= SERCOM_USART_CTRLA_SWRST;
         
         wait_for_sercom_sync_swrst();
+		
+		result = HAL_SUCCESS;
     }
+	
+	return result;
 }
 
 hal_result_t hal_serial_clock_init()

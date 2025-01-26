@@ -159,6 +159,7 @@
     <ListValues>
       <Value>%24(PackRepoDir)\arm\CMSIS\5.4.0\CMSIS\Core\Include\</Value>
       <Value>%24(PackRepoDir)\atmel\SAMD11_DFP\1.1.81\include</Value>
+      <Value>../buran/inc</Value>
       <Value>../../event_queue/inc</Value>
       <Value>../../hal/inc</Value>
       <Value>../../hal/inc/core</Value>
@@ -169,11 +170,6 @@
   <armgcc.compiler.optimization.DebugLevel>Maximum (-g3)</armgcc.compiler.optimization.DebugLevel>
   <armgcc.compiler.warnings.AllWarnings>True</armgcc.compiler.warnings.AllWarnings>
   <armgcc.compiler.miscellaneous.Verbose>True</armgcc.compiler.miscellaneous.Verbose>
-  <armgcc.linker.libraries.Libraries>
-    <ListValues>
-      <Value>libm</Value>
-    </ListValues>
-  </armgcc.linker.libraries.Libraries>
   <armgcc.linker.libraries.LibrarySearchPaths>
     <ListValues>
       <Value>%24(ProjectDir)\Device_Startup</Value>
@@ -225,7 +221,16 @@
       <SubType>compile</SubType>
       <Link>mcu\peripherals\hal_timer.c</Link>
     </Compile>
-    <Compile Include="buran_defs\buran.h">
+    <Compile Include="buran\inc\buran.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="buran\inc\command_handler.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="buran\src\buran.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="buran\src\command_handler.c">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="Device_Startup\startup_samd11.c">
@@ -239,8 +244,10 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="buran\inc" />
+    <Folder Include="buran\src" />
     <Folder Include="Device_Startup\" />
-    <Folder Include="buran_defs" />
+    <Folder Include="buran" />
     <Folder Include="event_queue\" />
     <Folder Include="event_queue\src\" />
     <Folder Include="mcu" />

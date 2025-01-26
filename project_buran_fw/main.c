@@ -5,174 +5,211 @@
  * Author : Anton
  */ 
 
-
-#include "sam.h"
+#include "buran.h"
+#include "command_handler.h"
+#include "event_queue.h"
+#include "hal_core_interrupts.h"
 #include "hal_gpio.h"
 #include "hal_serial.h"
 #include "hal_timer.h"
+#include "hal_result.h"
+#include "sam.h"
 
-#define PORT_A 0
+#define EVENT_QUEUE_SIZE          256u
+#define BURAN_SWITCH_1_EVENT      0u
+#define BURAN_SWITCH_2_EVENT      1u
+#define BURAN_SWITCH_3_EVENT      2u
+#define BURAN_SWITCH_4_EVENT      3u
+#define BURAN_BYTE_RECEIVED_EVENT 4u
 
-#define USART_TX_PA22 22u
-#define USART_RX_PA23 23u
+static const uint8_t buran_switch_1_pressed[] = "S1\r\n";
+static const uint8_t buran_switch_2_pressed[] = "S2\r\n";
+static const uint8_t buran_switch_3_pressed[] = "S3\r\n";
+static const uint8_t buran_switch_4_pressed[] = "S4\r\n";
+static const uint8_t buran_bootup_info[] = "Buran2025V1 - Firmware v1.0\r\n";
 
-#define MCU_LED_1_PA5 5u
-#define MCU_LED_2_PA6 6u
-#define MCU_LED_PA16 16u
+static event_t event_queue[EVENT_QUEUE_SIZE];
 
-#define MCU_SWITCH_1_PA25 25u
-
-#define USART_GROUP_C_ALT 0x2 // SERCOM Pad is in Group C, see Table 6-1 PORT Function Multiplexing.
-
-#define BURAN_TASK_LED_1_TOGGLE   'A'
-#define BURAN_TASK_LED_2_TOGGLE   'B'
-#define BURAN_TASK_PRINT_VERSION  'C'
-
-static volatile uint8_t task;
-const uint8_t VERSION[] = "Project Buran v3.0\n";
-
-hal_gpio_pin_t gpio_pin_button_sw1 =
+static void buran_callback_serial(uint8_t byte)
 {
-	.pin = MCU_SWITCH_1_PA25,
-	.port = PORT_A,
-	.pin_mode = HAL_GPIO_INPUT,
-};
-
-hal_gpio_pin_t gpio_pin_led_16 =
-{
-	.pin = MCU_LED_PA16,
-	.port = PORT_A,
-	.pin_mode = HAL_GPIO_OUTPUT_PUSH_PULL,
-};
-
-hal_gpio_pin_t gpio_pin_tx =
-{
-	.pin = USART_TX_PA22,
-	.port = PORT_A,
-	.pin_mode = HAL_GPIO_ALTERNATE,
-};
-
-hal_gpio_pin_t gpio_pin_rx =
-{
-	.pin = USART_RX_PA23,
-	.port = PORT_A,
-	.pin_mode = HAL_GPIO_ALTERNATE,
-};
-
-hal_gpio_pin_t gpio_pin_led_1 =
-{
-	.pin = MCU_LED_1_PA5,
-	.port = PORT_A,
-	.pin_mode = HAL_GPIO_OUTPUT_PUSH_PULL,
-};
-
-hal_gpio_pin_t gpio_pin_led_2 =
-{
-	.pin = MCU_LED_2_PA6,
-	.port = PORT_A,
-	.pin_mode = HAL_GPIO_OUTPUT_PUSH_PULL,
-};
-
-static void read_callback(uint8_t byte)
-{
-	task = byte;
-}
-
-static void timer_callback(void)
-{
-}
-
-int main(void)
- {
-    /* Initialize the SAM system */
-    SystemInit();
-	
-	hal_gpio_init_t init_struct_tx = 
+	event_t serial_received_event =
 	{
-		.pin = gpio_pin_tx,	
-		.alternate_pin_mapping = USART_GROUP_C_ALT,
+		.id = BURAN_BYTE_RECEIVED_EVENT,
+		.byte = byte,
+	};
+	
+	/* Critical section not needed as we're executing within a handler context. */
+	event_queue_enqueue(serial_received_event);
+}
+
+static void buran_callback_switch_1(void)
+{
+	event_t switch_1_event = 
+	{
+		.id = BURAN_SWITCH_1_EVENT,
+	};
+	
+	/* Critical section not needed as we're executing within a handler context. */
+	event_queue_enqueue(switch_1_event);
+}
+
+static void buran_callback_switch_2(void)
+{
+	event_t switch_2_event =
+	{
+		.id = BURAN_SWITCH_2_EVENT,
+	};
+	
+	/* Critical section not needed as we're executing within a handler context. */
+	event_queue_enqueue(switch_2_event);
+}
+
+static void buran_callback_switch_3(void)
+{
+	event_t switch_3_event =
+	{
+		.id = BURAN_SWITCH_3_EVENT,
+	};
+	
+	/* Critical section not needed as we're executing within a handler context. */
+	event_queue_enqueue(switch_3_event);
+}
+
+static void buran_callback_switch_4(void)
+{
+	event_t switch_4_event =
+	{
+		.id = BURAN_SWITCH_4_EVENT,
+	};
+	
+	/* Critical section not needed as we're executing within a handler context. */
+	event_queue_enqueue(switch_4_event);
+}
+
+static void buran_timer_init(void)
+{
+	hal_timer_init_t init_struct_timer =
+	{
+		.period = 10u,
+	};
+
+	hal_timer_init(&init_struct_timer);
+	
+	hal_timer_start();	
+}
+
+static void buran_serial_init(void)
+{
+	hal_serial_init_t init_struct_hal =
+	{
+		.mode = HAL_SERIAL_MODE_RX_TX,
+		.stop_bits = HAL_SERIAL_STOP_BITS_ONE,
+		.parity_bits = HAL_SERIAL_PARITY_BITS_NONE,
+		.baud_rate = HAL_SERIAL_BAUD_RATE_9600,
+		.read_event_cb = buran_callback_serial,
+	};
+	
+	hal_serial_init(&init_struct_hal);	
+}
+
+static void buran_gpio_init(void)
+{
+	hal_gpio_init_t init_struct_tx =
+	{
+		.pin = buran_gpio_pin_tx,
+		.alternate_pin_mapping = BURAN_USART_GROUP_C_ALT,
 	};
 	
 	hal_gpio_init_t init_struct_rx =
 	{
-		.pin = gpio_pin_rx,
-		.alternate_pin_mapping = USART_GROUP_C_ALT,
+		.pin = buran_gpio_pin_rx,
+		.alternate_pin_mapping = BURAN_USART_GROUP_C_ALT,
 	};
 	
 	hal_gpio_init_t init_struct_led_1 =
 	{
-		.pin = gpio_pin_led_1,
+		.pin = buran_gpio_pin_led_1,
 	};
 	
 	hal_gpio_init_t init_struct_led_2 =
 	{
-		.pin = gpio_pin_led_2,
+		.pin = buran_gpio_pin_led_2,
 	};
 	
-	hal_gpio_init_t init_struct_led_16 =
+	hal_gpio_init_t init_struct_button_switch_1 =
 	{
-		.pin = gpio_pin_led_16,
+		.pin = buran_gpio_pin_button_switch_1,
+		.trigger_event_cb = buran_callback_switch_1,
 	};
 	
-	hal_gpio_init_t init_struct_button_sw1 =
+	hal_gpio_init_t init_struct_button_switch_2 =
 	{
-		.pin = gpio_pin_button_sw1,
+		.pin = buran_gpio_pin_button_switch_2,
+		.trigger_event_cb = buran_callback_switch_2,
+	};
+	
+	hal_gpio_init_t init_struct_button_switch_3 =
+	{
+		.pin = buran_gpio_pin_button_switch_3,
+		.trigger_event_cb = buran_callback_switch_3,
+	};
+	
+	hal_gpio_init_t init_struct_button_switch_4 =
+	{
+		.pin = buran_gpio_pin_button_switch_4,
+		.trigger_event_cb = buran_callback_switch_4,
 	};
 	
 	hal_gpio_pin_init(&init_struct_tx);
 	hal_gpio_pin_init(&init_struct_rx);
 	hal_gpio_pin_init(&init_struct_led_1);
 	hal_gpio_pin_init(&init_struct_led_2);
-	hal_gpio_pin_init(&init_struct_led_16);
-	hal_gpio_pin_init(&init_struct_button_sw1);
-	
-	hal_serial_init_t init_struct_hal = 
-	{
-		.mode = HAL_SERIAL_MODE_RX_TX,
-		.stop_bits = HAL_SERIAL_STOP_BITS_ONE,
-		.parity_bits = HAL_SERIAL_PARITY_BITS_NONE,
-		.baud_rate = HAL_SERIAL_BAUD_RATE_9600,
-		.read_event_cb = read_callback,
-	};
-	
-	hal_timer_init_t init_struct_timer = 
-	{
-		.period = 1u,
-		.call_back = timer_callback
-	};
-	
+	hal_gpio_pin_init(&init_struct_button_switch_1);
+	hal_gpio_pin_init(&init_struct_button_switch_2);
+	hal_gpio_pin_init(&init_struct_button_switch_3);
+	hal_gpio_pin_init(&init_struct_button_switch_4);
+}
+
+int main(void)
+ {
+	hal_gpio_clock_init();
 	hal_serial_clock_init();
-	hal_timer_init(&init_struct_timer);
 	
-	hal_timer_start();
-	hal_serial_init(&init_struct_hal);
+	buran_gpio_init();
+	buran_serial_init();
+	buran_timer_init();
+	
+	event_queue_initialise(event_queue, EVENT_QUEUE_SIZE);
+	
+	hal_serial_transmit_non_blocking(buran_bootup_info, sizeof(buran_bootup_info));
+	
+	event_t dequeued_event;
 
     while (1) 
-    {
-		if (task == BURAN_TASK_LED_1_TOGGLE)
+    {	
+		if (event_queue_dequeue_critical(&dequeued_event))
 		{
-			hal_gpio_toggle_level(&gpio_pin_led_1);
-			task = 0;
-		}
-		else if (task == BURAN_TASK_LED_2_TOGGLE)
-		{
-			hal_gpio_toggle_level(&gpio_pin_led_2);
-			task = 0;
-		}
-		else if (task == BURAN_TASK_PRINT_VERSION)
-		{
-			hal_serial_transmit_non_blocking(VERSION, sizeof(VERSION));
-			task = 0;
-		}
-		
-		if (!hal_gpio_read_level(&gpio_pin_button_sw1))
-		{
-			hal_timer_delay(1000);
-			
-			if (!hal_gpio_read_level(&gpio_pin_button_sw1))
+			switch (dequeued_event.id)
 			{
-				hal_gpio_toggle_level(&gpio_pin_led_1);
+				case BURAN_BYTE_RECEIVED_EVENT:
+					buran_command_handler(dequeued_event.byte);
+					break;
+				case BURAN_SWITCH_1_EVENT:
+					hal_serial_transmit_non_blocking(buran_switch_1_pressed, sizeof(buran_switch_1_pressed));
+					break;
+				case BURAN_SWITCH_2_EVENT:
+					hal_serial_transmit_non_blocking(buran_switch_2_pressed, sizeof(buran_switch_2_pressed));
+					break;
+				case BURAN_SWITCH_3_EVENT:
+					hal_serial_transmit_non_blocking(buran_switch_3_pressed, sizeof(buran_switch_3_pressed));
+					break;
+				case BURAN_SWITCH_4_EVENT:
+					hal_serial_transmit_non_blocking(buran_switch_4_pressed, sizeof(buran_switch_4_pressed));
+					break;
+				default:
+					break;
 			}
 		}
+		
     }
 }
