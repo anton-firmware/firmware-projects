@@ -224,13 +224,13 @@
     <Compile Include="buran\inc\buran.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="buran\inc\command_handler.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="buran\src\buran.c">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="command_handler.c">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="command_handler.h">
+    <Compile Include="buran\src\command_handler.c">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="Device_Startup\startup_samd11.c">

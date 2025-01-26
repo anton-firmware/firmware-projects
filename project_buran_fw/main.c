@@ -172,9 +172,6 @@ static void buran_gpio_init(void)
 
 int main(void)
  {
-    /* Initialize the SAM system */
-    SystemInit();
-	
 	hal_gpio_clock_init();
 	hal_serial_clock_init();
 	
