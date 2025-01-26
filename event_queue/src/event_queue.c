@@ -27,6 +27,7 @@ bool event_queue_initialise(event_t *buffer, size_t length)
         queue.buffer_length = length;
         queue.head = 0u;
         queue.tail = 0u;
+		result = true;
     }
     
     return result;
