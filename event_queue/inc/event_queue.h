@@ -9,6 +9,7 @@
 typedef struct 
 {
     uint8_t id; /*!< ID of the event. */
+	uint8_t byte; /*!< Optional byte of data. */
 } event_t;
 
 /** Structure representing the event queue. */
