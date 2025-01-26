@@ -14,33 +14,61 @@
 #include "hal_result.h"
 #include "sam.h"
 
-#define EVENT_QUEUE_SIZE          100u
+#define EVENT_QUEUE_SIZE     256u
+#define BURAN_SWITCH_1_EVENT 0u
+#define BURAN_SWITCH_2_EVENT 1u
+#define BURAN_SWITCH_3_EVENT 2u
+#define BURAN_SWITCH_4_EVENT 3u
 
 static event_t event_queue[EVENT_QUEUE_SIZE];
 
-static void buran_callback_serial(void)
+static void buran_callback_serial(uint8_t byte)
 {
-	
+	(void)byte;
 }
 
 static void buran_callback_switch_1(void)
 {
+	event_t switch_1_event = 
+	{
+		.id = BURAN_SWITCH_1_EVENT,
+	};
 	
+	/* Critical section not needed as we're executing within a handler context. */
+	event_queue_enqueue(switch_1_event);
 }
 
 static void buran_callback_switch_2(void)
 {
+	event_t switch_2_event =
+	{
+		.id = BURAN_SWITCH_2_EVENT,
+	};
 	
+	/* Critical section not needed as we're executing within a handler context. */
+	event_queue_enqueue(switch_2_event);
 }
 
 static void buran_callback_switch_3(void)
 {
+	event_t switch_3_event =
+	{
+		.id = BURAN_SWITCH_3_EVENT,
+	};
 	
+	/* Critical section not needed as we're executing within a handler context. */
+	event_queue_enqueue(switch_3_event);
 }
 
 static void buran_callback_switch_4(void)
 {
+	event_t switch_4_event =
+	{
+		.id = BURAN_SWITCH_4_EVENT,
+	};
 	
+	/* Critical section not needed as we're executing within a handler context. */
+	event_queue_enqueue(switch_4_event);
 }
 
 static void buran_timer_init(void)
