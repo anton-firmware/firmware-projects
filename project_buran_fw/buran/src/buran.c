@@ -102,7 +102,7 @@ const hal_gpio_pin_t buran_gpio_pin_tx =
 
 const hal_gpio_pin_t buran_gpio_pin_rx =
 {
-	.pin = BURAN_USART_TX_PIN,
+	.pin = BURAN_USART_RX_PIN,
 	.port = BURAN_PORT_A_INDEX,
 	.pin_mode = HAL_GPIO_ALTERNATE,
 };
