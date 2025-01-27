@@ -16,7 +16,7 @@ namespace Buran_Controller
         {
             InitializeComponent();
             cboFunction.Items.AddRange(Enum.GetNames(typeof(BUTTON_FUNCTION)));
-            cboSceneSelect.Items.AddRange(SLOBSLocal.SceneValuePairs.Keys.ToArray());
+            //cboSceneSelect.Items.AddRange(SLOBSLocal.SceneValuePairs.Keys.ToArray());
         }
 
         private void frmButtonConfig_Load(object sender, EventArgs e)

@@ -34,12 +34,14 @@ namespace Buran_Controller
             this.olvBtnID = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
             this.olvBtnColor = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
             this.olvBtnFunction = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
-            this.button1 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
-            this.button3 = new System.Windows.Forms.Button();
-            this.olvTimer = new System.Windows.Forms.Timer(this.components);
             this.olvSceneName = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+            this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.CreateButtonProfileButton = new System.Windows.Forms.Button();
+            this.ApplyProfilesButton = new System.Windows.Forms.Button();
+            this.SaveProfileButton = new System.Windows.Forms.Button();
+            this.olvTimer = new System.Windows.Forms.Timer(this.components);
+            this.LoadProfileButton = new System.Windows.Forms.Button();
+            this.SettingsButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.olvController)).BeginInit();
             this.SuspendLayout();
             // 
@@ -61,7 +63,7 @@ namespace Buran_Controller
             this.olvController.HideSelection = false;
             this.olvController.Location = new System.Drawing.Point(12, 39);
             this.olvController.Name = "olvController";
-            this.olvController.Size = new System.Drawing.Size(683, 386);
+            this.olvController.Size = new System.Drawing.Size(987, 386);
             this.olvController.TabIndex = 0;
             this.olvController.UseCompatibleStateImageBehavior = false;
             this.olvController.View = System.Windows.Forms.View.Details;
@@ -93,49 +95,70 @@ namespace Buran_Controller
             this.comboBox1.Size = new System.Drawing.Size(195, 21);
             this.comboBox1.TabIndex = 1;
             // 
-            // button1
+            // CreateButtonProfileButton
             // 
-            this.button1.Location = new System.Drawing.Point(213, 12);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(152, 21);
-            this.button1.TabIndex = 2;
-            this.button1.Text = "Create Button Profile";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.CreateButtonProfileButton.Location = new System.Drawing.Point(213, 12);
+            this.CreateButtonProfileButton.Name = "CreateButtonProfileButton";
+            this.CreateButtonProfileButton.Size = new System.Drawing.Size(152, 21);
+            this.CreateButtonProfileButton.TabIndex = 2;
+            this.CreateButtonProfileButton.Text = "Create Button Profile";
+            this.CreateButtonProfileButton.UseVisualStyleBackColor = true;
+            this.CreateButtonProfileButton.Click += new System.EventHandler(this.button1_Click);
             // 
-            // button2
+            // ApplyProfilesButton
             // 
-            this.button2.Location = new System.Drawing.Point(371, 12);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(159, 21);
-            this.button2.TabIndex = 3;
-            this.button2.Text = "Apply Profiles";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
+            this.ApplyProfilesButton.Location = new System.Drawing.Point(371, 12);
+            this.ApplyProfilesButton.Name = "ApplyProfilesButton";
+            this.ApplyProfilesButton.Size = new System.Drawing.Size(159, 21);
+            this.ApplyProfilesButton.TabIndex = 3;
+            this.ApplyProfilesButton.Text = "Apply Profiles";
+            this.ApplyProfilesButton.UseVisualStyleBackColor = true;
+            this.ApplyProfilesButton.Click += new System.EventHandler(this.button2_Click);
             // 
-            // button3
+            // SaveProfileButton
             // 
-            this.button3.Location = new System.Drawing.Point(536, 12);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(159, 21);
-            this.button3.TabIndex = 4;
-            this.button3.Text = "Save Profiles";
-            this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
+            this.SaveProfileButton.Location = new System.Drawing.Point(536, 12);
+            this.SaveProfileButton.Name = "SaveProfileButton";
+            this.SaveProfileButton.Size = new System.Drawing.Size(159, 21);
+            this.SaveProfileButton.TabIndex = 4;
+            this.SaveProfileButton.Text = "Save Profiles";
+            this.SaveProfileButton.UseVisualStyleBackColor = true;
+            this.SaveProfileButton.Click += new System.EventHandler(this.button3_Click);
             // 
             // olvTimer
             // 
             this.olvTimer.Enabled = true;
             this.olvTimer.Tick += new System.EventHandler(this.olvTimer_Tick);
             // 
+            // LoadProfileButton
+            // 
+            this.LoadProfileButton.Location = new System.Drawing.Point(701, 11);
+            this.LoadProfileButton.Name = "LoadProfileButton";
+            this.LoadProfileButton.Size = new System.Drawing.Size(159, 21);
+            this.LoadProfileButton.TabIndex = 5;
+            this.LoadProfileButton.Text = "Load Profiles";
+            this.LoadProfileButton.UseVisualStyleBackColor = true;
+            // 
+            // SettingsButton
+            // 
+            this.SettingsButton.Location = new System.Drawing.Point(866, 11);
+            this.SettingsButton.Name = "SettingsButton";
+            this.SettingsButton.Size = new System.Drawing.Size(133, 21);
+            this.SettingsButton.TabIndex = 6;
+            this.SettingsButton.Text = "Settings";
+            this.SettingsButton.UseVisualStyleBackColor = true;
+            this.SettingsButton.Click += new System.EventHandler(this.SettingsButton_Click);
+            // 
             // frmBuranController
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(711, 437);
-            this.Controls.Add(this.button3);
-            this.Controls.Add(this.button2);
-            this.Controls.Add(this.button1);
+            this.ClientSize = new System.Drawing.Size(1011, 437);
+            this.Controls.Add(this.SettingsButton);
+            this.Controls.Add(this.LoadProfileButton);
+            this.Controls.Add(this.SaveProfileButton);
+            this.Controls.Add(this.ApplyProfilesButton);
+            this.Controls.Add(this.CreateButtonProfileButton);
             this.Controls.Add(this.comboBox1);
             this.Controls.Add(this.olvController);
             this.Name = "frmBuranController";
@@ -150,14 +173,16 @@ namespace Buran_Controller
 
         private BrightIdeasSoftware.ObjectListView olvController;
         private System.Windows.Forms.ComboBox comboBox1;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button CreateButtonProfileButton;
+        private System.Windows.Forms.Button ApplyProfilesButton;
         private BrightIdeasSoftware.OLVColumn olvBtnID;
-        private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.Button SaveProfileButton;
         private BrightIdeasSoftware.OLVColumn olvBtnColor;
         private BrightIdeasSoftware.OLVColumn olvBtnFunction;
         private System.Windows.Forms.Timer olvTimer;
         private BrightIdeasSoftware.OLVColumn olvSceneName;
+        private System.Windows.Forms.Button LoadProfileButton;
+        private System.Windows.Forms.Button SettingsButton;
     }
 }
 
