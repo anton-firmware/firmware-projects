@@ -1,0 +1,54 @@
+C:\Users\Anon\Documents\project_buran_controller\Project_Buran_Controller\bin\Debug\Project_Buran_Controller.exe.config
+C:\Users\Anon\Documents\project_buran_controller\Project_Buran_Controller\bin\Debug\Project_Buran_Controller.exe
+C:\Users\Anon\Documents\project_buran_controller\Project_Buran_Controller\bin\Debug\Project_Buran_Controller.pdb
+C:\Users\Anon\Documents\project_buran_controller\Project_Buran_Controller\bin\Debug\AutoMapper.dll
+C:\Users\Anon\Documents\project_buran_controller\Project_Buran_Controller\bin\Debug\DiscordRPC.dll
+C:\Users\Anon\Documents\project_buran_controller\Project_Buran_Controller\bin\Debug\Newtonsoft.Json.dll
+C:\Users\Anon\Documents\project_buran_controller\Project_Buran_Controller\bin\Debug\ObjectListView.dll
+C:\Users\Anon\Documents\project_buran_controller\Project_Buran_Controller\bin\Debug\SLOBSharp.dll
+C:\Users\Anon\Documents\project_buran_controller\Project_Buran_Controller\bin\Debug\websocket-sharp.dll
+C:\Users\Anon\Documents\project_buran_controller\Project_Buran_Controller\bin\Debug\DiscordRPC.pdb
+C:\Users\Anon\Documents\project_buran_controller\Project_Buran_Controller\bin\Debug\DiscordRPC.xml
+C:\Users\Anon\Documents\project_buran_controller\Project_Buran_Controller\bin\Debug\AutoMapper.pdb
+C:\Users\Anon\Documents\project_buran_controller\Project_Buran_Controller\bin\Debug\AutoMapper.xml
+C:\Users\Anon\Documents\project_buran_controller\Project_Buran_Controller\bin\Debug\Newtonsoft.Json.xml
+C:\Users\Anon\Documents\project_buran_controller\Project_Buran_Controller\bin\Debug\ObjectListView.xml
+C:\Users\Anon\Documents\project_buran_controller\Project_Buran_Controller\bin\Debug\websocket-sharp.xml
+C:\Users\Anon\Documents\project_buran_controller\Project_Buran_Controller\obj\Debug\Project_Buran_Controller.csprojAssemblyReference.cache
+C:\Users\Anon\Documents\project_buran_controller\Project_Buran_Controller\obj\Debug\Project_Buran_Controller.Properties.Resources.resources
+C:\Users\Anon\Documents\project_buran_controller\Project_Buran_Controller\obj\Debug\Project_Buran_Controller.csproj.GenerateResource.cache
+C:\Users\Anon\Documents\project_buran_controller\Project_Buran_Controller\obj\Debug\Project_Buran_Controller.csproj.CoreCompileInputs.cache
+C:\Users\Anon\Documents\project_buran_controller\Project_Buran_Controller\obj\Debug\Project_Buran_Controller.csproj.CopyComplete
+C:\Users\Anon\Documents\project_buran_controller\Project_Buran_Controller\obj\Debug\Project_Buran_Controller.exe
+C:\Users\Anon\Documents\project_buran_controller\Project_Buran_Controller\obj\Debug\Project_Buran_Controller.pdb
+C:\Users\Anon\Documents\project_buran_controller\Project_Buran_Controller\obj\Debug\Buran_Controller.frmBuranController.resources
+C:\Users\Anon\Documents\project_buran_controller\Project_Buran_Controller\obj\Debug\Buran_Controller.frmButtonConfig.resources
+C:\Users\Anon\Documents\project_buran_controller\Project_Buran_Controller\bin\Debug\LibUsbDotNet.dll
+C:\Users\Anon\Documents\project_buran_controller\Project_Buran_Controller\bin\Debug\System.Memory.dll
+C:\Users\Anon\Documents\project_buran_controller\Project_Buran_Controller\bin\Debug\System.Runtime.CompilerServices.Unsafe.dll
+C:\Users\Anon\Documents\project_buran_controller\Project_Buran_Controller\bin\Debug\System.Buffers.dll
+C:\Users\Anon\Documents\project_buran_controller\Project_Buran_Controller\bin\Debug\LibUsbDotNet.pdb
+D:\Hardware Projects\Project Buran\project_buran_controller\Project_Buran_Controller\bin\Debug\Project_Buran_Controller.exe.config
+D:\Hardware Projects\Project Buran\project_buran_controller\Project_Buran_Controller\bin\Debug\Project_Buran_Controller.exe
+D:\Hardware Projects\Project Buran\project_buran_controller\Project_Buran_Controller\bin\Debug\Project_Buran_Controller.pdb
+D:\Hardware Projects\Project Buran\project_buran_controller\Project_Buran_Controller\bin\Debug\AutoMapper.dll
+D:\Hardware Projects\Project Buran\project_buran_controller\Project_Buran_Controller\bin\Debug\Newtonsoft.Json.dll
+D:\Hardware Projects\Project Buran\project_buran_controller\Project_Buran_Controller\bin\Debug\ObjectListView.dll
+D:\Hardware Projects\Project Buran\project_buran_controller\Project_Buran_Controller\bin\Debug\SLOBSharp.dll
+D:\Hardware Projects\Project Buran\project_buran_controller\Project_Buran_Controller\bin\Debug\websocket-sharp.dll
+D:\Hardware Projects\Project Buran\project_buran_controller\Project_Buran_Controller\bin\Debug\AutoMapper.pdb
+D:\Hardware Projects\Project Buran\project_buran_controller\Project_Buran_Controller\bin\Debug\AutoMapper.xml
+D:\Hardware Projects\Project Buran\project_buran_controller\Project_Buran_Controller\bin\Debug\Newtonsoft.Json.xml
+D:\Hardware Projects\Project Buran\project_buran_controller\Project_Buran_Controller\bin\Debug\ObjectListView.xml
+D:\Hardware Projects\Project Buran\project_buran_controller\Project_Buran_Controller\bin\Debug\websocket-sharp.xml
+D:\Hardware Projects\Project Buran\project_buran_controller\Project_Buran_Controller\obj\Debug\Project_Buran_Controller.csproj.AssemblyReference.cache
+D:\Hardware Projects\Project Buran\project_buran_controller\Project_Buran_Controller\obj\Debug\Buran_Controller.frmBuranController.resources
+D:\Hardware Projects\Project Buran\project_buran_controller\Project_Buran_Controller\obj\Debug\Buran_Controller.frmButtonConfig.resources
+D:\Hardware Projects\Project Buran\project_buran_controller\Project_Buran_Controller\obj\Debug\Project_Buran_Controller.Properties.Resources.resources
+D:\Hardware Projects\Project Buran\project_buran_controller\Project_Buran_Controller\obj\Debug\Project_Buran_Controller.csproj.GenerateResource.cache
+D:\Hardware Projects\Project Buran\project_buran_controller\Project_Buran_Controller\obj\Debug\Project_Buran_Controller.csproj.CoreCompileInputs.cache
+D:\Hardware Projects\Project Buran\project_buran_controller\Project_Buran_Controller\obj\Debug\Project_Buran_Controller.csproj.CopyComplete
+D:\Hardware Projects\Project Buran\project_buran_controller\Project_Buran_Controller\obj\Debug\Project_Buran_Controller.exe
+D:\Hardware Projects\Project Buran\project_buran_controller\Project_Buran_Controller\obj\Debug\Project_Buran_Controller.pdb
+D:\Hardware Projects\Project Buran\project_buran_controller\Project_Buran_Controller\obj\Debug\Project_Buran_Controller.csproj.SuggestedBindingRedirects.cache
+D:\Hardware Projects\Project Buran\project_buran_controller\Project_Buran_Controller\obj\Debug\Project_Buran_Controller.frmSettings.resources
