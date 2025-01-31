@@ -5,6 +5,7 @@ tmp
 Debug
 bin
 obj
+packages
 
 # File extensions
 *.a
