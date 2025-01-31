@@ -10,7 +10,8 @@ namespace Buran_Controller
     {
         public String SceneName { get; set; }
 
-        public StreamSceneButtonProfile(int ID, System.Drawing.Color Color, String SceneName, BUTTON_FUNCTION Function) : base(ID, Color, Function)
+        public StreamSceneButtonProfile(int ID, System.Drawing.Color Color, String SceneName, BUTTON_FUNCTION Function, 
+            string ButtonDescription) : base(ID, Color, Function, ButtonDescription)
         {
             this.SceneName = SceneName;
         }

@@ -201,6 +201,7 @@
             this.SerialConnectButton.TabIndex = 6;
             this.SerialConnectButton.Text = "Connect";
             this.SerialConnectButton.UseVisualStyleBackColor = true;
+            this.SerialConnectButton.Click += new System.EventHandler(this.SerialConnectButton_Click);
             // 
             // SerialRefreshButton
             // 
@@ -230,6 +231,7 @@
             this.Controls.Add(this.ConfigGroup);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.ApplyButton);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Name = "frmSettings";
             this.Text = "frmSettings";
             this.Load += new System.EventHandler(this.frmSettings_Load);

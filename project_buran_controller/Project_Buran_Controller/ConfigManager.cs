@@ -95,13 +95,5 @@ namespace Project_Buran_Controller
 
             return result;
         }
-
-        public static BuranResult.Result ImportConfig(string BuranConfigPath)
-        {
-            /** Assume Success. */
-            BuranResult.Result result = BuranResult.Result.SUCCESS;
-
-            return result;
-        }
     }
 }

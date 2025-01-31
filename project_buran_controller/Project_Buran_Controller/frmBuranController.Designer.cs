@@ -42,6 +42,7 @@ namespace Buran_Controller
             this.olvTimer = new System.Windows.Forms.Timer(this.components);
             this.LoadProfileButton = new System.Windows.Forms.Button();
             this.SettingsButton = new System.Windows.Forms.Button();
+            this.USBIdentifyTimer = new System.Windows.Forms.Timer(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.olvController)).BeginInit();
             this.SuspendLayout();
             // 
@@ -72,20 +73,29 @@ namespace Buran_Controller
             // olvBtnID
             // 
             this.olvBtnID.AspectName = "ID";
+            this.olvBtnID.Groupable = false;
             this.olvBtnID.Text = "Button ID";
             this.olvBtnID.Width = 78;
             // 
             // olvBtnColor
             // 
             this.olvBtnColor.AspectName = "ButtonColor";
+            this.olvBtnColor.Groupable = false;
             this.olvBtnColor.Text = "Button Color";
             this.olvBtnColor.Width = 120;
             // 
             // olvBtnFunction
             // 
             this.olvBtnFunction.AspectName = "Function";
+            this.olvBtnFunction.Groupable = false;
             this.olvBtnFunction.Text = "Button Function";
             this.olvBtnFunction.Width = 118;
+            // 
+            // olvSceneName
+            // 
+            this.olvSceneName.AspectName = "ButtonDescription";
+            this.olvSceneName.Groupable = false;
+            this.olvSceneName.Text = "Description";
             // 
             // comboBox1
             // 
@@ -149,6 +159,11 @@ namespace Buran_Controller
             this.SettingsButton.UseVisualStyleBackColor = true;
             this.SettingsButton.Click += new System.EventHandler(this.SettingsButton_Click);
             // 
+            // USBIdentifyTimer
+            // 
+            this.USBIdentifyTimer.Interval = 1;
+            this.USBIdentifyTimer.Tick += new System.EventHandler(this.USBIdentifyTimer_Tick);
+            // 
             // frmBuranController
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -183,6 +198,7 @@ namespace Buran_Controller
         private BrightIdeasSoftware.OLVColumn olvSceneName;
         private System.Windows.Forms.Button LoadProfileButton;
         private System.Windows.Forms.Button SettingsButton;
+        private System.Windows.Forms.Timer USBIdentifyTimer;
     }
 }
 

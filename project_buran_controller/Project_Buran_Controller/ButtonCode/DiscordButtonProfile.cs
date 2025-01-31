@@ -25,7 +25,8 @@ namespace Buran_Controller
         /// <param name="ID">The ID for the button for firmware identification</param>
         /// <param name="Color">The color of the button.</param>
         /// <param name="Function">Enum representing the function of the button.</param>
-        public DiscordButtonProfile(int ID, Color Color, BUTTON_FUNCTION Function) : base(ID, Color, Function) 
+        public DiscordButtonProfile(int ID, Color Color, BUTTON_FUNCTION Function, 
+            string ButtonDescription) : base(ID, Color, Function, ButtonDescription) 
         {
               
         }

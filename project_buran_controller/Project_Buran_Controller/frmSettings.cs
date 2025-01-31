@@ -40,12 +40,16 @@ namespace Project_Buran_Controller
 
         private void ApplyButton_Click(object sender, EventArgs e)
         {
-            BuranExecutive.BuranConfig.ButtonConfigFilePath = ConfigPathDialog.SelectedPath;
+            BuranExecutive.BuranConfig.ButtonConfigFilePath = ButtonPathTextBox.Text;
+            BuranExecutive.BuranConfig.BuranConfigFilePath = BuranPathTextBox.Text;
+            this.Hide();
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            if(BuranExecutive.USBControl != null) 
+            COMPortComboBox.Items.Clear();
+
+            if (BuranExecutive.USBControl != null) 
             {
                 string[] ports = BuranExecutive.USBControl.GetPorts();
 
@@ -72,6 +76,18 @@ namespace Project_Buran_Controller
         {
             ConfigPathDialog.ShowDialog();
             BuranPathTextBox.Text = ConfigPathDialog.SelectedPath;
+        }
+
+        private void SerialConnectButton_Click(object sender, EventArgs e)
+        {
+            string com = COMPortComboBox.SelectedItem.ToString();
+
+            if (BuranExecutive.USBControl.IsBuran(com)) 
+            {
+                int buttons = BuranExecutive.USBControl.GetButtons();
+                this.label2.Text = buttons.ToString();
+                this.BuranStatusDynmaicLabel.Text = "Active";
+            }
         }
     }
 }
