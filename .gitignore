@@ -3,9 +3,18 @@
 .vs
 tmp
 Debug
+bin
+obj
 
 # File extensions
 *.a
 *.o
 *.log
 *.config
+*.exe
+*.dll
+*.pdb
+*.appx
+*.appxbundle
+*.msix
+*.msixbundle
