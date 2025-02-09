@@ -148,6 +148,7 @@ namespace Buran_Controller
             this.LoadProfileButton.TabIndex = 5;
             this.LoadProfileButton.Text = "Load Profiles";
             this.LoadProfileButton.UseVisualStyleBackColor = true;
+            this.LoadProfileButton.Click += new System.EventHandler(this.LoadProfileButton_Click);
             // 
             // SettingsButton
             // 

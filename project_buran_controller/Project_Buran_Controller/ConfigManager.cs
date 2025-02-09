@@ -15,6 +15,12 @@ namespace Project_Buran_Controller
         private const string ButtonProfileFileName = "\\button_profiles.json";
         private const string BuranConfigFileName = "\\buran_profile_config.json";
 
+        private static readonly JsonSerializerSettings settings = new JsonSerializerSettings
+        {
+            TypeNameHandling = TypeNameHandling.Auto,
+            Formatting = Formatting.Indented
+        };
+
         /// <summary>
         /// Save the button profiles in JSON format.
         /// </summary>
@@ -38,11 +44,8 @@ namespace Project_Buran_Controller
             }
             else
             {
-                foreach (ButtonProfile profile in buttonProfiles)
-                {
-                    string ButtonJson = JsonConvert.SerializeObject(profile);
-                    JSONConfig.Append(ButtonJson);
-                }
+                string ButtonJson = JsonConvert.SerializeObject(buttonProfiles, ConfigManager.settings);
+                JSONConfig.Append(ButtonJson);
 
                 string FullPath = buttonConfigFilePath + ButtonProfileFileName;
 
@@ -92,6 +95,23 @@ namespace Project_Buran_Controller
         {
             /** Assume Success. */
             BuranResult.Result result = BuranResult.Result.SUCCESS;
+
+            if (ButtonProfilePath == "")
+            {
+                result = BuranResult.Result.INVALID_PATH;
+            }
+            else
+            {
+                string config = ButtonProfilePath + "\\button_profiles.json";
+
+                using (StreamReader reader = new StreamReader(config))
+                {
+                    string json = reader.ReadToEnd();
+                    List<ButtonProfile> buttons = JsonConvert.DeserializeObject< List<ButtonProfile>>(json, settings);
+                    BuranExecutive.ButtonProfiles = buttons;
+                    BuranExecutive.UpdateGUI = true;
+                }
+            }
 
             return result;
         }

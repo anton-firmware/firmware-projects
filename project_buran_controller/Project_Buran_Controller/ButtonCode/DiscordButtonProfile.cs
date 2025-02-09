@@ -7,14 +7,18 @@ using System.Drawing;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using System.Threading;
 
 namespace Buran_Controller
 {
     class DiscordButtonProfile : ButtonProfile
     {
+        [DllImport("user32.dll", SetLastError = true)]
+        static extern void keybd_event(byte bVk, byte bScan, int dwFlags, int dwExtraInfo);
 
-        [DllImport("User32.dll")]
-        static extern int SetForegroundWindow(IntPtr point);
+        const int VIRTUAL_F5 = 0x74;
+        const int VIRTUAL_KEY_DOWN = 0x0000;
+        const int VIRTUAL_KEY_UP = 0x0002;
 
         ///<summary>Variable representing the mute setting for the discord button profile</summary>
         private bool MuteSetting { get; set; } = false;
@@ -30,19 +34,23 @@ namespace Buran_Controller
         {
               
         }
+
         /// <summary>
         /// Overriden function for the button function
         /// </summary>
         public override void ExecuteFunction()
         {
-            //DiscordLocal.MuteSetting(!this.MuteSetting);
-
             Process p = Process.GetProcessesByName("discord").FirstOrDefault();
+
             if (p != null)
             {
                 IntPtr h = p.MainWindowHandle;
-                SetForegroundWindow(h);
-                SendKeys.SendWait("^%");
+                Thread.Sleep(10);
+                keybd_event(VIRTUAL_F5, 0, VIRTUAL_KEY_DOWN, 0);
+                Thread.Sleep(10);
+                keybd_event(VIRTUAL_F5, 0, VIRTUAL_KEY_UP, 0);
+
+                Debug.WriteLine("Buran: Discord mute toggle.");
             }
         }
     }
