@@ -1,30 +1,62 @@
 ﻿using Buran_Controller;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
+using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Project_Buran_Controller
 {
     public partial class frmSettings : Form
     {
-
         private FolderBrowserDialog ConfigPathDialog;
-
+        private List<String> COMPorts = new List<String>();
+        
         public frmSettings()
         {
             InitializeComponent();
-            ConfigPathDialog = new FolderBrowserDialog(); 
+            PopulatePaths();
+            ConfigPathDialog = new FolderBrowserDialog();
+        }
+
+        private void PopulateCOMPorts()
+        {
+            string[] ports = BuranExecutive.USBControl.GetPorts();
+
+            if (ports.Count() > 0)
+            {
+                COMPorts.Clear();
+
+                foreach (string port in ports)
+                {
+                    COMPorts.Add(port);
+                }
+            }
+            else
+            {
+                BuranResult.RaiseMessageBox(BuranResult.Result.NO_PORTS);
+            }
+        }
+
+        private void PopulatePaths()
+        {
+            string buranConfigPath = BuranExecutive.BuranConfig.BuranConfigFilePath;
+            string buttonConfigPath = BuranExecutive.BuranConfig.ButtonConfigFilePath;
+
+            if (!string.IsNullOrEmpty(buttonConfigPath))
+            {
+                ButtonPathTextBox.Text = buttonConfigPath;
+            }
+
+            if (!string.IsNullOrEmpty(buranConfigPath))
+            {
+                BuranPathTextBox.Text = buranConfigPath;
+            }
         }
 
         private void frmSettings_Load(object sender, EventArgs e)
         {
-
+            PopulateCOMPorts();
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -42,6 +74,7 @@ namespace Project_Buran_Controller
         {
             BuranExecutive.BuranConfig.ButtonConfigFilePath = ButtonPathTextBox.Text;
             BuranExecutive.BuranConfig.BuranConfigFilePath = BuranPathTextBox.Text;
+
             this.Hide();
         }
 
@@ -51,19 +84,7 @@ namespace Project_Buran_Controller
 
             if (BuranExecutive.USBControl != null) 
             {
-                string[] ports = BuranExecutive.USBControl.GetPorts();
-
-                if (ports.Count() > 0)
-                {
-                    foreach (string port in ports)
-                    {
-                        COMPortComboBox.Items.Add(port);
-                    }
-                }
-                else 
-                {
-                    BuranResult.RaiseMessageBox(BuranResult.Result.NO_PORTS);
-                }
+                COMPortComboBox.Items.AddRange(COMPorts.ToArray());
             }
         }
 
@@ -87,6 +108,88 @@ namespace Project_Buran_Controller
                 int buttons = BuranExecutive.USBControl.GetButtons();
                 this.label2.Text = buttons.ToString();
                 this.BuranStatusDynmaicLabel.Text = "Active";
+            }
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            foreach (string com_port in COMPorts) 
+            {
+                if (BuranExecutive.USBControl.IsBuran(com_port))
+                {
+                    int buttons = BuranExecutive.USBControl.GetButtons();
+                    this.label2.Text = buttons.ToString();
+                    this.BuranStatusDynmaicLabel.Text = "Active";
+                    MessageBox.Show($"Buran detected on {com_port} with {buttons} buttons!");
+                    break;
+                }
+            }
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            string path;
+
+            if (!string.IsNullOrEmpty(BuranExecutive.BuranConfig.BuranConfigFilePath))
+            {
+                path = BuranExecutive.BuranConfig.BuranConfigFilePath;
+            }
+            else
+            {
+                path = System.Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
+                path = Path.Combine(path, "BuranData");
+            }
+
+            switch (ConfigManager.ImportBuranConfig(path))
+            {
+                case BuranResult.Result.SUCCESS:
+                    MessageBox.Show("Profiles loaded successfully!", "Success!", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    PopulatePaths();
+                    break;
+                case BuranResult.Result.INVALID_PATH:
+                    MessageBox.Show("Buran path not set correctly!\n" +
+                        "Please modify in the settings dialog!", "Unable to save!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    break;
+                default:
+                    MessageBox.Show("Unexpected error - Code 0x1", "Unexpected error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    break;
+            }
+        }
+
+        private void button2_Click_1(object sender, EventArgs e)
+        {
+            string path;
+
+            if (!string.IsNullOrEmpty(BuranExecutive.BuranConfig.BuranConfigFilePath))
+            {
+                path = BuranExecutive.BuranConfig.BuranConfigFilePath;
+            }
+            else 
+            {
+                path = System.Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
+                path = Path.Combine(path, "BuranData");
+
+                if (!Directory.Exists(path)) 
+                {
+                    Directory.CreateDirectory(path);
+                }
+            }
+
+            BuranExecutive.BuranConfig.BuranConfigFilePath = BuranPathTextBox.Text;
+            BuranExecutive.BuranConfig.ButtonConfigFilePath = ButtonPathTextBox.Text;
+
+            switch (ConfigManager.SaveConfigButtons(BuranExecutive.BuranConfig, path))
+            {
+                case BuranResult.Result.SUCCESS:
+                    MessageBox.Show("Profiles saved successfully!", "Success!", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    break;
+                case BuranResult.Result.INVALID_PATH:
+                    MessageBox.Show("Config path not set correctly!\n" +
+                        "Please modify in the settings dialog!", "Unable to save!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    break;
+                default:
+                    MessageBox.Show("Unexpected error - Code 0x0", "Unexpected error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    break;
             }
         }
     }

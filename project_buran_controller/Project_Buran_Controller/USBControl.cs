@@ -36,6 +36,8 @@ namespace Buran_Controller
             SerialPort.Parity = Parity.None;
             SerialPort.Handshake = Handshake.XOnXOff;
             SerialPort.DtrEnable = true;
+            SerialPort.WriteTimeout = 50;
+            SerialPort.ReadTimeout = 50;
         }
 
         private static void DataReceivedHandler(object sender, SerialDataReceivedEventArgs e)
@@ -94,15 +96,20 @@ namespace Buran_Controller
         public bool IsBuran(string name) 
         {
             bool response = false;
+            SerialPort.PortName = name;
 
-            this.SerialPort.PortName = name;
             try 
             {
-                this.SerialPort.Open();
+                if (!SerialPort.IsOpen)
+                {
+                    SerialPort.Open();
+                }
+
                 SerialPort.Write(new byte[] { (byte)'I' }, 0, 1);
+
                 string identify = SerialPort.ReadLine().TrimEnd('\r');
 
-                if (identify != null)
+                if (!string.IsNullOrEmpty(identify))
                 {
                     if (identify == "BuranPCB")
                     {
@@ -111,14 +118,14 @@ namespace Buran_Controller
                     }
                     else
                     {
-                        this.SerialPort.Close();
-                        this.SerialPort.PortName = null;
+                        SerialPort.Close();
+                        SerialPort.PortName = null;
                     }
                 }
             }
             catch(Exception e) 
             { 
-
+                SerialPort.Close();
             }
 
             return response;

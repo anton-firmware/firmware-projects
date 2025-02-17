@@ -177,6 +177,7 @@ namespace Buran_Controller
             this.Controls.Add(this.CreateButtonProfileButton);
             this.Controls.Add(this.comboBox1);
             this.Controls.Add(this.olvController);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Name = "frmBuranController";
             this.Text = "frmBuranController";
             this.Load += new System.EventHandler(this.frmBuranController_Load);
