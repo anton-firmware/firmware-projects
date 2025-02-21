@@ -16,18 +16,34 @@ namespace Buran_Controller
         {
             InitializeComponent();
             cboFunction.Items.AddRange(Enum.GetNames(typeof(BUTTON_FUNCTION)));
-            //cboSceneSelect.Items.AddRange(SLOBSLocal.SceneValuePairs.Keys.ToArray());
         }
 
         private void frmButtonConfig_Load(object sender, EventArgs e)
         {
             guiUpdateTimer.Enabled = true;
+            cboSceneSelect.Items.Clear();
+            cboSceneSelect.Items.AddRange(SLOBSLocal.SceneValuePairs.Keys.ToArray());
+
+            if (BuranExecutive.USBControl.buran_active) 
+            {
+                buttonIDUpDown.Enabled = true;
+                btnAddButton.Enabled = true;
+                buttonIDUpDown.Maximum = BuranExecutive.USBControl.number_of_buttons;
+                buttonIDUpDown.Minimum = 1;
+            }
+            else
+            {
+                btnAddButton.Enabled = false;
+                buttonIDUpDown.Enabled = false;
+            }
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
             ButtonFactory.ButtonColor = buttonColorDialog.Color;
-            ButtonFactory.ID = 0;
+            ButtonFactory.ID = (int)buttonIDUpDown.Value;
+            ButtonFactory.ButtonDescription = cboSceneSelect.Text;
+            bool add = true;
 
             if (pnlScene.Visible)
             {
@@ -35,7 +51,29 @@ namespace Buran_Controller
             }
 
             ButtonFactory.Function = (BUTTON_FUNCTION)Enum.Parse(typeof(BUTTON_FUNCTION), cboFunction.SelectedItem.ToString());
-            BuranExecutive.ButtonProfiles.Add(ButtonFactory.CreateButtonProfile());
+
+            ButtonProfile existing_button = BuranExecutive.ButtonProfiles.Find(x => x.ID == ButtonFactory.ID);
+
+            if (existing_button != null) 
+            {
+                DialogResult result = MessageBox.Show($"The button with ID {ButtonFactory.ID} has already been assigned to! Would you like to replace the assignment?", "Button Exists",
+                    MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
+
+                if (result == DialogResult.Yes) 
+                {
+                    BuranExecutive.ButtonProfiles.Remove(existing_button);
+                }
+                else
+                {
+                    add = false;
+                }
+            }
+
+            if (add) 
+            {
+                BuranExecutive.ButtonProfiles.Add(ButtonFactory.CreateButtonProfile());
+            }
+
             BuranExecutive.UpdateGUI = true;
         }
 
@@ -68,6 +106,21 @@ namespace Buran_Controller
         private void btnClose_Click(object sender, EventArgs e)
         {
             this.Hide();
+        }
+
+        private void pnlScene_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void label1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void cboFunction_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }

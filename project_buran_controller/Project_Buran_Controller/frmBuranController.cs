@@ -37,18 +37,21 @@ namespace Buran_Controller
 
         private void button3_Click(object sender, EventArgs e)
         {
-            switch (ConfigManager.SaveButtonProfiles()) 
+            if (BuranExecutive.ButtonProfiles.Count > 0) 
             {
-                case BuranResult.Result.SUCCESS:
-                    MessageBox.Show("Profiles saved successfully!", "Success!", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    break;
-                case BuranResult.Result.INVALID_PATH:
-                    MessageBox.Show("Config path not set correctly!\n" +
-                        "Please modify in the settings dialog!", "Unable to save!", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    break;
-                default:
-                    MessageBox.Show("Unexpected error - Code 0x0!", "Unexpected error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    break;
+                switch (ConfigManager.SaveButtonProfiles(BuranExecutive.ButtonProfiles, BuranExecutive.BuranConfig.ButtonConfigFilePath))
+                {
+                    case BuranResult.Result.SUCCESS:
+                        MessageBox.Show("Profiles saved successfully!", "Success!", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        break;
+                    case BuranResult.Result.INVALID_PATH:
+                        MessageBox.Show("Config path not set correctly!\n" +
+                            "Please modify in the settings dialog!", "Unable to save!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        break;
+                    default:
+                        MessageBox.Show("Unexpected error - Code 0x0", "Unexpected error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        break;
+                }
             }
         }
 
@@ -59,12 +62,13 @@ namespace Buran_Controller
 
         private void olvTimer_Tick(object sender, EventArgs e)
         {
-            /*if(BuranExecutive.ButtonProfiles != null && BuranExecutive.UpdateGUI) 
+            if(BuranExecutive.ButtonProfiles != null && BuranExecutive.UpdateGUI) 
             {
                 this.olvController.SetObjects(BuranExecutive.ButtonProfiles);
+                this.olvController.Sort("Button ID");
 
                 BuranExecutive.UpdateGUI = false;
-            }*/
+            }
         }
 
         private void olvController_SelectedIndexChanged(object sender, EventArgs e)
@@ -75,6 +79,30 @@ namespace Buran_Controller
         private void SettingsButton_Click(object sender, EventArgs e)
         {
             SettingsDialog.Show();
+        }
+
+        private void USBIdentifyTimer_Tick(object sender, EventArgs e)
+        {
+        }
+
+        private void LoadProfileButton_Click(object sender, EventArgs e)
+        {
+            if (BuranExecutive.BuranConfig.ButtonConfigFilePath != "")
+            {
+                switch (ConfigManager.ImportConfig(BuranExecutive.BuranConfig.ButtonConfigFilePath))
+                {
+                    case BuranResult.Result.SUCCESS:
+                        MessageBox.Show("Profiles loaded successfully!", "Success!", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        break;
+                    case BuranResult.Result.INVALID_PATH:
+                        MessageBox.Show("Button path not set correctly!\n" +
+                            "Please modify in the settings dialog!", "Unable to save!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        break;
+                    default:
+                        MessageBox.Show("Unexpected error - Code 0x1", "Unexpected error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        break;
+                }
+            }
         }
     }
 }

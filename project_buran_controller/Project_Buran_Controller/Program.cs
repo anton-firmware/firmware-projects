@@ -13,7 +13,7 @@ namespace Buran_Controller
         /// </summary>
         [STAThread]
         static void Main()
-        {
+       {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new frmBuranController());

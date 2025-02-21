@@ -16,6 +16,8 @@ namespace Buran_Controller
         public Color ButtonColor { get; set; }
         /// <summary>The function of the button</summary>
         public BUTTON_FUNCTION Function { get; set; }
+        /// <summary>The description of the button</summary>
+        public string ButtonDescription { get; set; }
 
         /// <summary>
         /// Constructor for generic button profile.
@@ -23,11 +25,12 @@ namespace Buran_Controller
         /// <param name="ID">The ID for the button for firmware identification</param>
         /// <param name="ButtonColor">The color of the button.</param>
         /// <param name="Function">The function of the button.</param>
-        public ButtonProfile(int ID, Color ButtonColor, BUTTON_FUNCTION Function)
+        public ButtonProfile(int ID, Color ButtonColor, BUTTON_FUNCTION Function, string buttonDescription)
         {
             this.ID = ID;
             this.ButtonColor = ButtonColor;
             this.Function = Function;
+            this.ButtonDescription = buttonDescription;
         }
         /// <summary> Generic method re</summary>
         public abstract void ExecuteFunction();

@@ -42,7 +42,10 @@ namespace Buran_Controller
             this.cboSceneSelect = new System.Windows.Forms.ComboBox();
             this.lblScene = new System.Windows.Forms.Label();
             this.guiUpdateTimer = new System.Windows.Forms.Timer(this.components);
+            this.buttonIDUpDown = new System.Windows.Forms.NumericUpDown();
+            this.label1 = new System.Windows.Forms.Label();
             this.pnlScene.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.buttonIDUpDown)).BeginInit();
             this.SuspendLayout();
             // 
             // btnAddButton
@@ -67,6 +70,7 @@ namespace Buran_Controller
             // 
             // button3
             // 
+            this.button3.Enabled = false;
             this.button3.Location = new System.Drawing.Point(213, 12);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(143, 23);
@@ -110,16 +114,19 @@ namespace Buran_Controller
             this.cboFunction.Name = "cboFunction";
             this.cboFunction.Size = new System.Drawing.Size(270, 21);
             this.cboFunction.TabIndex = 6;
+            this.cboFunction.SelectedIndexChanged += new System.EventHandler(this.cboFunction_SelectedIndexChanged);
             // 
             // pnlScene
             // 
+            this.pnlScene.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.pnlScene.Controls.Add(this.cboSceneSelect);
             this.pnlScene.Controls.Add(this.lblScene);
-            this.pnlScene.Location = new System.Drawing.Point(12, 156);
+            this.pnlScene.Location = new System.Drawing.Point(12, 123);
             this.pnlScene.Name = "pnlScene";
-            this.pnlScene.Size = new System.Drawing.Size(346, 53);
+            this.pnlScene.Size = new System.Drawing.Size(346, 86);
             this.pnlScene.TabIndex = 7;
             this.pnlScene.Visible = false;
+            this.pnlScene.Paint += new System.Windows.Forms.PaintEventHandler(this.pnlScene_Paint);
             // 
             // cboSceneSelect
             // 
@@ -143,11 +150,30 @@ namespace Buran_Controller
             this.guiUpdateTimer.Interval = 10;
             this.guiUpdateTimer.Tick += new System.EventHandler(this.guiUpdateTimer_Tick);
             // 
+            // buttonIDUpDown
+            // 
+            this.buttonIDUpDown.Location = new System.Drawing.Point(86, 72);
+            this.buttonIDUpDown.Name = "buttonIDUpDown";
+            this.buttonIDUpDown.Size = new System.Drawing.Size(272, 20);
+            this.buttonIDUpDown.TabIndex = 9;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(12, 74);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(38, 13);
+            this.label1.TabIndex = 10;
+            this.label1.Text = "Button";
+            this.label1.Click += new System.EventHandler(this.label1_Click);
+            // 
             // frmButtonConfig
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(370, 250);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.buttonIDUpDown);
             this.Controls.Add(this.pnlScene);
             this.Controls.Add(this.cboFunction);
             this.Controls.Add(this.lblFunction);
@@ -156,11 +182,16 @@ namespace Buran_Controller
             this.Controls.Add(this.button3);
             this.Controls.Add(this.btnClose);
             this.Controls.Add(this.btnAddButton);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "frmButtonConfig";
-            this.Text = " ";
+            this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
+            this.Text = " Button config";
             this.Load += new System.EventHandler(this.frmButtonConfig_Load);
             this.pnlScene.ResumeLayout(false);
             this.pnlScene.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.buttonIDUpDown)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -180,5 +211,7 @@ namespace Buran_Controller
         private System.Windows.Forms.ComboBox cboSceneSelect;
         private System.Windows.Forms.Label lblScene;
         private System.Windows.Forms.Timer guiUpdateTimer;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.NumericUpDown buttonIDUpDown;
     }
 }

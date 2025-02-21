@@ -3,9 +3,27 @@
 .vs
 tmp
 Debug
+bin
+obj
+packages
 
 # File extensions
 *.a
 *.o
 *.log
 *.config
+*.exe
+*.dll
+*.pdb
+*.appx
+*.appxbundle
+*.msix
+*.msixbundle
+*.xml
+*.nupkg
+*.snupkg
+*.p7s
+!app.config
+!web.config
+!packages.config
+!MyCustomSettings.xml

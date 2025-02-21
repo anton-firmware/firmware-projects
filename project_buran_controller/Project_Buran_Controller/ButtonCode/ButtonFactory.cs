@@ -18,11 +18,13 @@ namespace Buran_Controller
         /// <summary>SceneName used when constructing a SLOBS Scene Change button</summary>
         public static string SceneName { get; set; }
         /// <summary>Button ID used to identify the button for firmware and other uses</summary>
-        public static int ID { get; set; }
+        public static int ID { get; set; } = 1;
         /// <summary>The color of the button to be created</summary>
         public static Color ButtonColor { get; set; }
         /// <summary>The function of the button</summary>
         public static BUTTON_FUNCTION Function { get; set; }
+        /// <summary>The function of the button</summary>
+        public static string ButtonDescription { get; set; }
 
         /// <summary>
         /// Creates a ButtonProfile based on the set parameters of Color, ID, and Function specific parameters
@@ -35,10 +37,10 @@ namespace Buran_Controller
             switch (Function)
             {
                 case BUTTON_FUNCTION.DISCORD_MUTE:
-                    Button = new DiscordButtonProfile(ID, ButtonColor, Function);
+                    Button = new DiscordButtonProfile(ID, ButtonColor, Function, ButtonDescription);
                     break;
                 case BUTTON_FUNCTION.SLOBS_SCENE:
-                    Button = new StreamSceneButtonProfile(ID, ButtonColor, SceneName, Function);
+                    Button = new StreamSceneButtonProfile(ID, ButtonColor, SceneName, Function, ButtonDescription);
                     break;
                 default:
                     Button = null;

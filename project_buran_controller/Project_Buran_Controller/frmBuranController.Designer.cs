@@ -42,6 +42,7 @@ namespace Buran_Controller
             this.olvTimer = new System.Windows.Forms.Timer(this.components);
             this.LoadProfileButton = new System.Windows.Forms.Button();
             this.SettingsButton = new System.Windows.Forms.Button();
+            this.USBIdentifyTimer = new System.Windows.Forms.Timer(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.olvController)).BeginInit();
             this.SuspendLayout();
             // 
@@ -72,20 +73,29 @@ namespace Buran_Controller
             // olvBtnID
             // 
             this.olvBtnID.AspectName = "ID";
+            this.olvBtnID.Groupable = false;
             this.olvBtnID.Text = "Button ID";
             this.olvBtnID.Width = 78;
             // 
             // olvBtnColor
             // 
             this.olvBtnColor.AspectName = "ButtonColor";
+            this.olvBtnColor.Groupable = false;
             this.olvBtnColor.Text = "Button Color";
             this.olvBtnColor.Width = 120;
             // 
             // olvBtnFunction
             // 
             this.olvBtnFunction.AspectName = "Function";
+            this.olvBtnFunction.Groupable = false;
             this.olvBtnFunction.Text = "Button Function";
             this.olvBtnFunction.Width = 118;
+            // 
+            // olvSceneName
+            // 
+            this.olvSceneName.AspectName = "ButtonDescription";
+            this.olvSceneName.Groupable = false;
+            this.olvSceneName.Text = "Description";
             // 
             // comboBox1
             // 
@@ -138,6 +148,7 @@ namespace Buran_Controller
             this.LoadProfileButton.TabIndex = 5;
             this.LoadProfileButton.Text = "Load Profiles";
             this.LoadProfileButton.UseVisualStyleBackColor = true;
+            this.LoadProfileButton.Click += new System.EventHandler(this.LoadProfileButton_Click);
             // 
             // SettingsButton
             // 
@@ -148,6 +159,11 @@ namespace Buran_Controller
             this.SettingsButton.Text = "Settings";
             this.SettingsButton.UseVisualStyleBackColor = true;
             this.SettingsButton.Click += new System.EventHandler(this.SettingsButton_Click);
+            // 
+            // USBIdentifyTimer
+            // 
+            this.USBIdentifyTimer.Interval = 1;
+            this.USBIdentifyTimer.Tick += new System.EventHandler(this.USBIdentifyTimer_Tick);
             // 
             // frmBuranController
             // 
@@ -161,6 +177,7 @@ namespace Buran_Controller
             this.Controls.Add(this.CreateButtonProfileButton);
             this.Controls.Add(this.comboBox1);
             this.Controls.Add(this.olvController);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Name = "frmBuranController";
             this.Text = "frmBuranController";
             this.Load += new System.EventHandler(this.frmBuranController_Load);
@@ -183,6 +200,7 @@ namespace Buran_Controller
         private BrightIdeasSoftware.OLVColumn olvSceneName;
         private System.Windows.Forms.Button LoadProfileButton;
         private System.Windows.Forms.Button SettingsButton;
+        private System.Windows.Forms.Timer USBIdentifyTimer;
     }
 }
 

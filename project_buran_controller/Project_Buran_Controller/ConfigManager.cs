@@ -13,7 +13,13 @@ namespace Project_Buran_Controller
     {
         private static StringBuilder JSONConfig = new StringBuilder();
         private const string ButtonProfileFileName = "\\button_profiles.json";
-        private const string BuranConfigFileName = "\\buran_profile_config.json";
+        private const string BuranConfigFileName = "\\buran_config.json";
+
+        private static readonly JsonSerializerSettings settings = new JsonSerializerSettings
+        {
+            TypeNameHandling = TypeNameHandling.Auto,
+            Formatting = Formatting.Indented
+        };
 
         /// <summary>
         /// Save the button profiles in JSON format.
@@ -38,11 +44,8 @@ namespace Project_Buran_Controller
             }
             else
             {
-                foreach (ButtonProfile profile in buttonProfiles)
-                {
-                    string ButtonJson = JsonConvert.SerializeObject(profile);
-                    JSONConfig.Append(ButtonJson);
-                }
+                string ButtonJson = JsonConvert.SerializeObject(buttonProfiles, ConfigManager.settings);
+                JSONConfig.Append(ButtonJson);
 
                 string FullPath = buttonConfigFilePath + ButtonProfileFileName;
 
@@ -59,12 +62,12 @@ namespace Project_Buran_Controller
         /// Save the Buran controller config in JSON Format.
         /// </summary>
         /// <returns>The result of the save operation as a BuranResult.</returns>
-        public static BuranResult.Result SaveConfigButtons(BuranConfig buranConfig, string buttonConfigFilePath) 
+        public static BuranResult.Result SaveConfigButtons(BuranConfig buranConfig, string buranPathConfig) 
         {
             /** Assume Success. */
             BuranResult.Result result = BuranResult.Result.SUCCESS;
 
-            if (buttonConfigFilePath == null)
+            if (string.IsNullOrEmpty(buranPathConfig))
             {
                 result = BuranResult.Result.INVALID_PATH;
             }
@@ -77,7 +80,7 @@ namespace Project_Buran_Controller
                 string BuranJson = JsonConvert.SerializeObject(buranConfig);
                 JSONConfig.Append(BuranJson);
 
-                string FullPath = buttonConfigFilePath + BuranConfigFileName;
+                string FullPath = buranPathConfig + BuranConfigFileName;
 
                 using (StreamWriter writer = new StreamWriter(FullPath))
                 {
@@ -93,13 +96,46 @@ namespace Project_Buran_Controller
             /** Assume Success. */
             BuranResult.Result result = BuranResult.Result.SUCCESS;
 
+            if (ButtonProfilePath == "")
+            {
+                result = BuranResult.Result.INVALID_PATH;
+            }
+            else
+            {
+                string config = ButtonProfilePath + "\\button_profiles.json";
+
+                using (StreamReader reader = new StreamReader(config))
+                {
+                    string json = reader.ReadToEnd();
+                    List<ButtonProfile> buttons = JsonConvert.DeserializeObject< List<ButtonProfile>>(json, settings);
+                    BuranExecutive.ButtonProfiles = buttons;
+                    BuranExecutive.UpdateGUI = true;
+                }
+            }
+
             return result;
         }
 
-        public static BuranResult.Result ImportConfig(string BuranConfigPath)
+        public static BuranResult.Result ImportBuranConfig(string BuranProfilePath)
         {
             /** Assume Success. */
             BuranResult.Result result = BuranResult.Result.SUCCESS;
+
+            if (BuranProfilePath == "")
+            {
+                result = BuranResult.Result.INVALID_PATH;
+            }
+            else
+            {
+                string config_path = BuranProfilePath + BuranConfigFileName;
+
+                using (StreamReader reader = new StreamReader(config_path))
+                {
+                    string json = reader.ReadToEnd();
+                    var config = JsonConvert.DeserializeObject<BuranConfig>(json);
+                    BuranExecutive.BuranConfig = config;
+                }
+            }
 
             return result;
         }
