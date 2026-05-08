@@ -6,6 +6,8 @@
 #include "hal_timer.h"
 #include "sam.h"
 
+/* For this MCU, PORTA is the only group and it's always 0. */
+#define PORTA_GROUP                           0u
 #define EXTERNAL_INTERRUPT_LINES              7u
 #define PINS_ON_MCU                           32u
 #define EXTERNAL_INTERRUPT_ALTERNATE_FUNCTION 0x00u
@@ -113,15 +115,16 @@ static inline void set_alternate_function(hal_gpio_pin_t *pin, alt_func_t alt_fu
 {
     const uint8_t alt_func_group = pin->pin >> 1u;
 	
-    PORT->Group[0u].PINCFG[pin->pin].bit.PMUXEN = 1u;
+    PORT->Group[PORTA_GROUP].PINCFG[pin->pin].bit.PMUXEN = 1u;
     
+    /* Determine if a pin is in an odd or even group by looking at the last bit. */
     if (pin->pin & 0x1u)
     {
-        PORT->Group[0u].PMUX[alt_func_group].bit.PMUXO = alt_func;
+        PORT->Group[PORTA_GROUP].PMUX[alt_func_group].bit.PMUXO = alt_func;
     }
     else 
     {
-        PORT->Group[0u].PMUX[alt_func_group].bit.PMUXE = alt_func;
+        PORT->Group[PORTA_GROUP].PMUX[alt_func_group].bit.PMUXE = alt_func;
     }
 }
 
@@ -135,12 +138,12 @@ static inline void set_pull_up_pull_down(hal_gpio_pin_t *pin)
     {
         if (pin->pull_up_mode == HAL_GPIO_PULL_UP)
         {
-            PORT->Group[0u].PINCFG[pin->pin].bit.PULLEN = 1u;
-			PORT->Group[0u].OUTSET.reg |= (1u << pin->pin);
+            PORT->Group[PORTA_GROUP].PINCFG[pin->pin].bit.PULLEN = 1u;
+			PORT->Group[PORTA_GROUP].OUTSET.reg |= (1u << pin->pin);
         }
         else
         {
-            PORT->Group[0u].PINCFG[pin->pin].bit.PULLEN = 0u;
+            PORT->Group[PORTA_GROUP].PINCFG[pin->pin].bit.PULLEN = 0u;
         }
     }
 }
@@ -306,14 +309,14 @@ hal_result_t hal_gpio_pin_init(hal_gpio_init_t *init_struct)
         switch (init_struct->pin.pin_mode)
         {
             case HAL_GPIO_INPUT:
-                PORT->Group[0u].DIRCLR.reg = (1u << init_struct->pin.pin);
-                PORT->Group[0u].PINCFG[init_struct->pin.pin].reg |= PORT_PINCFG_INEN;
+                PORT->Group[PORTA_GROUP].DIRCLR.reg = (1u << init_struct->pin.pin);
+                PORT->Group[PORTA_GROUP].PINCFG[init_struct->pin.pin].reg |= PORT_PINCFG_INEN;
                 set_pull_up_pull_down(&init_struct->pin);
                 set_input_trigger_type(&init_struct->pin, init_struct->trigger_event_cb);
                 enable_external_interrupt_controller();
                 break;
             case HAL_GPIO_OUTPUT_PUSH_PULL:
-                PORT->Group[0u].DIRSET.reg = (1u << init_struct->pin.pin);
+                PORT->Group[PORTA_GROUP].DIRSET.reg = (1u << init_struct->pin.pin);
                 break;
             case HAL_GPIO_OUTPUT_OPEN_DRAIN:
                 /* TODO: Init open drain. */
@@ -373,18 +376,18 @@ hal_result_t hal_gpio_pin_teardown(hal_gpio_pin_t *pin)
         switch (pin->pin_mode)
         {
             case HAL_GPIO_INPUT:
-                PORT->Group[0u].DIRCLR.reg = (1u << pin->pin);
-                PORT->Group[0u].PINCFG[pin->pin].reg &= ~PORT_PINCFG_INEN;
-                PORT->Group[0u].PINCFG[pin->pin].bit.PULLEN = 0u;
+                PORT->Group[PORTA_GROUP].DIRCLR.reg = (1u << pin->pin);
+                PORT->Group[PORTA_GROUP].PINCFG[pin->pin].reg &= ~PORT_PINCFG_INEN;
+                PORT->Group[PORTA_GROUP].PINCFG[pin->pin].bit.PULLEN = 0u;
                 break;
             case HAL_GPIO_OUTPUT_PUSH_PULL:
-                PORT->Group[0u].DIRCLR.reg = (1u << pin->pin);
+                PORT->Group[PORTA_GROUP].DIRCLR.reg = (1u << pin->pin);
                 break;
             case HAL_GPIO_OUTPUT_OPEN_DRAIN:
                 /* TODO: Clear output drain. */
                 break;
             case HAL_GPIO_ALTERNATE:
-                PORT->Group[0u].PINCFG[pin->pin].bit.PMUXEN = 0;
+                PORT->Group[PORTA_GROUP].PINCFG[pin->pin].bit.PMUXEN = 0;
                 set_alternate_function(pin, 0u);
                 break;
             default:
@@ -423,11 +426,11 @@ hal_result_t hal_gpio_set_level(hal_gpio_pin_t *pin, hal_gpio_level_t level)
     {
         if (level == HAL_GPIO_HIGH)
         {
-            PORT->Group[0u].OUTSET.reg = (1u << pin->pin);
+            PORT->Group[PORTA_GROUP].OUTSET.reg = (1u << pin->pin);
         }
         else 
         {
-            PORT->Group[0u].OUTCLR.reg = (1u << pin->pin);
+            PORT->Group[PORTA_GROUP].OUTCLR.reg = (1u << pin->pin);
             
         }
         
@@ -459,7 +462,7 @@ hal_result_t hal_gpio_toggle_level(hal_gpio_pin_t *pin)
     }
     else
     {
-        PORT->Group[0u].OUTTGL.reg = (1u << pin->pin);
+        PORT->Group[PORTA_GROUP].OUTTGL.reg = (1u << pin->pin);
 
         result = HAL_SUCCESS;
     }
@@ -489,7 +492,7 @@ hal_gpio_level_t hal_gpio_read_level(hal_gpio_pin_t *pin)
     }
     else
     {
-        result = (PORT->Group[0u].IN.reg & (1u << pin->pin)) ? HAL_GPIO_HIGH : HAL_GPIO_LOW;
+        result = (PORT->Group[PORTA_GROUP].IN.reg & (1u << pin->pin)) ? HAL_GPIO_HIGH : HAL_GPIO_LOW;
     }
 
     return result;
