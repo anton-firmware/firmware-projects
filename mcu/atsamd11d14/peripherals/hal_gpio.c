@@ -21,7 +21,7 @@ static volatile uint32_t current_interrupt_time;
 static uint8_t pin_external_line_map[PINS_ON_MCU] = 
 {
 	0xFFu, /* PA00 - NONE.   */ 
-	0u, /* PA01 - NONE.      */
+	0xFFu, /* PA01 - NONE.   */
 	2u, /* PA02 - EXTINT[2]. */
 	3u, /* PA03 - EXTINT[3]. */
 	4u, /* PA04 - EXTINT[4]. */
@@ -34,7 +34,7 @@ static uint8_t pin_external_line_map[PINS_ON_MCU] =
 	3u, /* PA11 - EXTINT[3]. */
 	0xFFu, /* PA12 - NONE.   */
 	0xFFu, /* PA13 - NONE.   */
-	0u, /* PA14 - NMI.       */
+	0xFFu, /* PA14 - NMI (Not EXTINT). */
 	1u, /* PA15 - EXTINT[1]. */
 	0u, /* PA16 - EXTINT[0]. */
 	1u, /* PA17 - EXTINT[1]. */
