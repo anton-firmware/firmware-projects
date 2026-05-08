@@ -321,7 +321,7 @@ hal_result_t hal_gpio_pin_init(hal_gpio_init_t *init_struct)
                 break;
         }
         
-        if (result != HAL_ERROR_PARAM_ERROR || result != HAL_ERROR_PERIPHERAL_ERROR)
+        if ((result != HAL_ERROR_PARAM_ERROR) && (result != HAL_ERROR_PERIPHERAL_ERROR))
         {
             initialised_pins_bitmap |= (1u << init_struct->pin.pin);
             result = HAL_SUCCESS;
