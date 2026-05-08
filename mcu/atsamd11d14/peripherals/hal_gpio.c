@@ -213,7 +213,12 @@ static inline void set_input_trigger_type(hal_gpio_pin_t *pin, hal_gpio_trigger_
 	}
 }
 
-/** ISR for the external interrupt controller. */
+/** ISR for the external interrupt controller. 
+ * 
+ * \note KNOWN LIMITATION: In this mplementation if two or more buttons are pressed
+ *       simultaneously within the same debounce window, the second press will be discarded.
+ *       To be fixed at a later date.
+ */
 void EIC_Handler(void)
 {
 	current_interrupt_time = hal_timer_get_tick();
