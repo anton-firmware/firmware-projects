@@ -11,17 +11,26 @@
  */
 
 #include <stdint.h>
+#include <stdbool.h>
 
 #include "hal_result.h"
 
+/** Structure representing USB initialisation. */
+typedef struct hal_usb_init
+{
+       bool external_clock; /*!< Whether or not the USB peripheral uses an external clock. */
+} hal_usb_init_t;
+
 /** Initialise a USB peripheral.
  *
+ *  \param[in] init_struct USB initialisation structure.
+ * 
  *  \retval #HAL_SUCCESS Initialisation was successful.
  *  \retval #HAL_ERROR_REJECTED Initialisation failed due to a previous `hal_usb_init()` call being made.
  *  \retval #HAL_ERROR_PARAM_ERROR Initialisation failed due to a parameter error.
  *  \retval #HAL_ERROR_PERIPHERAL_ERROR Initialisation failed due to a peripheral error.
  */
-hal_result_t hal_usb_init(void);
+hal_result_t hal_usb_init(hal_usb_init_t *init_struct);
 
 /** Initialise clocks used by the USB peripheral.
  *
