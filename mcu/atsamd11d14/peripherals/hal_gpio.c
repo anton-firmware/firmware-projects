@@ -56,8 +56,12 @@ static uint8_t pin_external_line_map[PINS_ON_MCU] =
 	3u, /* PA31 - EXTINT[3]. */
 };
 
+
 static uint32_t initialised_pins_bitmap = 0x00000000u;
 
+/** Valid pins for a particular MCU depending on the compiler flag.
+ * 
+ */
 #if defined(__SAMD11C14A__) || defined(__ATSAMD11C14A__)
     static const uint32_t pin_bitmap = 0x00000000u;
 #elif defined(__SAMD11D14AM__) || defined(__ATSAMD11D14AM__)
@@ -91,8 +95,7 @@ static inline bool is_valid_pin(hal_gpio_pin_t *pin)
  */
 static inline bool is_valid_port(hal_gpio_pin_t *pin)
 {
-    /* A value of 0 corresponds to port A.*/
-    return ((pin != NULL) && (pin->port == 0u));
+    return ((pin != NULL) && (pin->port == PORTA_GROUP));
 }
 
 /** Checks if a given pin is initialised by accessing the pins bitmap.
