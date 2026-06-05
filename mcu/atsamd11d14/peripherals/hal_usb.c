@@ -19,12 +19,29 @@ static bool initialised = false;
 
 static hal_result_t initialise_internal_usb_clock(void)
 {
-    
+    uint16_t clk_ctl_reg_value = 0;
+    uint32_t clk_gen_reg_value = 0;
+
+    /* USB Clock Recovery mode can be used to create the 48MHz USB clock from the USB Start Of Frame (SOF). 
+     * See USB Clock Recovery Mode Page 154 SMART SAM D11 Datasheet. */
+
+    /* Set Generic Clock Generator 1 to be fed from DFLL48M output
+    */
+
+    /* Set the USB core clock to be Generic Clock Generator 0 (Internal 8MHz oscilator). 
+     * Note: On reset, the OSC8M is fed through a divide by 8 step, so this clock is actually 1MHz. 
+     */
+    clk_ctl_reg_value |= (GCLK_CLKCTRL_ID_USB_CORE | GCLK_CLKCTRL_CLKEN | GCLK_CLKCTRL_GEN_GCLK1);
+
+    GCLK->CLKCTRL.reg = clk_ctl_reg_value; 
+
+    /* Wait for syncronisation. */
+    while (GCLK->STATUS.reg & GCLK_STATUS_SYNCBUSY);
 }
 
 static hal_result_t initialise_external_usb_clock(void)
 {
-    
+    return HAL_ERROR_NOT_IMPLEMENTED;
 }
 
 hal_result_t hal_usb_init(hal_usb_init_t *init_struct)
