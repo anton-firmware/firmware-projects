@@ -63,7 +63,7 @@ typedef uint8_t hal_result_t;
 /** Value representing an unsupported operation. */
 #define HAL_ERROR_UNSUPPORTED ((hal_result_t)136)
 
-/** Value representing an unsupported operation. */
+/** Value representing an operation that has not been implemented yet. */
 #define HAL_ERROR_NOT_IMPLEMENTED ((hal_result_t)137)
 
 /** \} End of Failure codes. */
