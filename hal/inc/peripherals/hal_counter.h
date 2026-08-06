@@ -16,8 +16,8 @@ typedef void (*hal_counter_event_cb_t)(void);
 /** Structure representing counter initialisation. */
 typedef struct hal_counter_init
 {
-    uint16_t             period;    /*!< The period of the counter in ms. */
-    hal_counter_event_cb_t call_back; /*!< Callback for counter tick. */
+    uint16_t period;    /*!< The period of the counter in ms. */
+    hal_counter_event_cb_t call_back; /*!< Callback for counter count. */
 
 } hal_counter_init_t;
 
@@ -49,7 +49,7 @@ hal_result_t hal_counter_teardown(void);
 
 /** Teardown clocks used by the counter peripheral.
  *
- *  \retval #HAL_SUCCESS Initialiqsation was successful.
+ *  \retval #HAL_SUCCESS Teardown was successful.
  *  \retval #HAL_ERROR_REJECTED Initialisation failed due to a previous `hal_counter_clock_init()` call not being made.
  *  \retval #HAL_ERROR_PERIPHERAL_ERROR Initialisation failed due to a peripheral error.
  */
@@ -65,11 +65,11 @@ hal_result_t hal_counter_clock_teardown(void);
  */
 hal_result_t hal_counter_delay(uint16_t ms);
 
-/** Get the current 'tick' count of the counter.
+/** Get the current 'count' count of the counter.
  *  
- *  \retval The current tick value of the running counter.
+ *  \retval The current count value of the running counter.
  */
-uint32_t hal_counter_get_tick(void);
+uint32_t hal_counter_get_count(void);
 
 /** Start a previously initialised counter.
  *  
