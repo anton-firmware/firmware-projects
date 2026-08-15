@@ -5,7 +5,7 @@
     <ProjectVersion>7.0</ProjectVersion>
     <ToolchainName>com.Atmel.ARMGCC.C</ToolchainName>
     <ProjectGuid>dce6c7e3-ee26-4d79-826b-08594b9ad897</ProjectGuid>
-    <avrdevice>ATSAMD11D14AM</avrdevice>
+    <avrdevice>ATSAMD11D14AS</avrdevice>
     <avrdeviceseries>none</avrdeviceseries>
     <OutputType>Executable</OutputType>
     <Language>C</Language>
@@ -20,10 +20,10 @@
     <OverrideVtor>false</OverrideVtor>
     <CacheFlash>true</CacheFlash>
     <ProgFlashFromRam>true</ProgFlashFromRam>
-    <RamSnippetAddress />
+    <RamSnippetAddress>0x20000000</RamSnippetAddress>
     <UncachedRange />
     <preserveEEPROM>true</preserveEEPROM>
-    <OverrideVtorValue />
+    <OverrideVtorValue>exception_table</OverrideVtorValue>
     <BootSegment>2</BootSegment>
     <ResetRule>0</ResetRule>
     <eraseonlaunchrule>0</eraseonlaunchrule>
@@ -40,7 +40,34 @@
         </dependencies>
       </framework-data>
     </AsfFrameworkConfig>
-    <avrtool />
+    <avrtool>com.atmel.avrdbg.tool.samice</avrtool>
+    <avrtoolserialnumber>852001164</avrtoolserialnumber>
+    <avrdeviceexpectedsignature>0x10030103</avrdeviceexpectedsignature>
+    <avrtoolinterface>SWD</avrtoolinterface>
+    <com_atmel_avrdbg_tool_edbg>
+      <ToolOptions>
+        <InterfaceProperties>
+          <SwdClock>2000000</SwdClock>
+        </InterfaceProperties>
+        <InterfaceName>SWD</InterfaceName>
+      </ToolOptions>
+      <ToolType>com.atmel.avrdbg.tool.edbg</ToolType>
+      <ToolNumber>ATML2178051800002829</ToolNumber>
+      <ToolName>EDBG</ToolName>
+    </com_atmel_avrdbg_tool_edbg>
+    <avrtoolinterfaceclock>4000000</avrtoolinterfaceclock>
+    <com_atmel_avrdbg_tool_samice>
+      <ToolOptions>
+        <InterfaceProperties>
+          <SwdClock>4000000</SwdClock>
+        </InterfaceProperties>
+        <InterfaceName>SWD</InterfaceName>
+        <JlinkConfigFile>D:\firmware-projects\project_venera_fw\dev_board_xplained_pro\VeneraUSBTest\jlink.config</JlinkConfigFile>
+      </ToolOptions>
+      <ToolType>com.atmel.avrdbg.tool.samice</ToolType>
+      <ToolNumber>852001164</ToolNumber>
+      <ToolName>J-Link</ToolName>
+    </com_atmel_avrdbg_tool_samice>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <ToolchainSettings>
@@ -75,7 +102,7 @@
     </ListValues>
   </armgcc.linker.libraries.LibrarySearchPaths>
   <armgcc.linker.optimization.GarbageCollectUnusedSections>True</armgcc.linker.optimization.GarbageCollectUnusedSections>
-  <armgcc.linker.miscellaneous.LinkerFlags>-Tsamd11d14am_flash.ld</armgcc.linker.miscellaneous.LinkerFlags>
+  <armgcc.linker.miscellaneous.LinkerFlags>-Tsamd11d14as_flash.ld</armgcc.linker.miscellaneous.LinkerFlags>
   <armgcc.assembler.general.IncludePaths>
     <ListValues>
       <Value>%24(PackRepoDir)\arm\CMSIS\5.4.0\CMSIS\Core\Include\</Value>
@@ -106,8 +133,6 @@
   </armgcc.compiler.symbols.DefSymbols>
   <armgcc.compiler.directories.IncludePaths>
     <ListValues>
-      <Value>%24(PackRepoDir)\arm\CMSIS\5.4.0\CMSIS\Core\Include\</Value>
-      <Value>%24(PackRepoDir)\atmel\SAMD11_DFP\1.1.81\include</Value>
       <Value>../hid_cdc_example</Value>
       <Value>../../../../third_party/tinyusb/src</Value>
       <Value>../../../../third_party/tinyusb/src/class/cdc</Value>
@@ -117,9 +142,12 @@
       <Value>../../../../hal/inc</Value>
       <Value>../../../../third_party/tinyusb/hw/bsp</Value>
       <Value>../../../../third_party/tinyusb/hw/mcu/microchip/samd11</Value>
+      <Value>%24(PackRepoDir)\arm\CMSIS\5.4.0\CMSIS\Core\Include\</Value>
+      <Value>%24(PackRepoDir)\atmel\SAMD11_DFP\1.1.81\include</Value>
+      <Value>../venera/inc</Value>
     </ListValues>
   </armgcc.compiler.directories.IncludePaths>
-  <armgcc.compiler.optimization.level>Optimize debugging experience (-Og)</armgcc.compiler.optimization.level>
+  <armgcc.compiler.optimization.level>Optimize (-O1)</armgcc.compiler.optimization.level>
   <armgcc.compiler.optimization.PrepareFunctionsForGarbageCollection>True</armgcc.compiler.optimization.PrepareFunctionsForGarbageCollection>
   <armgcc.compiler.optimization.DebugLevel>Maximum (-g3)</armgcc.compiler.optimization.DebugLevel>
   <armgcc.compiler.warnings.AllWarnings>True</armgcc.compiler.warnings.AllWarnings>
@@ -135,7 +163,7 @@
   </armgcc.linker.libraries.LibrarySearchPaths>
   <armgcc.linker.optimization.GarbageCollectUnusedSections>True</armgcc.linker.optimization.GarbageCollectUnusedSections>
   <armgcc.linker.memorysettings.ExternalRAM />
-  <armgcc.linker.miscellaneous.LinkerFlags>-Tsamd11d14am_flash.ld</armgcc.linker.miscellaneous.LinkerFlags>
+  <armgcc.linker.miscellaneous.LinkerFlags>-Tsamd11d14as_flash.ld</armgcc.linker.miscellaneous.LinkerFlags>
   <armgcc.assembler.general.IncludePaths>
     <ListValues>
       <Value>%24(PackRepoDir)\arm\CMSIS\5.4.0\CMSIS\Core\Include\</Value>
@@ -154,6 +182,22 @@
     </ToolchainSettings>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="..\..\..\mcu\atsamd11d14\peripherals\hal_counter.c">
+      <SubType>compile</SubType>
+      <Link>mcu\hal_counter.c</Link>
+    </Compile>
+    <Compile Include="..\..\..\mcu\atsamd11d14\peripherals\hal_gpio.c">
+      <SubType>compile</SubType>
+      <Link>mcu\hal_gpio.c</Link>
+    </Compile>
+    <Compile Include="..\..\..\mcu\atsamd11d14\peripherals\hal_timer.c">
+      <SubType>compile</SubType>
+      <Link>mcu\hal_timer.c</Link>
+    </Compile>
+    <Compile Include="..\..\..\mcu\atsamd11d14\peripherals\hal_usb.c">
+      <SubType>compile</SubType>
+      <Link>mcu\hal_usb.c</Link>
+    </Compile>
     <Compile Include="Device_Startup\startup_samd11.c">
       <SubType>compile</SubType>
     </Compile>
@@ -172,16 +216,10 @@
     <Compile Include="main.c">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="mcu\hal_timer.c">
-      <SubType>compile</SubType>
-    </Compile>
     <Compile Include="tinyusb\cdc_device.c">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="tinyusb\dcd_samd.c">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="tinyusb\family.c">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="tinyusb\hid_device.c">
@@ -196,6 +234,10 @@
     <Compile Include="tinyusb\usbd.c">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="venera\src\charlieplexing.c">
+      <SubType>compile</SubType>
+      <Link>charlieplexing.c</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Device_Startup\" />
@@ -204,10 +246,10 @@
     <Folder Include="tinyusb" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Device_Startup\samd11d14am_flash.ld">
+    <None Include="Device_Startup\samd11d14as_flash.ld">
       <SubType>compile</SubType>
     </None>
-    <None Include="Device_Startup\samd11d14am_sram.ld">
+    <None Include="Device_Startup\samd11d14as_sram.ld">
       <SubType>compile</SubType>
     </None>
   </ItemGroup>
