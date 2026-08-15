@@ -8,12 +8,12 @@
 
 /* For this MCU, PORTA is the only group and it's always 0. */
 #define PORTA_GROUP                           0u
-#define EXTERNAL_INTERRUPT_LINES              7u
+#define EXTERNAL_INTERRUPT_LINES              8u
 #define PINS_ON_MCU                           32u
 #define EXTERNAL_INTERRUPT_ALTERNATE_FUNCTION 0x00u
-#define BUTTON_DEBOUNCING_THRESHOLD           22u
+#define BUTTON_DEBOUNCING_THRESHOLD           1000u
 
-static hal_gpio_trigger_event_t external_interrupt_pins[EXTERNAL_INTERRUPT_LINES];
+static volatile hal_gpio_trigger_event_t external_interrupt_pins[EXTERNAL_INTERRUPT_LINES];
 
 static volatile uint32_t last_interrupt_time;
 static volatile uint32_t current_interrupt_time;
@@ -163,7 +163,7 @@ static inline void setup_eic_gclk(void)
     /* Set the EIC core clock to be Generic Clock Generator 0 (Internal 8MHz oscilator). 
      * Note: On reset, the OSC8M is fed through a divide by 8 step, so this clock is actually 1MHz. 
      */
-    clk_ctl_reg_value |= (GCLK_CLKCTRL_ID_EIC | GCLK_CLKCTRL_CLKEN | GCLK_CLKCTRL_GEN_GCLK0);
+    clk_ctl_reg_value |= (GCLK_CLKCTRL_ID_EIC | GCLK_CLKCTRL_CLKEN | GCLK_CLKCTRL_GEN_GCLK1);
 
     GCLK->CLKCTRL.reg = clk_ctl_reg_value; 
 
@@ -227,7 +227,7 @@ static inline void set_input_trigger_type(hal_gpio_pin_t *pin, hal_gpio_trigger_
  */
 void EIC_Handler(void)
 {
-	current_interrupt_time = hal_timer_get_tick();
+ 	current_interrupt_time = hal_timer_get_tick();
 	
 	if (current_interrupt_time - last_interrupt_time > BUTTON_DEBOUNCING_THRESHOLD)
 	{
@@ -308,7 +308,7 @@ hal_result_t hal_gpio_pin_init(hal_gpio_init_t *init_struct)
         result = HAL_ERROR_PARAM_ERROR;
     }
     else
-    {
+    {	
         switch (init_struct->pin.pin_mode)
         {
             case HAL_GPIO_INPUT:
@@ -320,6 +320,7 @@ hal_result_t hal_gpio_pin_init(hal_gpio_init_t *init_struct)
                 break;
             case HAL_GPIO_OUTPUT_PUSH_PULL:
                 PORT->Group[PORTA_GROUP].DIRSET.reg = (1u << init_struct->pin.pin);
+				PORT->Group[PORTA_GROUP].PINCFG[init_struct->pin.pin].bit.DRVSTR = 1;
                 break;
             case HAL_GPIO_OUTPUT_OPEN_DRAIN:
                 /* TODO: Init open drain. */
@@ -332,7 +333,7 @@ hal_result_t hal_gpio_pin_init(hal_gpio_init_t *init_struct)
                 break;
         }
         
-        if ((result != HAL_ERROR_PARAM_ERROR) && (result != HAL_ERROR_PERIPHERAL_ERROR))
+        if ((result != HAL_ERROR_PARAM_ERROR) || (result != HAL_ERROR_PERIPHERAL_ERROR))
         {
             initialised_pins_bitmap |= (1u << init_struct->pin.pin);
             result = HAL_SUCCESS;
@@ -399,7 +400,6 @@ hal_result_t hal_gpio_pin_teardown(hal_gpio_pin_t *pin)
         }
 
         initialised_pins_bitmap &= ~(1u << pin->pin);
-		teardown_external_interrupt_controller();
     }
 
     return result;

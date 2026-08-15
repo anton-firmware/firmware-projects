@@ -10,7 +10,7 @@
 
 #include "hal_result.h"
 
-/** Counter overflow event call-back declaration. */
+/** Timer 'tick' event call-back declaration. */
 typedef void (*hal_counter_event_cb_t)(void);
 
 /** Structure representing counter initialisation. */
@@ -69,7 +69,7 @@ hal_result_t hal_counter_delay(uint16_t ms);
  *  
  *  \retval The current count value of the running counter.
  */
-uint32_t hal_counter_get_count(void);
+uint16_t hal_counter_get_count(void);
 
 /** Start a previously initialised counter.
  *  
@@ -86,5 +86,8 @@ hal_result_t hal_counter_start(void);
  *  \retval #HAL_ERROR_PERIPHERAL_ERROR Initialisation failed due to a peripheral error.
  */
 hal_result_t hal_counter_stop(void);
+
+/** Modify a compare value for a counter. */
+void hal_counter_change_compare_value(uint16_t new_val);
 
 #endif /* HAL_COUNTER_H */

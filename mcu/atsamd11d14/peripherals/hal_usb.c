@@ -17,26 +17,69 @@
 static bool external_clock = false;
 static bool initialised = false;
 
+
+
 static hal_result_t initialise_internal_usb_clock(void)
 {
-    uint16_t clk_ctl_reg_value = 0;
-    uint32_t clk_gen_reg_value = 0;
-
-    /* USB Clock Recovery mode can be used to create the 48MHz USB clock from the USB Start Of Frame (SOF). 
-     * See USB Clock Recovery Mode Page 154 SMART SAM D11 Datasheet. */
-
-    /* Set Generic Clock Generator 1 to be fed from DFLL48M output
-    */
-
-    /* Set the USB core clock to be Generic Clock Generator 0 (Internal 8MHz oscilator). 
-     * Note: On reset, the OSC8M is fed through a divide by 8 step, so this clock is actually 1MHz. 
-     */
-    clk_ctl_reg_value |= (GCLK_CLKCTRL_ID_USB_CORE | GCLK_CLKCTRL_CLKEN | GCLK_CLKCTRL_GEN_GCLK1);
-
-    GCLK->CLKCTRL.reg = clk_ctl_reg_value; 
-
-    /* Wait for syncronisation. */
+    /* Set NVM wait states for 48MHz operation as required by electrical characteristics */
+    NVMCTRL->CTRLB.bit.RWS = 1;
+	
+    /* 2. Set GCLK1 to use OSC8M as reference for DFLL
+     * (don't touch GCLK0 until DFLL is locked) */
+    GCLK->GENCTRL.reg = GCLK_GENCTRL_ID(1)     |
+                        GCLK_GENCTRL_SRC_OSC8M  |
+                        GCLK_GENCTRL_IDC         |
+                        GCLK_GENCTRL_GENEN;
     while (GCLK->STATUS.reg & GCLK_STATUS_SYNCBUSY);
+
+    /* 3. Route GCLK1 to DFLL48 reference input */
+    GCLK->CLKCTRL.reg = GCLK_CLKCTRL_ID_DFLL48 |
+                        GCLK_CLKCTRL_CLKEN      |
+                        GCLK_CLKCTRL_GEN(1);
+    while (GCLK->STATUS.reg & GCLK_STATUS_SYNCBUSY);
+
+    /* 4. Extract factory DFLL coarse calibration */
+    uint32_t coarse_cal = ((*((volatile uint32_t *)0x00806024)) & (0x3F << 26)) >> 26;
+
+    /* 5. See errata reference 9905 - The DFLL clock must be requested before being configured otherwise a write access to a DFLL register can freeze the device */
+    SYSCTRL->DFLLCTRL.bit.ONDEMAND = 0;
+
+    /* 6. Inject coarse calibration */
+    SYSCTRL->DFLLVAL.reg = SYSCTRL_DFLLVAL_COARSE(coarse_cal);
+    while ((SYSCTRL->PCLKSR.reg & SYSCTRL_PCLKSR_DFLLRDY) == 0);
+
+    /* 7. Set multiplier: 48MHz / 1MHz = 1 */
+    SYSCTRL->DFLLMUL.reg = SYSCTRL_DFLLMUL_MUL(48)   |
+                           SYSCTRL_DFLLMUL_CSTEP(1)  |
+                           SYSCTRL_DFLLMUL_FSTEP(1);
+    while ((SYSCTRL->PCLKSR.reg & SYSCTRL_PCLKSR_DFLLRDY) == 0);
+
+    /* 8. Enable DFLL in closed loop mode, wait for lock */
+    SYSCTRL->DFLLCTRL.reg = SYSCTRL_DFLLCTRL_MODE     |
+                            SYSCTRL_DFLLCTRL_WAITLOCK |
+                            SYSCTRL_DFLLCTRL_ENABLE;
+    while ((SYSCTRL->PCLKSR.reg & SYSCTRL_PCLKSR_DFLLRDY) == 0);
+
+    /* 9. Wait for coarse and fine lock */
+    while ((SYSCTRL->PCLKSR.reg & (SYSCTRL_PCLKSR_DFLLLCKC | SYSCTRL_PCLKSR_DFLLLCKF))
+           != (SYSCTRL_PCLKSR_DFLLLCKC | SYSCTRL_PCLKSR_DFLLLCKF));
+
+    /* 10. Switch GCLK0 (system/CPU clock) to DFLL48M @ 48MHz */
+    GCLK->GENDIV.reg  = GCLK_GENDIV_ID(0) | GCLK_GENDIV_DIV(0);
+    while (GCLK->STATUS.reg & GCLK_STATUS_SYNCBUSY);
+    GCLK->GENCTRL.reg = GCLK_GENCTRL_ID(0)      |
+                        GCLK_GENCTRL_SRC_DFLL48M |
+                        GCLK_GENCTRL_IDC          |
+                        GCLK_GENCTRL_GENEN;
+    while (GCLK->STATUS.reg & GCLK_STATUS_SYNCBUSY);
+
+    /* 11. Route GCLK0 to USB peripheral */
+    GCLK->CLKCTRL.reg = GCLK_CLKCTRL_ID_USB |
+                        GCLK_CLKCTRL_CLKEN   |
+                        GCLK_CLKCTRL_GEN(0);
+    while (GCLK->STATUS.reg & GCLK_STATUS_SYNCBUSY);
+
+    return HAL_SUCCESS;
 }
 
 static hal_result_t initialise_external_usb_clock(void)
