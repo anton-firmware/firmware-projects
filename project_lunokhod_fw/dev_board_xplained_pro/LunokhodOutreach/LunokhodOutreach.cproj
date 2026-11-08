@@ -12,9 +12,9 @@
     <OutputFileName>$(MSBuildProjectName)</OutputFileName>
     <OutputFileExtension>.elf</OutputFileExtension>
     <OutputDirectory>$(MSBuildProjectDirectory)\$(Configuration)</OutputDirectory>
-    <AssemblyName>VeneraUSBTest</AssemblyName>
-    <Name>VeneraUSBTest</Name>
-    <RootNamespace>VeneraUSBTest</RootNamespace>
+    <AssemblyName>LunokhodOutreach</AssemblyName>
+    <Name>LunokhodOutreach</Name>
+    <RootNamespace>LunokhodOutreach</RootNamespace>
     <ToolchainFlavour>Native</ToolchainFlavour>
     <KeepTimersRunning>true</KeepTimersRunning>
     <OverrideVtor>false</OverrideVtor>
@@ -62,7 +62,7 @@
           <SwdClock>4000000</SwdClock>
         </InterfaceProperties>
         <InterfaceName>SWD</InterfaceName>
-        <JlinkConfigFile>D:\firmware-projects\project_venera_fw\dev_board_xplained_pro\VeneraUSBTest\jlink.config</JlinkConfigFile>
+        <JlinkConfigFile>D:\firmware-projects\project_venera_fw\dev_board_xplained_pro\LunokhodOutreach\jlink.config</JlinkConfigFile>
       </ToolOptions>
       <ToolType>com.atmel.avrdbg.tool.samice</ToolType>
       <ToolNumber>852001164</ToolNumber>

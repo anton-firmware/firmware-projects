@@ -1,7 +1,7 @@
 /**
  * \file
  *
- * \brief Linker script for running in internal SRAM on the SAMD11D14AM
+ * \brief Linker script for running in internal SRAM on the SAMD11D14AS
  *
  * Copyright (c) 2018 Microchip Technology Inc.
  *
