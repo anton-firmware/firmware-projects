@@ -94,7 +94,7 @@
 
 //------------- CLASS -------------//
 #define CFG_TUD_CDC              1
-#define CFG_TUD_HID              1
+#define CFG_TUD_HID              0
 #define CFG_TUD_VENDOR           0
 
 #define CFG_TUD_CDC_NOTIFY        1 // Enable use of notification endpoint

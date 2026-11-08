@@ -253,22 +253,6 @@ void USB_Handler(void)
 
 static void counter_cb(void) 
 {
-	const charlieplexed_led_t LETTERS[] =
-	{
-		led_q, led_w, led_e, led_r, led_t, led_y, led_u, led_i, led_o, led_p,
-		led_a, led_s, led_d, led_f, led_g, led_h, led_j, led_k, led_l,
-		led_z, led_x, led_c, led_v, led_b, led_n, led_m,
-		led_space, led_backspace
-	};
-	
-	if (i >= KEYS)
-	{
-		 i = 0;
-	}
-	
-	current_key = i;
-	
-	charlieplexing_set_pin_level(LETTERS[i++], HAL_GPIO_HIGH);
 }
 
 /*------------- MAIN -------------*/
@@ -318,32 +302,9 @@ int main(void)
   
   uint8_t alphabet_index = 0;
 
-  charlieplexed_led_t LETTERS[] =
-  {
-    led_q, led_w, led_e, led_r, led_t, led_y, led_u, led_i, led_o, led_p, led_a, led_s
-  };
-
 	while (1)
 	{
 		tud_task(); // MUST run every single iteration without interruption
-
-		/* Initial check if the button is pressed */
-		if (key_pressed)
-		{
-			key_pressed = false;
-			uint8_t keycode[6] = {0};
-			// Send the key corresponding to the current lit LED.
-			keycode[0] = keys[current_key % KEYS];
-			
-			tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, keycode);
-			
-			// Wait until the PC acknowledges the 'D' press packet
-			while (!tud_hid_ready()) { tud_task(); }
-			
-			// Send Release immediately
-			keycode[0] = 0;
-			tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, keycode);
-		}
 	}
 }
 
@@ -396,27 +357,4 @@ void tud_cdc_line_state_cb(uint8_t itf, bool dtr, bool rts) {
 void tud_cdc_rx_cb(uint8_t itf) 
 {
 
-}
-
-// Invoked when received GET_REPORT control request
-// Application must fill buffer report's content and return its length.
-// Return zero will cause the stack to STALL request
-uint16_t tud_hid_get_report_cb(
-uint8_t instance, uint8_t report_id, hid_report_type_t report_type, uint8_t *buffer, uint16_t reqlen) {
-	// TODO not Implemented
-	(void)instance;
-	(void)report_id;
-	(void)report_type;
-	(void)buffer;
-	(void)reqlen;
-
-	return 0;
-}
-
-// Invoked when received SET_REPORT control request or
-// received data on OUT endpoint ( Report ID = 0, Type = 0 )
-void tud_hid_set_report_cb(
-uint8_t instance, uint8_t report_id, hid_report_type_t report_type, uint8_t const *buffer, uint16_t bufsize) 
-{
-	(void)instance;
 }
