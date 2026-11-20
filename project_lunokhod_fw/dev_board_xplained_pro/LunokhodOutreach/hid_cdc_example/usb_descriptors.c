@@ -78,7 +78,6 @@ uint8_t const *tud_descriptor_device_cb(void) {
 enum {
   ITF_NUM_CDC = 0,
   ITF_NUM_CDC_DATA,
-  ITF_NUM_HID,
   ITF_NUM_TOTAL
 };
 
@@ -86,24 +85,7 @@ enum {
 #define EPNUM_CDC_OUT     0x02
 #define EPNUM_CDC_IN      0x82
 
-#define EPNUM_HID_IN      0x83
-
-#define CONFIG_TOTAL_LEN    (TUD_CONFIG_DESC_LEN + TUD_CDC_DESC_LEN + TUD_HID_DESC_LEN)
-
-//--------------------------------------------------------------------+
-// HID Report Descriptor
-//--------------------------------------------------------------------+
-
-uint8_t const desc_hid_report[] =
-{
-	TUD_HID_REPORT_DESC_KEYBOARD( HID_REPORT_ID(REPORT_ID_KEYBOARD)),
-};
-
-uint8_t const * tud_hid_descriptor_report_cb(uint8_t instance)
-{
-	(void) instance;
-	return desc_hid_report;
-}
+#define CONFIG_TOTAL_LEN    (TUD_CONFIG_DESC_LEN + TUD_CDC_DESC_LEN)
 
 // full speed configuration
 static uint8_t const desc_fs_configuration[] = {
@@ -112,9 +94,6 @@ static uint8_t const desc_fs_configuration[] = {
 
     // Interface number, string index, EP notification address and size, EP data address (out, in) and size.
     TUD_CDC_DESCRIPTOR(ITF_NUM_CDC, 4, EPNUM_CDC_NOTIF, 16, EPNUM_CDC_OUT, EPNUM_CDC_IN, 64),
-	
-    // Interface number, string index, protocol, report descriptor len, EP In address, size & polling interval
-    TUD_HID_DESCRIPTOR(ITF_NUM_HID, 0, HID_ITF_PROTOCOL_NONE, sizeof(desc_hid_report), EPNUM_HID_IN, CFG_TUD_HID_EP_BUFSIZE, 5)
 };
 
 #if TUD_OPT_HIGH_SPEED
@@ -207,7 +186,6 @@ static char const *string_desc_arr[] = {
     "Totally a Legit Keyboard I promise",              // 2: Product
     NULL,                          // 3: Serials will use unique ID if possible
     "TinyUSB CDC",                 // 4: CDC Interface
-    "TinyUSB HID",                 // 5: HID Interface
 };
 
 static uint16_t _desc_str[32 + 1];
