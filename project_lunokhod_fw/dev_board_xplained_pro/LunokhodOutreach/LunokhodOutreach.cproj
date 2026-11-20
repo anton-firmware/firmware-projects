@@ -41,7 +41,7 @@
       </framework-data>
     </AsfFrameworkConfig>
     <avrtool>com.atmel.avrdbg.tool.samice</avrtool>
-    <avrtoolserialnumber>852001164</avrtoolserialnumber>
+    <avrtoolserialnumber>852001112</avrtoolserialnumber>
     <avrdeviceexpectedsignature>0x10030103</avrdeviceexpectedsignature>
     <avrtoolinterface>SWD</avrtoolinterface>
     <com_atmel_avrdbg_tool_edbg>
@@ -62,10 +62,10 @@
           <SwdClock>4000000</SwdClock>
         </InterfaceProperties>
         <InterfaceName>SWD</InterfaceName>
-        <JlinkConfigFile>D:\firmware-projects\project_venera_fw\dev_board_xplained_pro\LunokhodOutreach\jlink.config</JlinkConfigFile>
+        <JlinkConfigFile>D:\firmware-projects\project_lunokhod_fw\dev_board_xplained_pro\LunokhodOutreach\jlink.config</JlinkConfigFile>
       </ToolOptions>
       <ToolType>com.atmel.avrdbg.tool.samice</ToolType>
-      <ToolNumber>852001164</ToolNumber>
+      <ToolNumber>852001112</ToolNumber>
       <ToolName>J-Link</ToolName>
     </com_atmel_avrdbg_tool_samice>
   </PropertyGroup>
@@ -138,6 +138,7 @@
       <Value>../../../../third_party/tinyusb/src/class/cdc</Value>
       <Value>../../../../third_party/tinyusb/src/class/hid</Value>
       <Value>../../../../third_party/tinyusb/src/common</Value>
+      <Value>../../../../hal/inc/core</Value>
       <Value>../../../../hal/inc/peripherals</Value>
       <Value>../../../../hal/inc</Value>
       <Value>../../../../third_party/tinyusb/hw/bsp</Value>
@@ -182,9 +183,17 @@
     </ToolchainSettings>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="..\..\..\mcu\atsamd11d14\core\hal_core_interrupts.c">
+      <SubType>compile</SubType>
+      <Link>mcu\hal_core_interrupts.c</Link>
+    </Compile>
     <Compile Include="..\..\..\mcu\atsamd11d14\peripherals\hal_counter.c">
       <SubType>compile</SubType>
       <Link>mcu\hal_counter.c</Link>
+    </Compile>
+    <Compile Include="..\..\..\mcu\atsamd11d14\peripherals\hal_flash.c">
+      <SubType>compile</SubType>
+      <Link>mcu\hal_flash.c</Link>
     </Compile>
     <Compile Include="..\..\..\mcu\atsamd11d14\peripherals\hal_gpio.c">
       <SubType>compile</SubType>
