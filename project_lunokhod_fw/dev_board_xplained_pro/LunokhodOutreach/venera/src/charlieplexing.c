@@ -33,8 +33,6 @@ static hal_gpio_pin_t gpio_input =
 	.pin_mode = HAL_GPIO_INPUT,
 };
 
-static charlieplexed_led_t last_configured_pin;
-
 static void set_inputs_on_pins(uint8_t cathode, uint8_t anode)
 {
 	for (uint8_t i = 0; i < pin_count_plex; i++)
@@ -81,6 +79,11 @@ hal_result_t charlieplexing_set_pin_level(charlieplexed_led_t led_to_set, hal_gp
 {
 	hal_gpio_pin_teardown(&gpio_anode);
 	hal_gpio_pin_teardown(&gpio_cathode);
+    
+    if (pin_level == HAL_GPIO_LOW)
+    {
+        return HAL_SUCCESS;
+    }        
 	
 	gpio_anode.pin = led_to_set.anode;
 	gpio_cathode.pin = led_to_set.cathode;
@@ -95,13 +98,16 @@ hal_result_t charlieplexing_set_pin_level(charlieplexed_led_t led_to_set, hal_gp
 		.pin = gpio_cathode
 	};
 
-	last_configured_pin = led_to_set;
-
 	(void)hal_gpio_pin_init(&gpio_anode_init);
 	(void)hal_gpio_pin_init(&gpio_cathode_init);
 
 	set_inputs_on_pins(led_to_set.cathode, led_to_set.anode);
 
-	hal_gpio_set_level(&gpio_anode, HAL_GPIO_HIGH);
-	hal_gpio_set_level(&gpio_cathode, HAL_GPIO_LOW);
+	if (pin_level == HAL_GPIO_HIGH)
+	{
+		hal_gpio_set_level(&gpio_anode, HAL_GPIO_HIGH);
+		hal_gpio_set_level(&gpio_cathode, HAL_GPIO_LOW);
+	}
+
+	return HAL_SUCCESS;
 }
