@@ -42,7 +42,7 @@ void display_replay_replay_mode(void)
     
     frame_timer = hal_timer_get_tick();
     
-    if (frame_timer - previous_frame_timer > 4000)
+    if (frame_timer - previous_frame_timer > 9000)
     {
         previous_frame_timer = frame_timer;
         current_frame_index = (current_frame_index + 1) % MAX_FRAME_COUNT;

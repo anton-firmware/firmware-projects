@@ -112,7 +112,7 @@ const hal_gpio_pin_t gpio_button_switch_mode =
 };
 
 static uint32_t tick_timer = 0;
-static bool edit_mode = true;
+static bool edit_mode = false;
 
 static void board_init_gpio()
 {
@@ -162,10 +162,6 @@ void USB_Handler(void)
     tud_int_handler(0);
 }
 
-static void counter_cb(void)
-{
-}
-
 static void timer_cb(void)
 {
     if ((tick_timer++ % 10) == 0 )
@@ -207,18 +203,10 @@ int main(void)
         .external_clock = false
     };
     
-    hal_counter_init_t counter_init =
-    {
-        .call_back = &counter_cb,
-    };
-    
     hal_usb_init(&usb_init);
     hal_usb_clock_init();
 
     hal_timer_init(&init_struct);
-    
-    hal_counter_clock_init();
-    hal_counter_init(&counter_init);
     
     hal_counter_start();
     

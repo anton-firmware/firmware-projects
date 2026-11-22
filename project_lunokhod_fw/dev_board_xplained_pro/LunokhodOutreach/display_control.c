@@ -206,7 +206,7 @@ void display_control_tick_display(void)
             break;
 
         default:
-            /* We shouldn't end up here... if we do, just cry. */
+            charlieplexing_set_pin_level(leds[current_led_index].led, HAL_GPIO_LOW);
             break;
     }
 }
