@@ -29,11 +29,13 @@
 #include <stdbool.h>
 
 #include "display_control.h"
+#include "display_editor.h"
 #include "hal_counter.h"
 #include "hal_flash.h"
 #include "hal_timer.h"
 #include "hal_usb.h"
 #include "hal_gpio.h"
+#include "main.h"
 #include "tusb.h"
 #include "sam.h"
 #include "usb_descriptors.h"
@@ -169,23 +171,14 @@ static void counter_cb(void)
 */
 }
 
-static hal_gpio_level_t read_gpio_debounced(hal_gpio_pin_t pin)
-{
-    if (hal_gpio_read_level(&pin) == HAL_GPIO_LOW)
-    {
-        hal_timer_delay(10);
-
-        if (hal_gpio_read_level(&pin) == HAL_GPIO_LOW)
-        {
-            return HAL_GPIO_LOW;
-        }
-    }
-
-    return HAL_GPIO_HIGH;
-}
+static uint32_t tick_timer = 0;
 
 static void timer_cb(void)
 {
+    if ((tick_timer++ % 10) == 0 )
+    {
+        display_control_tick_display();
+    }
 }
 
 static bool edit_mode = false;
@@ -214,7 +207,6 @@ int main(void)
     hal_usb_clock_init();
 
     hal_timer_init(&init_struct);
-    hal_timer_start();
     
     hal_counter_clock_init();
     hal_counter_init(&counter_init);
@@ -230,10 +222,15 @@ int main(void)
     NVIC_EnableIRQ(USB_IRQn);
 
     board_init_gpio();
-    initialise_display();
+    display_control_init_display();
     
+    hal_timer_start();
+
     while (1)
-    {   
+    {
+        display_editor_edit_mode();
+        
+        tud_task();
     }
 }
 
