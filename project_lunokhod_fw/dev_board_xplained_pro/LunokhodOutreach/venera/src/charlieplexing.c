@@ -1,9 +1,10 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "charlieplexing.h"
 #include "hal_gpio.h"
 #include "hal_result.h"
-#include "charlieplexing.h"
+#include "hal_timer.h"
 
 #define MAX_PIN_COUNT 32u
 #define PORT_A_INDEX 0u
@@ -78,7 +79,7 @@ hal_result_t charlieplexing_initialise_pin_table(uint8_t *pins, uint8_t pin_coun
 hal_result_t charlieplexing_set_pin_level(charlieplexed_led_t led_to_set, hal_gpio_level_t pin_level)
 {
 	hal_gpio_pin_teardown(&gpio_anode);
-	hal_gpio_pin_teardown(&gpio_cathode);
+	hal_gpio_pin_teardown(&gpio_cathode); 
     
     if (pin_level == HAL_GPIO_LOW)
     {
