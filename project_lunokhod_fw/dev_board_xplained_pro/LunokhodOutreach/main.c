@@ -30,6 +30,8 @@
 
 #include "display_control.h"
 #include "display_editor.h"
+#include "display_replay.h"
+#include "hal_core_unique_id.h"
 #include "hal_counter.h"
 #include "hal_flash.h"
 #include "hal_timer.h"
@@ -109,6 +111,9 @@ const hal_gpio_pin_t gpio_button_switch_mode =
     .pull_up_mode = HAL_GPIO_PULL_UP
 };
 
+static uint32_t tick_timer = 0;
+static bool edit_mode = true;
+
 static void board_init_gpio()
 {
     hal_gpio_init_t dm_gpio =
@@ -159,19 +164,7 @@ void USB_Handler(void)
 
 static void counter_cb(void)
 {
-/*
-    const charlieplexed_led_t leds[] =
-    {
-        led_1, led_4, led_2, led_5,
-        led_3, led_6, led_7, led_8,
-        led_9, led_10, led_11, led_12,
-    };
-    
-    charlieplexing_set_pin_level(leds[i++ % 12], HAL_GPIO_HIGH);
-*/
 }
-
-static uint32_t tick_timer = 0;
 
 static void timer_cb(void)
 {
@@ -181,10 +174,26 @@ static void timer_cb(void)
     }
 }
 
-static bool edit_mode = false;
-extern uint32_t config_row_start;
+hal_gpio_level_t read_gpio_debounced(hal_gpio_pin_t pin)
+{
+    if (hal_gpio_read_level(&pin) == HAL_GPIO_LOW)
+    {
+        hal_timer_delay(10);
 
-/*------------- MAIN -------------*/
+        if (hal_gpio_read_level(&pin) == HAL_GPIO_LOW)
+        {
+            return HAL_GPIO_LOW;
+        }
+    }
+
+    return HAL_GPIO_HIGH;
+}
+
+void lunokhod_switch_mode(void)
+{
+    edit_mode = !edit_mode;
+}
+
 int main(void)
 {
     hal_timer_init_t init_struct =
@@ -225,10 +234,19 @@ int main(void)
     display_control_init_display();
     
     hal_timer_start();
-
+    
+    display_editor_load_from_flash();
+    
     while (1)
     {
-        display_editor_edit_mode();
+        if (edit_mode)
+        {
+            display_editor_edit_mode();
+        }
+        else 
+        {
+            display_replay_replay_mode();
+        }
         
         tud_task();
     }
