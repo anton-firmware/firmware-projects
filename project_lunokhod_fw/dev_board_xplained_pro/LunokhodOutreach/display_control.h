@@ -10,13 +10,15 @@ typedef enum LED_STATE
     OFF,
     ON,
     FLASHING
-} display_led_state_t;
+} __attribute__((packed)) display_led_state_t;
 
 void display_control_init_display(void);
 
 void display_control_tick_display(void);
 
 display_led_state_t display_control_get_current_led_state(uint8_t led_index);
+
+void display_control_flash_all(void);
 
 void display_control_update_display(uint8_t led_index, display_led_state_t state);
 

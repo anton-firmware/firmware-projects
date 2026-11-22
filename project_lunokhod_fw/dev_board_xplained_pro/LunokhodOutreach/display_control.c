@@ -108,6 +108,8 @@ static uint8_t current_led_index = 0;
 static uint32_t timer_tick = 0;
 static uint32_t previous_timer_tick = 0;
 static flash_phase_t current_flash_phase = FLASH_PHASE_OFF;
+static bool flash_all = false;
+
 
 static void flash_led_routine(uint8_t led_index)
 {
@@ -155,6 +157,11 @@ void display_control_flash_single_led(uint8_t led_index)
         
         leds[led_index].led_state = FLASHING;
     }
+}
+
+void display_control_flash_all(void)
+{
+    flash_all = true;
 }
 
 void display_control_tick_display(void)
