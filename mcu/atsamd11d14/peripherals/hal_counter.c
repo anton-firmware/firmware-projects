@@ -10,7 +10,7 @@
 #include "hal_counter.h"
 #include "hal_result.h"
 
-#define TOP_VALUE (46874 / 2)
+#define TOP_VALUE (46874 / 16)
 
 static hal_counter_event_cb_t hal_cb;
 
