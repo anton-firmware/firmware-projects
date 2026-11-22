@@ -18,7 +18,7 @@ typedef void (*hal_timer_event_cb_t)(void);
 /** Structure representing timer initialisation. */
 typedef struct hal_timer_init
 {
-    uint16_t             period;    /*!< The period of the timer in ms. */
+    uint16_t             period;    /*!< The period of the timer in us. */
     hal_timer_event_cb_t call_back; /*!< Callback for timer tick. */
 
 } hal_timer_init_t;
