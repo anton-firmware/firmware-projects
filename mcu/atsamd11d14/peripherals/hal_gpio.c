@@ -385,6 +385,7 @@ hal_result_t hal_gpio_pin_teardown(hal_gpio_pin_t *pin)
                 PORT->Group[PORTA_GROUP].PINCFG[pin->pin].bit.PULLEN = 0u;
                 break;
             case HAL_GPIO_OUTPUT_PUSH_PULL:
+                PORT->Group[PORTA_GROUP].OUTCLR.reg = (1u << pin->pin);
                 PORT->Group[PORTA_GROUP].DIRCLR.reg = (1u << pin->pin);
                 break;
             case HAL_GPIO_OUTPUT_OPEN_DRAIN:
