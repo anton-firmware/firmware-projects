@@ -36,7 +36,7 @@
 #define USB_PID           (0x4000 | PID_MAP(CDC, 0) | PID_MAP(MSC, 1) | PID_MAP(HID, 2) | \
                            PID_MAP(MIDI, 3) | PID_MAP(VENDOR, 4) )
 
-#define USB_VID   0xCafe
+#define USB_VID   0xCAFE
 #define USB_BCD   0x0200
 
 //--------------------------------------------------------------------+
@@ -183,7 +183,7 @@ enum {
 static char const *string_desc_arr[] = {
     (const char[]) { 0x09, 0x04 }, // 0: is supported language is English (0x0409)
     "Anton",                     // 1: Manufacturer
-    "Totally a Legit Keyboard I promise",              // 2: Product
+    "1st Histon Duck Board",              // 2: Product
     NULL,                          // 3: Serials will use unique ID if possible
     "TinyUSB CDC",                 // 4: CDC Interface
 };

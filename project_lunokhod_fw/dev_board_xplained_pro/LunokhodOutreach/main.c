@@ -61,6 +61,9 @@
 #define PAGE_BUTTON_INDEX   2u
 #define MODE_BUTTON_INDEX   3u
 
+const char QUACK_MESSAGE[] = "QUACK. You asked. \r\n " 
+                                "github.com/anton-firmware/firmware-projects";
+
 const hal_gpio_pin_t gpio_usb_dm =
 {
     .pin = SAMD11_USB_DM,
@@ -242,27 +245,21 @@ int main(void)
 
 uint32_t tusb_time_millis_api(void)
 {
-    return hal_timer_get_tick();
+    return (hal_timer_get_tick() / 100);
 }
 
 //--------------------------------------------------------------------+
 // Device callbacks
 //--------------------------------------------------------------------+
 
-// Invoked when device is mounted
-void tud_mount_cb(void)
-{
-
-}
-
-// Invoked when device is unmounted
-void tud_umount_cb(void)
-{
-
-}
-
 // Invoked when CDC interface received data from host
 void tud_cdc_rx_cb(uint8_t itf)
 {
-
+    char rx = tud_cdc_read_char();
+    
+    if (rx == '?')
+    {
+        tud_cdc_write(QUACK_MESSAGE, sizeof(QUACK_MESSAGE));
+        tud_cdc_write_flush();
+    }
 }

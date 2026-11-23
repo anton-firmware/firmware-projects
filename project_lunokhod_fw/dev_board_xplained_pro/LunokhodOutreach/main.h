@@ -17,6 +17,7 @@ typedef enum button_phase
     UNPRESSED,
     PROCESSING_SHORT,
     PROCESSING_LONG,
+    PROCESSING_COMBINED,
     PRESSED
 } button_phase_t;
 
