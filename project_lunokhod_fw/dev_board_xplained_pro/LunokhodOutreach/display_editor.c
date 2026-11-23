@@ -17,6 +17,7 @@ static button_phase_t step_button = UNPRESSED;
 static button_phase_t toggle_button = UNPRESSED;
 static button_phase_t page_button = UNPRESSED;
 static button_phase_t mode_button = UNPRESSED;
+static button_phase_t combined_erase = UNPRESSED;
 
 static uint32_t mode_press_tick = 0;
 
@@ -41,6 +42,8 @@ const display_led_state_t* display_editor_get_frame_array(uint8_t frame_index)
     {
         return display_frames.frames[frame_index];
     }
+
+    return NULL;
 }
 
 void display_editor_load_from_flash(void)
@@ -61,8 +64,41 @@ void display_editor_edit_mode(void)
         {
             display_control_update_display(i, display_frames.frames[current_frame_number][i]);
         }
-        display_control_update_display(0, FLASHING);
+        display_control_update_display(currently_selected_led, FLASHING);
         first_entry = false;
+    }
+
+    switch (combined_erase)
+    {
+        case UNPRESSED:
+            if ((read_gpio_debounced(gpio_button_switch_step) == HAL_GPIO_LOW) && (read_gpio_debounced(gpio_button_switch_toggle) == HAL_GPIO_LOW))
+            {
+                combined_erase = PROCESSING_SHORT;
+            }
+            break;
+            
+        case PROCESSING_SHORT:
+            (void)memset(&display_frames, 0, sizeof(display_frames));
+            (void)hal_flash_write_data((uint32_t *)&display_frames, sizeof(display_frames), &config_row_start);
+            lunokhod_switch_mode();
+            combined_erase = PRESSED;
+            step_button = PRESSED;
+            toggle_button = PRESSED;
+            currently_selected_led = 0;
+            current_frame_number = 0;
+            first_entry = true;
+            break;
+
+        case PRESSED:
+            if ((read_gpio_debounced(gpio_button_switch_step) == HAL_GPIO_LOW) && (read_gpio_debounced(gpio_button_switch_toggle) == HAL_GPIO_LOW))
+            {
+                combined_erase = PRESSED;
+            }
+            else
+            {
+                combined_erase = UNPRESSED;
+            }
+            break;
     }
 
     switch (step_button)
@@ -175,6 +211,7 @@ void display_editor_edit_mode(void)
             if ((read_gpio_debounced(gpio_button_switch_mode) == HAL_GPIO_LOW) && (hal_timer_get_tick() - mode_press_tick > 100000))
             {
                 display_frames.magic = DISPLAY_MAGIC;
+                display_frames.version = DISPLAY_VERSION;
                 (void)hal_flash_write_data((uint32_t *)&display_frames, sizeof(display_frames), &config_row_start);
                 lunokhod_switch_mode();
                 first_entry = true;

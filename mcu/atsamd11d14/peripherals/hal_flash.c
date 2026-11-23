@@ -31,7 +31,7 @@ hal_result_t hal_flash_write_data(const uint32_t *data, uint8_t len, uint32_t *a
         hal_interrupts_disable();
 
         /* See 21.8.8 Address - Atmel | SMART SAM D11 [DATASHEET]
-         * For some godforesaken reason, the NVM operates on "half-word" pairs, so we
+         * For some god-foresaken reason, the NVM operates on "half-word" pairs, so we
          * need to divide the address by 2 before slapping it into the NVM for a row erase.*/
         NVMCTRL->ADDR.reg = ((uint32_t)addr >> 1u);
 
@@ -59,4 +59,6 @@ hal_result_t hal_flash_write_data(const uint32_t *data, uint8_t len, uint32_t *a
 
         result = HAL_SUCCESS;
     }
+    
+    return result;
 }

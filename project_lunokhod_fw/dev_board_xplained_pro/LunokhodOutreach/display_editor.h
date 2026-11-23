@@ -3,18 +3,19 @@
 
 #include "display_control.h"
 
-#define MAX_FRAME_COUNT   10u
+#define MAX_FRAME_COUNT   12u
 #define DISPLAY_MAGIC     0xBEEFCAFE
+#define DISPLAY_VERSION   0x00000001
 
 typedef struct display_frames
 {
     display_led_state_t frames[MAX_FRAME_COUNT][LED_NUMBER];
     uint16_t version;
-    uint16_t reserved;
+    uint32_t reserved[10];
     uint32_t magic;
 } display_frames_t;
 
-_Static_assert(sizeof(display_frames_t) == 128, "frames struct must be a whole number of flash pages");
+_Static_assert(sizeof(display_frames_t) % 64 == 0, "frames struct must be a whole number of flash pages");
 
 void display_editor_edit_mode(void);
 
