@@ -8,7 +8,7 @@
  * \warning Currently only supports host mode.
  */
 
-#include "../hal_result.h"
+#include "hal_result.h"
 
 typedef enum hal_i2c_speeds
 {

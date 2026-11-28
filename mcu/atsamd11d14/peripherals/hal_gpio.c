@@ -6,12 +6,14 @@
 #include "hal_timer.h"
 #include "sam.h"
 
-#define EXTERNAL_INTERRUPT_LINES              7u
+/* For this MCU, PORTA is the only group and it's always 0. */
+#define PORTA_GROUP                           0u
+#define EXTERNAL_INTERRUPT_LINES              8u
 #define PINS_ON_MCU                           32u
 #define EXTERNAL_INTERRUPT_ALTERNATE_FUNCTION 0x00u
-#define BUTTON_DEBOUNCING_THRESHOLD           22u
+#define BUTTON_DEBOUNCING_THRESHOLD           1000u
 
-static hal_gpio_trigger_event_t external_interrupt_pins[EXTERNAL_INTERRUPT_LINES];
+static volatile hal_gpio_trigger_event_t external_interrupt_pins[EXTERNAL_INTERRUPT_LINES];
 
 static volatile uint32_t last_interrupt_time;
 static volatile uint32_t current_interrupt_time;
@@ -21,7 +23,7 @@ static volatile uint32_t current_interrupt_time;
 static uint8_t pin_external_line_map[PINS_ON_MCU] = 
 {
 	0xFFu, /* PA00 - NONE.   */ 
-	0u, /* PA01 - NONE.      */
+	0xFFu, /* PA01 - NONE.   */
 	2u, /* PA02 - EXTINT[2]. */
 	3u, /* PA03 - EXTINT[3]. */
 	4u, /* PA04 - EXTINT[4]. */
@@ -34,7 +36,7 @@ static uint8_t pin_external_line_map[PINS_ON_MCU] =
 	3u, /* PA11 - EXTINT[3]. */
 	0xFFu, /* PA12 - NONE.   */
 	0xFFu, /* PA13 - NONE.   */
-	0u, /* PA14 - NMI.       */
+	0xFFu, /* PA14 - NMI (Not EXTINT). */
 	1u, /* PA15 - EXTINT[1]. */
 	0u, /* PA16 - EXTINT[0]. */
 	1u, /* PA17 - EXTINT[1]. */
@@ -54,8 +56,12 @@ static uint8_t pin_external_line_map[PINS_ON_MCU] =
 	3u, /* PA31 - EXTINT[3]. */
 };
 
+
 static uint32_t initialised_pins_bitmap = 0x00000000u;
 
+/** Valid pins for a particular MCU depending on the compiler flag.
+ * 
+ */
 #if defined(__SAMD11C14A__) || defined(__ATSAMD11C14A__)
     static const uint32_t pin_bitmap = 0x00000000u;
 #elif defined(__SAMD11D14AM__) || defined(__ATSAMD11D14AM__)
@@ -89,8 +95,7 @@ static inline bool is_valid_pin(hal_gpio_pin_t *pin)
  */
 static inline bool is_valid_port(hal_gpio_pin_t *pin)
 {
-    /* A value of 0 corresponds to port A.*/
-    return ((pin != NULL) && (pin->port == 0u));
+    return ((pin != NULL) && (pin->port == PORTA_GROUP));
 }
 
 /** Checks if a given pin is initialised by accessing the pins bitmap.
@@ -113,15 +118,16 @@ static inline void set_alternate_function(hal_gpio_pin_t *pin, alt_func_t alt_fu
 {
     const uint8_t alt_func_group = pin->pin >> 1u;
 	
-    PORT->Group[0u].PINCFG[pin->pin].bit.PMUXEN = 1u;
+    PORT->Group[PORTA_GROUP].PINCFG[pin->pin].bit.PMUXEN = 1u;
     
+    /* Determine if a pin is in an odd or even group by looking at the last bit. */
     if (pin->pin & 0x1u)
     {
-        PORT->Group[0u].PMUX[alt_func_group].bit.PMUXO = alt_func;
+        PORT->Group[PORTA_GROUP].PMUX[alt_func_group].bit.PMUXO = alt_func;
     }
     else 
     {
-        PORT->Group[0u].PMUX[alt_func_group].bit.PMUXE = alt_func;
+        PORT->Group[PORTA_GROUP].PMUX[alt_func_group].bit.PMUXE = alt_func;
     }
 }
 
@@ -135,12 +141,12 @@ static inline void set_pull_up_pull_down(hal_gpio_pin_t *pin)
     {
         if (pin->pull_up_mode == HAL_GPIO_PULL_UP)
         {
-            PORT->Group[0u].PINCFG[pin->pin].bit.PULLEN = 1u;
-			PORT->Group[0u].OUTSET.reg |= (1u << pin->pin);
+            PORT->Group[PORTA_GROUP].PINCFG[pin->pin].bit.PULLEN = 1u;
+			PORT->Group[PORTA_GROUP].OUTSET.reg |= (1u << pin->pin);
         }
         else
         {
-            PORT->Group[0u].PINCFG[pin->pin].bit.PULLEN = 0u;
+            PORT->Group[PORTA_GROUP].PINCFG[pin->pin].bit.PULLEN = 0u;
         }
     }
 }
@@ -157,7 +163,7 @@ static inline void setup_eic_gclk(void)
     /* Set the EIC core clock to be Generic Clock Generator 0 (Internal 8MHz oscilator). 
      * Note: On reset, the OSC8M is fed through a divide by 8 step, so this clock is actually 1MHz. 
      */
-    clk_ctl_reg_value |= (GCLK_CLKCTRL_ID_EIC | GCLK_CLKCTRL_CLKEN | GCLK_CLKCTRL_GEN_GCLK0);
+    clk_ctl_reg_value |= (GCLK_CLKCTRL_ID_EIC | GCLK_CLKCTRL_CLKEN | GCLK_CLKCTRL_GEN_GCLK1);
 
     GCLK->CLKCTRL.reg = clk_ctl_reg_value; 
 
@@ -213,10 +219,15 @@ static inline void set_input_trigger_type(hal_gpio_pin_t *pin, hal_gpio_trigger_
 	}
 }
 
-/** ISR for the external interrupt controller. */
+/** ISR for the external interrupt controller. 
+ * 
+ * \note KNOWN LIMITATION: In this mplementation if two or more buttons are pressed
+ *       simultaneously within the same debounce window, the second press will be discarded.
+ *       To be fixed at a later date.
+ */
 void EIC_Handler(void)
 {
-	current_interrupt_time = hal_timer_get_tick();
+ 	current_interrupt_time = hal_timer_get_tick();
 	
 	if (current_interrupt_time - last_interrupt_time > BUTTON_DEBOUNCING_THRESHOLD)
 	{
@@ -297,18 +308,19 @@ hal_result_t hal_gpio_pin_init(hal_gpio_init_t *init_struct)
         result = HAL_ERROR_PARAM_ERROR;
     }
     else
-    {
+    {	
         switch (init_struct->pin.pin_mode)
         {
             case HAL_GPIO_INPUT:
-                PORT->Group[0u].DIRCLR.reg = (1u << init_struct->pin.pin);
-                PORT->Group[0u].PINCFG[init_struct->pin.pin].reg |= PORT_PINCFG_INEN;
+                PORT->Group[PORTA_GROUP].DIRCLR.reg = (1u << init_struct->pin.pin);
+                PORT->Group[PORTA_GROUP].PINCFG[init_struct->pin.pin].reg |= PORT_PINCFG_INEN;
                 set_pull_up_pull_down(&init_struct->pin);
                 set_input_trigger_type(&init_struct->pin, init_struct->trigger_event_cb);
                 enable_external_interrupt_controller();
                 break;
             case HAL_GPIO_OUTPUT_PUSH_PULL:
-                PORT->Group[0u].DIRSET.reg = (1u << init_struct->pin.pin);
+                PORT->Group[PORTA_GROUP].DIRSET.reg = (1u << init_struct->pin.pin);
+				PORT->Group[PORTA_GROUP].PINCFG[init_struct->pin.pin].bit.DRVSTR = 1;
                 break;
             case HAL_GPIO_OUTPUT_OPEN_DRAIN:
                 /* TODO: Init open drain. */
@@ -321,7 +333,7 @@ hal_result_t hal_gpio_pin_init(hal_gpio_init_t *init_struct)
                 break;
         }
         
-        if (result != HAL_ERROR_PARAM_ERROR || result != HAL_ERROR_PERIPHERAL_ERROR)
+        if ((result != HAL_ERROR_PARAM_ERROR) || (result != HAL_ERROR_PERIPHERAL_ERROR))
         {
             initialised_pins_bitmap |= (1u << init_struct->pin.pin);
             result = HAL_SUCCESS;
@@ -368,18 +380,19 @@ hal_result_t hal_gpio_pin_teardown(hal_gpio_pin_t *pin)
         switch (pin->pin_mode)
         {
             case HAL_GPIO_INPUT:
-                PORT->Group[0u].DIRCLR.reg = (1u << pin->pin);
-                PORT->Group[0u].PINCFG[pin->pin].reg &= ~PORT_PINCFG_INEN;
-                PORT->Group[0u].PINCFG[pin->pin].bit.PULLEN = 0u;
+                PORT->Group[PORTA_GROUP].DIRCLR.reg = (1u << pin->pin);
+                PORT->Group[PORTA_GROUP].PINCFG[pin->pin].reg &= ~PORT_PINCFG_INEN;
+                PORT->Group[PORTA_GROUP].PINCFG[pin->pin].bit.PULLEN = 0u;
                 break;
             case HAL_GPIO_OUTPUT_PUSH_PULL:
-                PORT->Group[0u].DIRCLR.reg = (1u << pin->pin);
+                PORT->Group[PORTA_GROUP].OUTCLR.reg = (1u << pin->pin);
+                PORT->Group[PORTA_GROUP].DIRCLR.reg = (1u << pin->pin);
                 break;
             case HAL_GPIO_OUTPUT_OPEN_DRAIN:
                 /* TODO: Clear output drain. */
                 break;
             case HAL_GPIO_ALTERNATE:
-                PORT->Group[0u].PINCFG[pin->pin].bit.PMUXEN = 0;
+                PORT->Group[PORTA_GROUP].PINCFG[pin->pin].bit.PMUXEN = 0;
                 set_alternate_function(pin, 0u);
                 break;
             default:
@@ -388,7 +401,6 @@ hal_result_t hal_gpio_pin_teardown(hal_gpio_pin_t *pin)
         }
 
         initialised_pins_bitmap &= ~(1u << pin->pin);
-		teardown_external_interrupt_controller();
     }
 
     return result;
@@ -418,11 +430,11 @@ hal_result_t hal_gpio_set_level(hal_gpio_pin_t *pin, hal_gpio_level_t level)
     {
         if (level == HAL_GPIO_HIGH)
         {
-            PORT->Group[0u].OUTSET.reg = (1u << pin->pin);
+            PORT->Group[PORTA_GROUP].OUTSET.reg = (1u << pin->pin);
         }
         else 
         {
-            PORT->Group[0u].OUTCLR.reg = (1u << pin->pin);
+            PORT->Group[PORTA_GROUP].OUTCLR.reg = (1u << pin->pin);
             
         }
         
@@ -454,7 +466,7 @@ hal_result_t hal_gpio_toggle_level(hal_gpio_pin_t *pin)
     }
     else
     {
-        PORT->Group[0u].OUTTGL.reg = (1u << pin->pin);
+        PORT->Group[PORTA_GROUP].OUTTGL.reg = (1u << pin->pin);
 
         result = HAL_SUCCESS;
     }
@@ -484,7 +496,7 @@ hal_gpio_level_t hal_gpio_read_level(hal_gpio_pin_t *pin)
     }
     else
     {
-        result = (PORT->Group[0u].IN.reg & (1u << pin->pin)) ? HAL_GPIO_HIGH : HAL_GPIO_LOW;
+        result = (PORT->Group[PORTA_GROUP].IN.reg & (1u << pin->pin)) ? HAL_GPIO_HIGH : HAL_GPIO_LOW;
     }
 
     return result;
